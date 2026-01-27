@@ -1,4 +1,5 @@
 "use client";
+import Link from "next/link";
 import * as React from "react";
 
 import {
@@ -13,25 +14,10 @@ import {
   SidebarMenuItem,
   SidebarRail,
 } from "@/components/ui/sidebar";
-import { useAuthContext } from "@/store/auth-store-provider";
+import { SidebarMenuSkeleton } from "@/components/skeletons/sidebar-menu-skeleton";
+import { useAuthContext } from "@/store/auth/auth-store-provider";
 import { Button } from "./ui/button";
-
-/*
-{
-      title: "Getting Started",
-      url: "#",
-      items: [
-        {
-          title: "Installation",
-          url: "#",
-        },
-        {
-          title: "Project Structure",
-          url: "#",
-        },
-      ],
-    },
-*/
+import { useConfig } from "@/store/config/config-store-provider";
 
 const data = {
   versions: ["1.0.1", "1.1.0-alpha", "2.0.0-beta1"],
@@ -56,6 +42,7 @@ const data = {
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const user = useAuthContext((s) => s.user);
   const logout = useAuthContext((s) => s.logout);
+  const config = useConfig();
 
   return (
     <Sidebar {...props}>
@@ -70,22 +57,20 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </h2>
       </SidebarHeader>
       <SidebarContent>
-        {data.navMain.map((item) => (
-          <SidebarGroup key={item.title}>
-            <SidebarGroupLabel>{item.title}</SidebarGroupLabel>
-            <SidebarGroupContent>
-              <SidebarMenu>
-                {item.items.map((item) => (
-                  <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton asChild>
-                      <a href={item.url}>{item.title}</a>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                ))}
-              </SidebarMenu>
-            </SidebarGroupContent>
-          </SidebarGroup>
-        ))}
+        <SidebarGroupLabel>Menü</SidebarGroupLabel>
+        <SidebarMenu>
+          {config ? (
+            config.menuItems.map((item) => (
+              <SidebarMenuItem key={item.title}>
+                <SidebarMenuButton asChild>
+                  <Link href={item.url}>{item.title}</Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            ))
+          ) : (
+            <SidebarMenuSkeleton />
+          )}
+        </SidebarMenu>
 
         {user && (
           <SidebarGroup>
@@ -97,11 +82,16 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                   Kijelentkezés
                 </Button>
               </div>
+              {config && (
+                <div className="p-2 text-xs text-center text-gray-500">
+                  Version: {config.version}
+                </div>
+              )}
             </SidebarGroupContent>
           </SidebarGroup>
         )}
       </SidebarContent>
-      <SidebarRail />
+      <SidebarRail></SidebarRail>
     </Sidebar>
   );
 }

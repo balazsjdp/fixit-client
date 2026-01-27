@@ -11,7 +11,8 @@ import {
 import { Separator } from "@radix-ui/react-separator";
 import { ModeToggle } from "@/components/ui/modeToggle";
 
-import { AuthStoreProvider } from "@/store/auth-store-provider";
+import { AuthStoreProvider } from "@/store/auth/auth-store-provider";
+import { ConfigStoreProvider } from "@/store/config/config-store-provider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -54,20 +55,22 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <AuthStoreProvider>
-            <SidebarProvider>
-              <AppSidebar />
-              <SidebarInset>
-                <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4 place-content-between">
-                  <SidebarTrigger className="-ml-1" />
-                  <Separator
-                    orientation="vertical"
-                    className="mr-2 data-[orientation=vertical]:h-4"
-                  />
-                  <ModeToggle />
-                </header>
-                {children}
-              </SidebarInset>
-            </SidebarProvider>
+            <ConfigStoreProvider>
+              <SidebarProvider>
+                <AppSidebar />
+                <SidebarInset>
+                  <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4 place-content-between">
+                    <SidebarTrigger className="-ml-1" />
+                    <Separator
+                      orientation="vertical"
+                      className="mr-2 data-[orientation=vertical]:h-4"
+                    />
+                    <ModeToggle />
+                  </header>
+                  {children}
+                </SidebarInset>
+              </SidebarProvider>
+            </ConfigStoreProvider>
           </AuthStoreProvider>
         </ThemeProvider>
       </body>
