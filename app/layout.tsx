@@ -12,7 +12,16 @@ import { Separator } from "@radix-ui/react-separator";
 import { ModeToggle } from "@/components/ui/modeToggle";
 
 import { AuthStoreProvider } from "@/store/auth-store-provider";
-import { AuthState, UserRole } from "@/store/auth-store";
+
+const geistSans = Geist({
+  variable: "--font-geist-sans",
+  subsets: ["latin"],
+});
+
+const geistMono = Geist_Mono({
+  variable: "--font-geist-mono",
+  subsets: ["latin"],
+});
 
 export const metadata: Metadata = {
   title: "FixIt",
@@ -24,20 +33,12 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const initialState: AuthState = {
-    user: {
-      id: "123",
-      name: "Teszt Elek",
-      email: "tesztelek@example.com",
-      role: UserRole.ADMIN,
-    },
-    token: "fake-jwt-token-xyz",
-    isAuthenticated: true,
-    isLoading: false,
-  };
-
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html
+      lang="en"
+      suppressHydrationWarning
+      className={`${geistSans.variable} ${geistMono.variable}`}
+    >
       <head>
         <link
           rel="stylesheet"
@@ -52,7 +53,7 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <AuthStoreProvider initState={initialState}>
+          <AuthStoreProvider>
             <SidebarProvider>
               <AppSidebar />
               <SidebarInset>

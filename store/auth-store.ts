@@ -33,10 +33,16 @@ export type AuthActions = {
 export type AuthStore = AuthState & AuthActions;
 
 // 4. Kezdőállapot
+const elekUser = {
+  id: "tesztelek",
+  name: "Teszt Elek",
+  email: "elek@teszt.hu",
+  role: UserRole.CLIENT,
+};
 export const defaultInitState: AuthState = {
-  user: null,
-  token: null,
-  isAuthenticated: false,
+  user: elekUser,
+  token: "teszt-token",
+  isAuthenticated: true,
   isLoading: false,
 };
 

@@ -1,32 +1,28 @@
 "use client";
 
-import { type ReactNode, createContext, useRef, useContext } from "react";
+import {
+  type ReactNode,
+  createContext,
+  useRef,
+  useContext,
+  useState,
+} from "react";
 import { type StoreApi, useStore } from "zustand";
 
 import { type AuthStore, createAuthStore, AuthState } from "./auth-store";
 
-export const AuthStoreContext = createContext<StoreApi<AuthStore> | null>(
-  null
-);
+export const AuthStoreContext = createContext<StoreApi<AuthStore> | null>(null);
 
 export interface AuthStoreProviderProps {
   children: ReactNode;
   initState?: Partial<AuthState>;
 }
 
-export const AuthStoreProvider = ({
-  children,
-  initState,
-}: AuthStoreProviderProps) => {
-  const storeRef = useRef<StoreApi<AuthStore>>();
-  if (!storeRef.current) {
-    storeRef.current = createAuthStore({
-        ...initState,
-    });
-  }
+export const AuthStoreProvider = ({ children }: AuthStoreProviderProps) => {
+  const [store] = useState(() => createAuthStore());
 
   return (
-    <AuthStoreContext.Provider value={storeRef.current}>
+    <AuthStoreContext.Provider value={store}>
       {children}
     </AuthStoreContext.Provider>
   );
@@ -40,4 +36,13 @@ export const useAuthContext = <T,>(selector: (store: AuthStore) => T): T => {
   }
 
   return useStore(storeContext, selector);
+};
+
+export const useAuthStore = <T,>(selector: (store: AuthStore) => T): T => {
+  const authStoreContext = useContext(AuthStoreContext);
+  if (!authStoreContext) {
+    throw new Error(`useAuthStore must be used within AuthStoreProvider`);
+  }
+
+  return useStore(authStoreContext, selector);
 };
