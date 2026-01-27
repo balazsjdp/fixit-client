@@ -54,7 +54,13 @@ const data = {
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const { user, logout, login } = useAuth();
+  const { user, logout } = useAuth();
+  const [isClient, setIsClient] = React.useState(false);
+
+  React.useEffect(() => {
+    setIsClient(true);
+  }, []);
+
   return (
     <Sidebar {...props}>
       <SidebarHeader className="flex-row items-center py-4">
@@ -85,13 +91,13 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           </SidebarGroup>
         ))}
 
-        {user && (
+        {isClient && user && (
           <SidebarGroup>
             <SidebarGroupLabel>Fiók</SidebarGroupLabel>
             <SidebarGroupContent>
               <div className="flex flex-col gap-2 p-2">
                 <p className="text-sm font-semibold">{user.name}</p>
-                <Button variant="outline" size="sm" onClick={() => logout}>
+                <Button variant="outline" size="sm" onClick={logout}>
                   Kijelentkezés
                 </Button>
               </div>
