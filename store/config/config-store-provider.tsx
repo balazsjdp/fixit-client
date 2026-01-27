@@ -2,7 +2,7 @@
 
 import { useEffect, createContext, useContext } from "react";
 import { useStore } from "zustand";
-import { configStore, ConfigState, createConfigStore } from "./config-store";
+import { configStore } from "./config-store";
 import { useConfig } from "@/app/api/client/config";
 
 export const ConfigStoreContext = createContext<typeof configStore | undefined>(
