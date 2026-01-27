@@ -1,5 +1,6 @@
-import { apiClient } from "../api-client";
+import { useApi } from "@/hooks/use-api";
+import { User } from "@/types/user";
 
-export const getUser = (id: string) => {
-  return apiClient.get(`/users/${id}`);
+export const useUser = (id?: string) => {
+  return useApi<User>(id ? `/users/${id}` : null);
 };

@@ -1,6 +1,6 @@
-import { apiClient } from "../api-client";
+import { useApi } from "@/hooks/use-api";
 import { Config } from "@/store/config/config-store";
 
-export const getConfig = () => {
-  return apiClient.get<Config>("/config");
+export const useConfig = () => {
+  return useApi<Config>("/config");
 };

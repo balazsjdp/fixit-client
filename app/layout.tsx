@@ -67,7 +67,7 @@ export default function RootLayout({
                     />
                     <ModeToggle />
                   </header>
-                  {children}
+                  <div className="flex p-6">{children}</div>
                 </SidebarInset>
               </SidebarProvider>
             </ConfigStoreProvider>

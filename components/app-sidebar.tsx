@@ -17,32 +17,12 @@ import {
 import { SidebarMenuSkeleton } from "@/components/skeletons/sidebar-menu-skeleton";
 import { useAuthContext } from "@/store/auth/auth-store-provider";
 import { Button } from "./ui/button";
-import { useConfig } from "@/store/config/config-store-provider";
-
-const data = {
-  versions: ["1.0.1", "1.1.0-alpha", "2.0.0-beta1"],
-  navMain: [
-    {
-      title: "Getting Started",
-      url: "#",
-      items: [
-        {
-          title: "Installation",
-          url: "#",
-        },
-        {
-          title: "Project Structure",
-          url: "#",
-        },
-      ],
-    },
-  ],
-};
+import { useConfigFromStore } from "@/store/config/config-store-provider";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const user = useAuthContext((s) => s.user);
   const logout = useAuthContext((s) => s.logout);
-  const config = useConfig();
+  const config = useConfigFromStore();
 
   return (
     <Sidebar {...props}>
