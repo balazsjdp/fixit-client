@@ -13,7 +13,7 @@ import {
   SidebarMenuItem,
   SidebarRail,
 } from "@/components/ui/sidebar";
-import { useAuth } from "@/hooks/use-auth";
+import { useAuthContext } from "@/store/auth-store-provider";
 import { Button } from "./ui/button";
 
 /*
@@ -54,12 +54,8 @@ const data = {
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const { user, logout } = useAuth();
-  const [isClient, setIsClient] = React.useState(false);
-
-  React.useEffect(() => {
-    setIsClient(true);
-  }, []);
+  const user = useAuthContext((s) => s.user);
+  const logout = useAuthContext((s) => s.logout);
 
   return (
     <Sidebar {...props}>
@@ -91,7 +87,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           </SidebarGroup>
         ))}
 
-        {isClient && user && (
+        {user && (
           <SidebarGroup>
             <SidebarGroupLabel>Fiók</SidebarGroupLabel>
             <SidebarGroupContent>

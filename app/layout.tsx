@@ -11,6 +11,9 @@ import {
 import { Separator } from "@radix-ui/react-separator";
 import { ModeToggle } from "@/components/ui/modeToggle";
 
+import { AuthStoreProvider } from "@/store/auth-store-provider";
+import { AuthState, UserRole } from "@/store/auth-store";
+
 export const metadata: Metadata = {
   title: "FixIt",
   description: "",
@@ -21,6 +24,18 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const initialState: AuthState = {
+    user: {
+      id: "123",
+      name: "Teszt Elek",
+      email: "tesztelek@example.com",
+      role: UserRole.ADMIN,
+    },
+    token: "fake-jwt-token-xyz",
+    isAuthenticated: true,
+    isLoading: false,
+  };
+
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
@@ -37,20 +52,22 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <SidebarProvider>
-            <AppSidebar />
-            <SidebarInset>
-              <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4 place-content-between">
-                <SidebarTrigger className="-ml-1" />
-                <Separator
-                  orientation="vertical"
-                  className="mr-2 data-[orientation=vertical]:h-4"
-                />
-                <ModeToggle />
-              </header>
-              {children}
-            </SidebarInset>
-          </SidebarProvider>
+          <AuthStoreProvider initState={initialState}>
+            <SidebarProvider>
+              <AppSidebar />
+              <SidebarInset>
+                <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4 place-content-between">
+                  <SidebarTrigger className="-ml-1" />
+                  <Separator
+                    orientation="vertical"
+                    className="mr-2 data-[orientation=vertical]:h-4"
+                  />
+                  <ModeToggle />
+                </header>
+                {children}
+              </SidebarInset>
+            </SidebarProvider>
+          </AuthStoreProvider>
         </ThemeProvider>
       </body>
     </html>

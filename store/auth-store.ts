@@ -34,14 +34,9 @@ export type AuthStore = AuthState & AuthActions;
 
 // 4. Kezdőállapot
 export const defaultInitState: AuthState = {
-  user: {
-    id: "123",
-    name: "Teszt Elek",
-    email: "tesztelek@example.com",
-    role: UserRole.ADMIN,
-  },
-  token: "fake-jwt-token-xyz",
-  isAuthenticated: true,
+  user: null,
+  token: null,
+  isAuthenticated: false,
   isLoading: false,
 };
 
