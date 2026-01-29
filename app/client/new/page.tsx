@@ -87,12 +87,12 @@ export default function New() {
             <section>
               <button
                 type="submit"
-                className="w-full flex items-center justify-center gap-3 py-5 bg-primary text-white rounded-xl font-bold text-xl shadow-lg shadow-primary/30 hover:bg-primary/90 transition-all active:scale-[0.98] cursor-pointer"
+                className="w-full flex items-center justify-center gap-3 py-5 bg-primary text-background rounded-xl font-bold text-xl shadow-lg shadow-primary/30 hover:bg-primary/90 transition-all active:scale-[0.98] cursor-pointer"
               >
                 <span className="material-symbols-outlined">send</span>
                 Probléma beküldése
               </button>
-              <p className="text-center text-xs text-gray-400 mt-8 max-w-lg mx-auto">
+              <p className="text-center text-xs text-foreground mt-8 max-w-lg mx-auto">
                 Az gombra kattintva elfogadja az általános szerződési
                 feltételeket, és lehetővé teszi a helyi szakemberek számára a
                 kérés részleteinek megtekintését.
