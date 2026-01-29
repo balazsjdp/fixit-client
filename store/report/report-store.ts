@@ -25,7 +25,7 @@ export type ReportActions = {
   setFiles: (files: File[]) => void;
   setDescription: (description: string) => void;
   setUrgency: (urgency: number) => void;
-  setAddress: (address: Address) => void;
+  setAddress: (address: Partial<Address>) => void;
   resetForm: () => void;
 };
 
