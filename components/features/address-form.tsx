@@ -30,7 +30,7 @@ export function AddressForm() {
             });
           }
         })
-        .catch((error) => console.error("Error fetching city:", error));
+        .catch((error) => logger.error("Error fetching city:", error));
     }
   }, [address.postcode, setAddress]);
 
