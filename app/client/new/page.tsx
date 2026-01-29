@@ -1,7 +1,7 @@
 import { CategorySelector } from "@/components/features/category-selector";
 import { Slider } from "@/components/ui/slider";
 
-export default function Client() {
+export default function New() {
   return (
     <>
       <main>

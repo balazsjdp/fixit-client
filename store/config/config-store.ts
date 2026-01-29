@@ -1,3 +1,4 @@
+import { IconName } from "lucide-react/dynamic";
 import { createStore } from "zustand";
 
 export interface Config {
@@ -8,6 +9,7 @@ export interface Config {
 export interface MenuItem {
   title: string;
   url: string;
+  icon: IconName;
 }
 
 export interface ConfigState {
