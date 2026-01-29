@@ -1,0 +1,2 @@
+- Feature flagek bevezetése
+- Irányítószám kitöltőt kirakni feature flagre
