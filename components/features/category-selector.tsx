@@ -2,6 +2,7 @@
 import { useCategories } from "@/app/api/client/categories";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { DesktopCategoriesSkeleton } from "../skeletons/desktop-categories-skeleton";
+import { DynamicIcon } from "lucide-react/dynamic";
 
 export function CategorySelector() {
   const isMobile = useIsMobile();
@@ -24,9 +25,11 @@ export function CategorySelector() {
                 key={category.id}
                 className="flex flex-col items-center gap-3 rounded-xl border border-gray-100 dark:border-gray-800 bg-primary/5 p-5 transition-all"
               >
-                <span className="material-symbols-outlined text-primary">
-                  {category.icon}
-                </span>
+                <DynamicIcon
+                  name={category.icon}
+                  color="var(--color-primary)"
+                  size={24}
+                />
                 <span className="text-xs font-bold">{category.label}</span>
               </button>
             ))}

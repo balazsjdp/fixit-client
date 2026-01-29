@@ -5,6 +5,7 @@ import * as React from "react";
 import {
   Sidebar,
   SidebarContent,
+  SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
@@ -18,6 +19,7 @@ import { SidebarMenuSkeleton } from "@/components/skeletons/sidebar-menu-skeleto
 import { useAuthContext } from "@/store/auth/auth-store-provider";
 import { Button } from "./ui/button";
 import { useConfigFromStore } from "@/store/config/config-store-provider";
+import { DynamicIcon } from "lucide-react/dynamic";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const user = useAuthContext((s) => s.user);
@@ -39,19 +41,26 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarContent>
         <SidebarGroupLabel>Menü</SidebarGroupLabel>
         <SidebarMenu>
-          {config ? (
-            config.menuItems.map((item) => (
+          <React.Suspense fallback={<SidebarMenuSkeleton />}>
+            {config?.menuItems.map((item) => (
               <SidebarMenuItem key={item.title}>
                 <SidebarMenuButton asChild>
-                  <Link href={item.url}>{item.title}</Link>
+                  <Link href={item.url}>
+                    <DynamicIcon
+                      name={item.icon}
+                      color="var(--color-primary)"
+                      size={48}
+                    />
+                    {item.title}
+                  </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
-            ))
-          ) : (
-            <SidebarMenuSkeleton />
-          )}
+            ))}
+          </React.Suspense>
         </SidebarMenu>
-
+      </SidebarContent>
+      <SidebarRail></SidebarRail>
+      <SidebarFooter>
         {user && (
           <SidebarGroup>
             <SidebarGroupLabel>Fiók</SidebarGroupLabel>
@@ -70,8 +79,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             </SidebarGroupContent>
           </SidebarGroup>
         )}
-      </SidebarContent>
-      <SidebarRail></SidebarRail>
+      </SidebarFooter>
     </Sidebar>
   );
 }
