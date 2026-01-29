@@ -64,7 +64,7 @@ export default function New() {
           <div className="space-y-10">
             <section>
               <h3 className="text-sm font-bold uppercase tracking-wider mb-5">
-                3. Sürgősségi szint
+                4. Sürgősségi szint
               </h3>
               <SliderSelector
                 max={100}
