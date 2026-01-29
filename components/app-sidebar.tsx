@@ -48,8 +48,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                   <Link href={item.url}>
                     <DynamicIcon
                       name={item.icon}
-                      color="var(--color-primary)"
-                      size={48}
+                      className="text-primary"
+                      size={24}
                     />
                     {item.title}
                   </Link>
