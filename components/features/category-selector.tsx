@@ -27,7 +27,7 @@ export function CategorySelector() {
               >
                 <DynamicIcon
                   name={category.icon}
-                  color="var(--color-primary)"
+                  className="text-primary"
                   size={24}
                 />
                 <span className="text-xs font-bold">{category.label}</span>
