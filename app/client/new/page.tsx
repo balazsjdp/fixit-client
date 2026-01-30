@@ -9,6 +9,7 @@ import {
   useReportActions,
 } from "@/store/report/report-store-provider";
 import { createReport } from "@/app/api/client/reports";
+import { toast } from "sonner";
 
 export default function New() {
   const form = useReportForm();
@@ -36,11 +37,11 @@ export default function New() {
 
       const response = await createReport(formData);
       logger.info("Report created successfully:", response);
-      // TODO: Success toast
+      toast.success("Hiba sikeresen bejelentve!");
       resetForm();
     } catch (error) {
       logger.error(`Error creating report:" ${error}`);
-      // TODO: Error toast
+      toast.error("Hiba lépett fel a bejelentés során!");
     }
   };
 

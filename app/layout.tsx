@@ -13,6 +13,7 @@ import { ModeToggle } from "@/components/ui/modeToggle";
 
 import { AuthStoreProvider } from "@/store/auth/auth-store-provider";
 import { ConfigStoreProvider } from "@/store/config/config-store-provider";
+import { Toaster } from "@/components/ui/sonner";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -73,6 +74,7 @@ export default function RootLayout({
             </ConfigStoreProvider>
           </AuthStoreProvider>
         </ThemeProvider>
+        <Toaster position="top-right" richColors />
       </body>
     </html>
   );
