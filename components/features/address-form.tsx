@@ -1,5 +1,7 @@
 "use client";
 
+import logger from "@/lib/logger";
+import { useConfigFromStore } from "@/store/config/config-store-provider";
 import {
   useReportForm,
   useReportActions,
@@ -9,6 +11,7 @@ import { useEffect } from "react";
 export function AddressForm() {
   const address = useReportForm().address;
   const { setAddress } = useReportActions();
+  const config = useConfigFromStore();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -19,7 +22,7 @@ export function AddressForm() {
   };
 
   useEffect(() => {
-    if (address.postcode.length === 4) {
+    if (address.postcode.length === 4 && config?.featureFlags.zipCodeResolver) {
       fetch(`https://hur.webmania.cc/zips/${address.postcode}.json`)
         .then((response) => response.json())
         .then((data) => {

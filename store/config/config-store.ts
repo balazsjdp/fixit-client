@@ -4,6 +4,12 @@ import { createStore } from "zustand";
 export interface Config {
   version: string;
   menuItems: MenuItem[];
+  featureFlags: Record<string, boolean>;
+}
+
+export interface FeatureFlag {
+  name: string;
+  enabled: boolean;
 }
 
 export interface MenuItem {
