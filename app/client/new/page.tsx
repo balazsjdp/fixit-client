@@ -69,12 +69,17 @@ export default function New() {
               <SliderSelector
                 max={100}
                 step={50}
-                labels={["Ma", "48 Óra", "Rugalmas"]}
+                labels={["Ráér", "Pár napon belül", "Sürgős"]}
                 title="Sürgősségi szint"
                 outputLabel={(value) => {
-                  if (value === 0) return "Ma";
-                  if (value === 50) return "48 Óra";
-                  return "Rugalmas";
+                  if (value === 0) return "Ráér";
+                  if (value === 50) return "Pár napon belül";
+                  return "Sürgős";
+                }}
+                labelColor={(value) => {
+                  if (value < 50) return "bg-green-600";
+                  if (value >= 50 && value < 100) return "bg-orange-600";
+                  return "bg-red-600";
                 }}
               />
             </section>

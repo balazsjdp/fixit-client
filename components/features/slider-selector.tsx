@@ -12,6 +12,7 @@ interface SliderSelectorProps {
   labels: string[];
   title: string;
   outputLabel: (value: number) => string;
+  labelColor: (value: number) => string;
 }
 
 export function SliderSelector({
@@ -20,6 +21,7 @@ export function SliderSelector({
   labels,
   title,
   outputLabel,
+  labelColor,
 }: SliderSelectorProps) {
   const urgency = useReportForm().urgency;
   const { setUrgency } = useReportActions();
@@ -31,7 +33,9 @@ export function SliderSelector({
   return (
     <div className="bg-primary/5 p-6 rounded-xl border border-gray-100 dark:border-gray-800">
       <div className="flex justify-between items-center mb-5">
-        <span className="text-xs font-bold text-primary bg-primary/10 px-3 py-1 rounded">
+        <span
+          className={`text-xs font-bold text-white px-3 py-1 rounded ${labelColor(urgency)}`}
+        >
           {outputLabel(urgency)}
         </span>
       </div>

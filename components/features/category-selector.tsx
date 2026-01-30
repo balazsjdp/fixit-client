@@ -32,24 +32,29 @@ export function CategorySelector() {
           <DesktopCategoriesSkeleton />
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-            {categories?.map((category) => (
-              <button
-                key={category.id}
-                className={cn(
-                  "flex flex-col items-center gap-3 rounded-xl border border-gray-100 dark:border-gray-800 bg-primary/5 p-5 transition-all hover:border-primary cursor-pointer",
-                  selected?.id === category.id &&
-                    "border-primary bg-primary/10 text-primary"
-                )}
-                onClick={() => onSelectHandler(category)}
-              >
-                <DynamicIcon
-                  name={category.icon}
-                  className="text-primary"
-                  size={24}
-                />
-                <span className="text-xs font-bold">{category.label}</span>
-              </button>
-            ))}
+            {categories?.map((category) => {
+              const isSelected = selected?.id === category.id;
+              return (
+                <button
+                  key={category.id}
+                  className={cn(
+                    "flex flex-col items-center gap-3 rounded-xl border border-gray-100 dark:border-gray-800 bg-primary/5 p-5 transition-all hover:border-primary cursor-pointer",
+                    isSelected && "border-primary bg-foreground text-background"
+                  )}
+                  onClick={() => onSelectHandler(category)}
+                >
+                  <DynamicIcon
+                    name={category.icon}
+                    className={cn(
+                      "text-primary",
+                      isSelected && "text-background"
+                    )}
+                    size={24}
+                  />
+                  <span className="text-xs font-bold">{category.label}</span>
+                </button>
+              );
+            })}
           </div>
         )}
       </div>
