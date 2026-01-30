@@ -1,1 +1,2 @@
 - hibabejelentés oldalra validáció + visszajelzés
+- több kép mentése backenden
