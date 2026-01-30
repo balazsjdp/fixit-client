@@ -22,7 +22,10 @@ export function AddressForm() {
   };
 
   useEffect(() => {
-    if (address.postcode.length === 4 && config?.featureFlags.zipCodeResolver) {
+    if (
+      address.postcode.length === 4 &&
+      config?.featureFlags?.zipCodeResolver
+    ) {
       fetch(`https://hur.webmania.cc/zips/${address.postcode}.json`)
         .then((response) => response.json())
         .then((data) => {
