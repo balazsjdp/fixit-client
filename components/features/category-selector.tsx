@@ -37,6 +37,7 @@ export function CategorySelector() {
               return (
                 <button
                   key={category.id}
+                  type="button"
                   className={cn(
                     "flex flex-col items-center gap-3 rounded-xl border border-gray-100 dark:border-gray-800 bg-primary/5 p-5 transition-all hover:border-primary cursor-pointer",
                     isSelected && "border-primary bg-foreground text-background"

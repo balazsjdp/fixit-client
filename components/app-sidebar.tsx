@@ -39,7 +39,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </h2>
       </SidebarHeader>
       <SidebarContent>
-        <SidebarGroupLabel>Menü</SidebarGroupLabel>
+        <SidebarGroupLabel>Menasdü</SidebarGroupLabel>
         <SidebarMenu>
           <React.Suspense fallback={<SidebarMenuSkeleton />}>
             {config?.menuItems.map((item) => (

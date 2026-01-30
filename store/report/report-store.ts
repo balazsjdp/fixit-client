@@ -57,7 +57,9 @@ export const reportStore = createStore<ReportStore>((set) => ({
     setUrgency: (urgency) =>
       set((state) => ({ form: { ...state.form, urgency } })),
     setAddress: (address) =>
-      set((state) => ({ form: { ...state.form, address } })),
+      set((state) => ({
+        form: { ...state.form, address: { ...state.form.address, ...address } },
+      })),
     resetForm: () => set({ form: defaultInitState.form }),
   },
 }));

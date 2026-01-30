@@ -8,14 +8,40 @@ import {
   useReportForm,
   useReportActions,
 } from "@/store/report/report-store-provider";
+import { createReport } from "@/app/api/client/reports";
 
 export default function New() {
   const form = useReportForm();
-  const { setDescription } = useReportActions();
+  const { setDescription, resetForm } = useReportActions();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    logger.debug(form);
+    try {
+      const formData = new FormData();
+      for (const key of Object.keys(form) as (keyof typeof form)[]) {
+        if (key === "files") {
+          continue;
+        }
+
+        if (typeof form[key] === "object" && form[key] !== null) {
+          formData.append(key, JSON.stringify(form[key]));
+        } else if (form[key] !== null && form[key] !== undefined) {
+          formData.append(key, (form[key] as string).toString());
+        }
+      }
+
+      form.files.forEach((file) => {
+        formData.append(`files`, file);
+      });
+
+      const response = await createReport(formData);
+      logger.info("Report created successfully:", response);
+      // TODO: Success toast
+      resetForm();
+    } catch (error) {
+      logger.error(`Error creating report:" ${error}`);
+      // TODO: Error toast
+    }
   };
 
   return (

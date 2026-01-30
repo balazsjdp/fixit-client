@@ -1,2 +1,1 @@
-- Feature flagek bevezetése
-- Irányítószám kitöltőt kirakni feature flagre
+- hibabejelentés oldalra validáció + visszajelzés
