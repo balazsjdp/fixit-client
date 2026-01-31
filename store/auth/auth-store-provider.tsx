@@ -1,22 +1,19 @@
 "use client";
 
-import { type ReactNode, createContext, useContext, useState } from "react";
+import { type ReactNode, createContext, useContext } from "react";
 import { type StoreApi, useStore } from "zustand";
 
-import { type AuthStore, createAuthStore, AuthState } from "./auth-store";
+import { type AuthStore, authStore } from "./auth-store";
 
 export const AuthStoreContext = createContext<StoreApi<AuthStore> | null>(null);
 
 export interface AuthStoreProviderProps {
   children: ReactNode;
-  initState?: Partial<AuthState>;
 }
 
 export const AuthStoreProvider = ({ children }: AuthStoreProviderProps) => {
-  const [store] = useState(() => createAuthStore());
-
   return (
-    <AuthStoreContext.Provider value={store}>
+    <AuthStoreContext.Provider value={authStore}>
       {children}
     </AuthStoreContext.Provider>
   );

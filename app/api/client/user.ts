@@ -1,4 +1,4 @@
-import { useApi } from "@/hooks/use-api";
+import { useApi } from "@/app/api/use-api";
 import { User } from "@/types/user";
 
 export const useUser = (id?: string) => {
