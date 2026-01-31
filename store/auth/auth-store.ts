@@ -17,7 +17,7 @@ export type AuthState = {
 
 // 2. Action Típusok - Itt definiálod, mit tud csinálni a store
 export type AuthActions = {
-  login: (email: string) => void; // Egyszerűsítettem: csak emailt vár a szimulációhoz
+  login: (user: User, token: string) => void;
   logout: () => void;
   setLoading: (isLoading: boolean) => void;
 };
@@ -26,16 +26,10 @@ export type AuthActions = {
 export type AuthStore = AuthState & { actions: AuthActions };
 
 // 4. Kezdőállapot
-const elekUser = {
-  id: "tesztelek",
-  name: "Teszt Elek",
-  email: "elek@teszt.hu",
-  role: UserRole.CLIENT,
-};
 export const defaultInitState: AuthState = {
-  user: elekUser,
-  token: "teszt-token",
-  isAuthenticated: true,
+  user: null,
+  token: null,
+  isAuthenticated: false,
   isLoading: false,
 };
 
@@ -46,19 +40,10 @@ export const createAuthStore = (initState: AuthState = defaultInitState) => {
       (set) => ({
         ...initState,
         actions: {
-          login: (email: string) => {
-            // Call backend to login here
-            // Set fake user now
-            const fakeUser: User = {
-              id: "123",
-              name: "Teszt Elek",
-              email: email,
-              role: UserRole.ADMIN,
-            };
-
+          login: (user: User, token: string) => {
             set({
-              user: fakeUser,
-              token: "fake-jwt-token-xyz",
+              user: user,
+              token: token,
               isAuthenticated: true,
             });
           },
@@ -86,3 +71,5 @@ export const createAuthStore = (initState: AuthState = defaultInitState) => {
     )
   );
 };
+
+export const authStore = createAuthStore();

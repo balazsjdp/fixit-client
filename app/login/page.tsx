@@ -2,19 +2,26 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useAuthActions, useAuthStore } from "@/store/auth/auth-store-provider";
+import { jwtDecode } from "jwt-decode";
+import Cookies from "js-cookie";
+import { User } from "@/types/user";
+import logger from "@/lib/logger";
+import { config } from "@/app.config";
 
 export default function LoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const { login } = useAuthActions();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError("");
 
     try {
-      const res = await fetch("http://localhost:8080/login", {
+      const res = await fetch(config.apiBaseUrl + "/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -22,17 +29,24 @@ export default function LoginPage() {
         body: JSON.stringify({ email, password }),
       });
 
+      logger.debug(`Login response status: ${res.ok}`);
+
       if (res.ok) {
-        const data = await res.json();
-        // TODO: Store the token in a secure way
-        console.log("Token:", data.token);
+        const { access_token, refresh_token } = await res.json();
+        logger.debug(`Received token: ${access_token}`);
+        const decodedToken = jwtDecode<User>(access_token);
+        logger.debug(`Decoded token: ${JSON.stringify(decodedToken)}`);
+        login(decodedToken, access_token);
+        logger.debug("User logged in successfully");
+        Cookies.set("token", access_token, { expires: 1 / 24 }); // Expires in 1 hour
+        Cookies.set("refresh_token", refresh_token, { expires: 7 }); // Expires in 7 days
         router.push("/");
       } else {
         const data = await res.json();
         setError(data.message || "Login failed");
       }
     } catch (error) {
-      setError("An unexpected error occurred");
+      setError(JSON.stringify(error));
     }
   };
 

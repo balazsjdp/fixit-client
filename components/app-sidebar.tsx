@@ -39,7 +39,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </h2>
       </SidebarHeader>
       <SidebarContent>
-        <SidebarGroupLabel>Menasdü</SidebarGroupLabel>
+        <SidebarGroupLabel>Menü</SidebarGroupLabel>
         <SidebarMenu>
           <React.Suspense fallback={<SidebarMenuSkeleton />}>
             {config?.menuItems.map((item) => (
@@ -66,7 +66,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             <SidebarGroupLabel>Fiók</SidebarGroupLabel>
             <SidebarGroupContent>
               <div className="flex flex-col gap-2 p-2">
-                <p className="text-sm font-semibold">{user.name}</p>
+                <p className="text-sm font-semibold">{`${user.lastName} ${user.firstName}`}</p>
                 <Button variant="outline" size="sm" onClick={logout}>
                   Kijelentkezés
                 </Button>

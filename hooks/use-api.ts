@@ -1,12 +1,5 @@
-import useSWR from "swr";
-import { fetcher } from "@/app/api/fetcher";
+import api from "@/lib/api";
 
-export const useApi = <T>(path: string | null) => {
-  const { data, error, isLoading } = useSWR<T>(path, fetcher.get);
-
-  return {
-    data,
-    error,
-    isLoading,
-  };
+export const useApi = () => {
+  return api;
 };
