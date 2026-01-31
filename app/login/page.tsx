@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useAuthActions, useAuthStore } from "@/store/auth/auth-store-provider";
+import { useAuthActions } from "@/store/auth/auth-store-provider";
 import { jwtDecode } from "jwt-decode";
 import Cookies from "js-cookie";
 import { User } from "@/types/user";
