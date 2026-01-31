@@ -1,2 +1,3 @@
 - hibabejelentés oldalra validáció + visszajelzés
 - több kép mentése backenden
+- mielőtt elmentjük a címet, adjunk hozzá koordinátákat

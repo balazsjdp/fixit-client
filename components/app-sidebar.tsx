@@ -16,14 +16,14 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar";
 import { SidebarMenuSkeleton } from "@/components/skeletons/sidebar-menu-skeleton";
-import { useAuthContext } from "@/store/auth/auth-store-provider";
+import { useAuthActions, useAuthStore } from "@/store/auth/auth-store-provider";
 import { Button } from "./ui/button";
 import { useConfigFromStore } from "@/store/config/config-store-provider";
 import { DynamicIcon } from "lucide-react/dynamic";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const user = useAuthContext((s) => s.user);
-  const logout = useAuthContext((s) => s.logout);
+  const user = useAuthStore().user;
+  const logout = useAuthActions().logout;
   const config = useConfigFromStore();
 
   return (

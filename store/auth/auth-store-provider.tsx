@@ -22,21 +22,19 @@ export const AuthStoreProvider = ({ children }: AuthStoreProviderProps) => {
   );
 };
 
-export const useAuthContext = <T,>(selector: (store: AuthStore) => T): T => {
-  const storeContext = useContext(AuthStoreContext);
-
-  if (!storeContext) {
-    throw new Error(`useAuthContext must be use within AuthStoreProvider`);
-  }
-
-  return useStore(storeContext, selector);
-};
-
-export const useAuthStore = <T,>(selector: (store: AuthStore) => T): T => {
+export const useAuthStore = () => {
   const authStoreContext = useContext(AuthStoreContext);
   if (!authStoreContext) {
     throw new Error(`useAuthStore must be used within AuthStoreProvider`);
   }
 
-  return useStore(authStoreContext, selector);
+  return useStore(authStoreContext, (state) => state);
+};
+
+export const useAuthActions = () => {
+  const store = useContext(AuthStoreContext);
+  if (!store) {
+    throw new Error("Missing AuthStoreProvider");
+  }
+  return useStore(store, (state) => state.actions);
 };
