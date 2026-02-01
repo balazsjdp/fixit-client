@@ -36,7 +36,7 @@ export default function New() {
       });
 
       const response = await createReport(formData);
-      logger.info("Report created successfully:", response);
+      logger.info(`Report created successfully: ${response}`);
       toast.success("Hiba sikeresen bejelentve!");
       resetForm();
     } catch (error) {
