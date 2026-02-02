@@ -14,6 +14,7 @@ import { ModeToggle } from "@/components/ui/modeToggle";
 import { AuthStoreProvider } from "@/store/auth/auth-store-provider";
 import { ConfigStoreProvider } from "@/store/config/config-store-provider";
 import { Toaster } from "@/components/ui/sonner";
+import { KeycloakProvider } from "@/components/auth/KeycloakProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -49,31 +50,35 @@ export default function RootLayout({
       </head>
 
       <body>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <AuthStoreProvider>
-            <ConfigStoreProvider>
-              <SidebarProvider>
-                <AppSidebar />
-                <SidebarInset>
-                  <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4 place-content-between">
-                    <SidebarTrigger className="-ml-1" />
-                    <Separator
-                      orientation="vertical"
-                      className="mr-2 data-[orientation=vertical]:h-4"
-                    />
-                    <ModeToggle />
-                  </header>
-                  <div className="flex flex p-6 justify-center">{children}</div>
-                </SidebarInset>
-              </SidebarProvider>
-            </ConfigStoreProvider>
-          </AuthStoreProvider>
-        </ThemeProvider>
+        <KeycloakProvider>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <AuthStoreProvider>
+              <ConfigStoreProvider>
+                <SidebarProvider>
+                  <AppSidebar />
+                  <SidebarInset>
+                    <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4 place-content-between">
+                      <SidebarTrigger className="-ml-1" />
+                      <Separator
+                        orientation="vertical"
+                        className="mr-2 data-[orientation=vertical]:h-4"
+                      />
+                      <ModeToggle />
+                    </header>
+                    <div className="flex flex p-6 justify-center">
+                      {children}
+                    </div>
+                  </SidebarInset>
+                </SidebarProvider>
+              </ConfigStoreProvider>
+            </AuthStoreProvider>
+          </ThemeProvider>
+        </KeycloakProvider>
         <Toaster position="top-right" richColors />
       </body>
     </html>
