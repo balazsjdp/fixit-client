@@ -42,12 +42,7 @@ export default function RootLayout({
       suppressHydrationWarning
       className={`${geistSans.variable} ${geistMono.variable}`}
     >
-      <head>
-        <link
-          rel="stylesheet"
-          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=optional"
-        />
-      </head>
+      <head></head>
 
       <body>
         <KeycloakProvider>
@@ -70,7 +65,7 @@ export default function RootLayout({
                       />
                       <ModeToggle />
                     </header>
-                    <div className="flex flex p-6 justify-center">
+                    <div className="flex flex p-6 justify-center flex-col">
                       {children}
                     </div>
                   </SidebarInset>

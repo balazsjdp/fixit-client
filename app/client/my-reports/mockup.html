@@ -1,0 +1,363 @@
+<!doctype html>
+<html class="light" lang="hu">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Bejelentett hibáim - Expertly</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              primary: "#0056b2",
+              "background-light": "#f8fafc",
+              "background-dark": "#0f172a",
+            },
+            fontFamily: {
+              display: ["Inter", "sans-serif"],
+            },
+            borderRadius: {
+              DEFAULT: "0.375rem",
+              lg: "0.5rem",
+              xl: "0.75rem",
+              "2xl": "1rem",
+              full: "9999px",
+            },
+          },
+        },
+      };
+    </script>
+    <style type="text/tailwindcss">
+      .material-symbols-outlined {
+        font-variation-settings:
+          "FILL" 0,
+          "wght" 400,
+          "GRAD" 0,
+          "opsz" 24;
+      }
+      .status-badge {
+        @apply px-2.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider;
+      }
+    </style>
+  </head>
+  <body
+    class="bg-background-light dark:bg-background-dark font-display text-[#1e293b] dark:text-slate-200 min-h-screen"
+  >
+    <div class="flex flex-col w-full min-h-screen">
+      <header
+        class="sticky top-0 z-30 flex items-center justify-between border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md px-6 md:px-12 py-4"
+      >
+        <div class="flex items-center gap-10">
+          <div class="flex items-center gap-3 text-primary">
+            <span class="material-symbols-outlined text-3xl font-bold"
+              >handyman</span
+            >
+            <h1 class="text-2xl font-black tracking-tight">Expertly</h1>
+          </div>
+          <nav class="hidden md:flex items-center gap-8">
+            <a
+              class="text-primary text-sm font-bold border-b-2 border-primary pb-1"
+              href="#"
+              >Kéréseim</a
+            >
+            <a
+              class="text-slate-600 dark:text-slate-400 text-sm font-semibold hover:text-primary transition-colors"
+              href="#"
+              >Szakemberek keresése</a
+            >
+          </nav>
+        </div>
+        <div class="flex items-center gap-6">
+          <div class="flex items-center gap-4">
+            <button
+              class="p-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors relative"
+            >
+              <span class="material-symbols-outlined">notifications</span>
+              <span
+                class="absolute top-2.5 right-2.5 w-2 h-2 bg-red-500 rounded-full border-2 border-white dark:border-slate-900"
+              ></span>
+            </button>
+            <div
+              class="flex items-center gap-3 pl-4 border-l border-slate-200 dark:border-slate-800"
+            >
+              <div class="text-right hidden sm:block">
+                <p class="text-sm font-bold leading-none">Kovács János</p>
+                <p class="text-[10px] text-slate-500 font-medium mt-1">
+                  Pilisvörösvár
+                </p>
+              </div>
+              <div
+                class="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden border border-primary/20"
+              >
+                <div
+                  class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-full"
+                  style="
+                    background-image: url(&quot;https://lh3.googleusercontent.com/aida-public/AB6AXuC1M5Nn4-InhPFhYcW02i0inATXnnVYfcp1sVXtsvEvcaPfmmWloUIdK00FbISEmq5GdyvyrOLZ4Csvi8Ey5EMf1zVTRludvtbRnoYB9JkJrkmBhFMUryPk0LuQL8m6o_4-aNCwnBKkzS1avAJbKMHmYtibFE7Xji25axILV_F0Xtsk-78ILHs02oII7ZQYWV1uSKlO0hRS7FjTJGLxfjhDotocaZG5ly1j0cGQjzEEX5SUl0XwDSCK0rPM0xW1YeSz8jDDzw2kRK4&quot;);
+                  "
+                ></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </header>
+      <main class="flex-1 max-w-5xl mx-auto w-full px-6 py-10">
+        <div
+          class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-10"
+        >
+          <div>
+            <h2 class="text-3xl font-black text-slate-900 dark:text-white mb-2">
+              Bejelentett hibáim
+            </h2>
+            <p class="text-slate-500 dark:text-slate-400">
+              Kövesse nyomon folyamatban lévő és lezárt szerviz igényeit.
+            </p>
+          </div>
+          <button
+            class="bg-primary hover:bg-primary/90 text-white px-6 py-3 rounded-xl font-bold flex items-center gap-2 shadow-lg shadow-primary/20 transition-all active:scale-95"
+          >
+            <span class="material-symbols-outlined text-xl">add</span>
+            Új hiba bejelentése
+          </button>
+        </div>
+        <div class="space-y-4">
+          <div
+            class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 sm:p-5 flex items-center gap-4 sm:gap-6 hover:shadow-xl hover:shadow-slate-200/50 dark:hover:shadow-none transition-all group"
+          >
+            <div
+              class="relative h-20 w-20 sm:h-24 sm:w-24 shrink-0 rounded-xl overflow-hidden bg-slate-100 dark:bg-slate-800"
+            >
+              <div
+                class="w-full h-full bg-cover bg-center transition-transform group-hover:scale-110"
+                style="
+                  background-image: url(&quot;https://lh3.googleusercontent.com/aida-public/AB6AXuAiIsIDtf5Jtuj1oEnlKH-8MTM51inbT6JOq4m4L1cponxkSFJhDdwSvhIkjdEWuw7Rx7Mbhko6EnxiXaojqUB2opOBM1Z7KKE3wIFZAyWLAj1WoPb0QUBB3tGbQj1d7liLUBKzc3-kTz-EXvFQUW7NNXAnE06YxTrI3xv0yAaBOsP42YnmRZ64vOe-EQcOlJI7CX67MZjmo0TvGVWnMawMQu6ibPSzP4PmGoesgIcvwl--vH2yRzT_70BWH4JQPhGgLlRUKXO5Q9I&quot;);
+                "
+              ></div>
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="flex flex-wrap items-center gap-2 mb-2">
+                <div
+                  class="flex items-center gap-1.5 bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded text-slate-600 dark:text-slate-400"
+                >
+                  <span class="material-symbols-outlined text-sm"
+                    >plumbing</span
+                  >
+                  <span class="text-[10px] font-bold uppercase tracking-wider"
+                    >Vízvezeték</span
+                  >
+                </div>
+                <span
+                  class="status-badge bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400"
+                  >Folyamatban</span
+                >
+              </div>
+              <h3
+                class="text-lg font-bold text-slate-900 dark:text-white truncate mb-1"
+              >
+                Csöpögő csap a konyhában
+              </h3>
+              <p class="text-xs text-slate-500 flex items-center gap-1">
+                <span class="material-symbols-outlined text-sm"
+                  >calendar_today</span
+                >
+                Bejelentve: 2024. Március 12.
+              </p>
+            </div>
+            <div class="hidden sm:flex flex-col items-end gap-3 shrink-0">
+              <div class="text-right">
+                <p
+                  class="text-[10px] font-bold text-slate-400 uppercase tracking-widest"
+                >
+                  Szakember
+                </p>
+                <p class="text-sm font-semibold">Kovács Antal</p>
+              </div>
+              <button
+                class="flex items-center gap-2 text-primary font-bold text-sm hover:underline"
+              >
+                Részletek
+                <span class="material-symbols-outlined text-base"
+                  >arrow_forward</span
+                >
+              </button>
+            </div>
+            <button class="sm:hidden p-2 text-primary shrink-0">
+              <span class="material-symbols-outlined">chevron_right</span>
+            </button>
+          </div>
+          <div
+            class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 sm:p-5 flex items-center gap-4 sm:gap-6 hover:shadow-xl hover:shadow-slate-200/50 dark:hover:shadow-none transition-all group"
+          >
+            <div
+              class="relative h-20 w-20 sm:h-24 sm:w-24 shrink-0 rounded-xl overflow-hidden bg-slate-100 dark:bg-slate-800"
+            >
+              <div
+                class="w-full h-full bg-slate-200 dark:bg-slate-800 flex items-center justify-center"
+              >
+                <span class="material-symbols-outlined text-slate-400 text-3xl"
+                  >image</span
+                >
+              </div>
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="flex flex-wrap items-center gap-2 mb-2">
+                <div
+                  class="flex items-center gap-1.5 bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded text-slate-600 dark:text-slate-400"
+                >
+                  <span class="material-symbols-outlined text-sm">bolt</span>
+                  <span class="text-[10px] font-bold uppercase tracking-wider"
+                    >Villany</span
+                  >
+                </div>
+                <span
+                  class="status-badge bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400"
+                  >Keresés</span
+                >
+              </div>
+              <h3
+                class="text-lg font-bold text-slate-900 dark:text-white truncate mb-1"
+              >
+                Nincs áram a garázsban
+              </h3>
+              <p class="text-xs text-slate-500 flex items-center gap-1">
+                <span class="material-symbols-outlined text-sm"
+                  >calendar_today</span
+                >
+                Bejelentve: 2024. Március 14.
+              </p>
+            </div>
+            <div class="hidden sm:flex flex-col items-end gap-3 shrink-0">
+              <div class="text-right">
+                <p
+                  class="text-[10px] font-bold text-slate-400 uppercase tracking-widest"
+                >
+                  Állapot
+                </p>
+                <p class="text-sm font-semibold">Szakemberre vár</p>
+              </div>
+              <button
+                class="flex items-center gap-2 text-primary font-bold text-sm hover:underline"
+              >
+                Részletek
+                <span class="material-symbols-outlined text-base"
+                  >arrow_forward</span
+                >
+              </button>
+            </div>
+            <button class="sm:hidden p-2 text-primary shrink-0">
+              <span class="material-symbols-outlined">chevron_right</span>
+            </button>
+          </div>
+          <div
+            class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 sm:p-5 flex items-center gap-4 sm:gap-6 hover:shadow-xl hover:shadow-slate-200/50 dark:hover:shadow-none transition-all group opacity-80 hover:opacity-100"
+          >
+            <div
+              class="relative h-20 w-20 sm:h-24 sm:w-24 shrink-0 rounded-xl overflow-hidden bg-slate-100 dark:bg-slate-800"
+            >
+              <div
+                class="w-full h-full bg-cover bg-center grayscale group-hover:grayscale-0 transition-all"
+                style="
+                  background-image: url(&quot;https://lh3.googleusercontent.com/aida-public/AB6AXuDqsrFXPDcOWQ0LmOgealzN4MT1ZL7Js5MzmVY9LyAuiv5-jMXuacd_JnJSzjrI9zbGsI5hTc77NxSrmtAzQDLA_n04voDUAxOiofvruYNOMJn74qhj-BQX_gx5qHRDuxBgRcAqEK-cv2_SQ3WplL_kNvWrrjYFJEE15IQ5JBBuqhwgPomduot6mDS2rGP89r5HKlA0Rf51u2puh381NcmBEV8UqW6yEd4dvuDG709e_IcoT-JUTxd-kwjJpRTA9AMc4ecegJ7usfY&quot;);
+                "
+              ></div>
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="flex flex-wrap items-center gap-2 mb-2">
+                <div
+                  class="flex items-center gap-1.5 bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded text-slate-600 dark:text-slate-400"
+                >
+                  <span class="material-symbols-outlined text-sm"
+                    >thermostat</span
+                  >
+                  <span class="text-[10px] font-bold uppercase tracking-wider"
+                    >Fűtés</span
+                  >
+                </div>
+                <span
+                  class="status-badge bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
+                  >Kész</span
+                >
+              </div>
+              <h3
+                class="text-lg font-bold text-slate-900 dark:text-white truncate mb-1"
+              >
+                Radiátor légtelenítés
+              </h3>
+              <p class="text-xs text-slate-500 flex items-center gap-1">
+                <span class="material-symbols-outlined text-sm"
+                  >calendar_today</span
+                >
+                Lezárva: 2024. Február 28.
+              </p>
+            </div>
+            <div class="hidden sm:flex flex-col items-end gap-3 shrink-0">
+              <div class="flex items-center gap-1 text-yellow-500 mb-1">
+                <span class="material-symbols-outlined text-sm fill-1"
+                  >star</span
+                >
+                <span class="material-symbols-outlined text-sm fill-1"
+                  >star</span
+                >
+                <span class="material-symbols-outlined text-sm fill-1"
+                  >star</span
+                >
+                <span class="material-symbols-outlined text-sm fill-1"
+                  >star</span
+                >
+                <span class="material-symbols-outlined text-sm fill-1"
+                  >star</span
+                >
+              </div>
+              <button
+                class="flex items-center gap-2 text-primary font-bold text-sm hover:underline"
+              >
+                Részletek
+                <span class="material-symbols-outlined text-base"
+                  >arrow_forward</span
+                >
+              </button>
+            </div>
+            <button class="sm:hidden p-2 text-primary shrink-0">
+              <span class="material-symbols-outlined">chevron_right</span>
+            </button>
+          </div>
+        </div>
+        <div
+          class="mt-12 p-8 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-3xl flex flex-col items-center text-center"
+        >
+          <div
+            class="w-16 h-16 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center mb-4"
+          >
+            <span class="material-symbols-outlined text-3xl text-slate-400"
+              >support_agent</span
+            >
+          </div>
+          <h4 class="text-lg font-bold mb-2">Segítségre van szüksége?</h4>
+          <p class="text-sm text-slate-500 max-w-sm mb-6">
+            Ügyfélszolgálatunk a nap 24 órájában rendelkezésére áll, ha
+            bármilyen kérdése adódna a bejelentéseivel kapcsolatban.
+          </p>
+          <a class="text-primary font-bold text-sm hover:underline" href="#"
+            >Kapcsolatfelvétel az ügyfélszolgálattal</a
+          >
+        </div>
+      </main>
+      <footer
+        class="mt-auto border-t border-slate-200 dark:border-slate-800 py-8 px-6 text-center"
+      >
+        <p class="text-xs text-slate-400">
+          © 2024 Expertly Hungary Kft. Minden jog fenntartva.
+        </p>
+      </footer>
+    </div>
+  </body>
+</html>

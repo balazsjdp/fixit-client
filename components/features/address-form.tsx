@@ -7,6 +7,7 @@ import {
   useReportActions,
 } from "@/store/report/report-store-provider";
 import { useEffect } from "react";
+import { Input } from "../ui/input";
 
 export function AddressForm() {
   const address = useReportForm().address;
@@ -50,7 +51,7 @@ export function AddressForm() {
           >
             Irányítószám
           </label>
-          <input
+          <Input
             id="postcode"
             name="postcode"
             value={address.postcode}
@@ -66,7 +67,7 @@ export function AddressForm() {
           >
             Város
           </label>
-          <input
+          <Input
             id="city"
             name="city"
             value={address.city}
@@ -83,7 +84,7 @@ export function AddressForm() {
         >
           Közterület neve
         </label>
-        <input
+        <Input
           id="street"
           name="street"
           value={address.street}
@@ -99,7 +100,7 @@ export function AddressForm() {
         >
           Házszám
         </label>
-        <input
+        <Input
           id="houseNumber"
           name="houseNumber"
           value={address.houseNumber}

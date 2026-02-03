@@ -10,6 +10,8 @@ import {
 } from "@/store/report/report-store-provider";
 import { createReport } from "@/app/api/client/reports";
 import { toast } from "sonner";
+import { Textarea } from "@/components/ui/textarea";
+import { Send } from "lucide-react";
 
 export default function New() {
   const form = useReportForm();
@@ -79,12 +81,12 @@ export default function New() {
               <h3 className="text-sm font-bold uppercase tracking-wider mb-5">
                 3. Hiba részletei
               </h3>
-              <textarea
+              <Textarea
                 className="w-full min-h-[150px] p-5 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-base focus:ring-2 focus:ring-primary focus:border-transparent resize-none"
                 placeholder="Kérjük, fejtse ki a hibát részletesen (pl. A konyhai mosogató alatti cső szivárog, amikor folyik a víz...)"
                 value={form.description}
                 onChange={(e) => setDescription(e.target.value)}
-              ></textarea>
+              ></Textarea>
             </section>
           </div>
 
@@ -121,7 +123,7 @@ export default function New() {
                 type="submit"
                 className="w-full flex items-center justify-center gap-3 py-5 bg-primary text-background rounded-xl font-bold text-xl shadow-lg shadow-primary/30 hover:bg-primary/90 transition-all active:scale-[0.98] cursor-pointer"
               >
-                <span className="material-symbols-outlined">send</span>
+                <Send className="text-xl" />
                 Probléma beküldése
               </button>
               <p className="text-center text-xs text-foreground mt-8 max-w-lg mx-auto">
