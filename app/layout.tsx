@@ -65,7 +65,7 @@ export default function RootLayout({
                       />
                       <ModeToggle />
                     </header>
-                    <div className="flex flex p-6 justify-center flex-col">
+                    <div className="flex flex p-6 justify-center flex-col lg:px-24 md:px-12 sm:px-6">
                       {children}
                     </div>
                   </SidebarInset>
