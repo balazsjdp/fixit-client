@@ -29,11 +29,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar {...props}>
       <SidebarHeader className="flex-row items-center py-4">
-        <div className="size-8 flex items-center justify-center">
-          <span className="material-symbols-outlined text-3xl! text-primary">
-            build_circle
-          </span>
-        </div>
         <h2 className="text-[#101418] dark:text-white text-xl font-black leading-tight tracking-tight">
           FixIt
         </h2>
