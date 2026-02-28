@@ -181,7 +181,66 @@ npx prettier --write .
 
 ## Tesztelés
 
-Jelenleg nincsenek tesztek. Ajánlott konvenció:
-- Unit tesztek: Vitest + React Testing Library
-- E2E tesztek: Playwright
-- Fájlok: `__tests__/` könyvtár vagy `*.test.tsx` suffix
+### Stack
+
+- **Unit tesztek**: Vitest + React Testing Library + jsdom
+- **E2E tesztek**: Playwright (Chromium, storageState alapú Keycloak auth)
+- Fájlok: `*.test.ts` / `*.test.tsx` suffix, a tesztelt fájl mellé
+- E2E fájlok: `e2e/` könyvtárban, `*.spec.ts` suffix
+
+### Unit tesztek futtatása
+
+```bash
+# Watch mode (fejlesztés közben)
+npm run test
+
+# Egyszeri futás + coverage report
+npm run test:coverage
+# Report: coverage/index.html
+```
+
+### Coverage thresholdok
+
+| Metrika     | Minimum |
+|-------------|---------|
+| Lines       | 90%     |
+| Functions   | 90%     |
+| Statements  | 90%     |
+| Branches    | 85%     |
+
+A `vitest.config.ts` kizárja az infrastruktúra fájlokat (`lib/api.ts`, provider-ek).
+
+### E2E tesztek futtatása
+
+```bash
+# E2E (headless, futó app + Keycloak szükséges)
+npm run e2e
+
+# E2E interaktív UI módban
+npm run e2e:ui
+```
+
+**Szükséges ENV változók E2E-hez** (`.env.local`):
+```
+E2E_USERNAME=testuser
+E2E_PASSWORD=password
+KEYCLOAK_URL=http://localhost:8081
+KEYCLOAK_REALM=FixIt
+BASE_URL=http://localhost:3000
+```
+
+### Mock stratégia
+
+- `vi.mock('next/navigation')` – router mock (`vitest.setup.ts`)
+- `vi.mock('next/link')` – Link mock (`vitest.setup.ts`)
+- Zustand store-ok: `reportStore` singleton direkt hívás, `resetForm()` a `beforeEach`-ben
+- SWR hookok: `vi.mock('@/app/api/...')` a tesztben
+- `global.URL.createObjectURL` – jsdom stub fájl tesztekhez
+
+### Merge policy (kötelező)
+
+> **TILOS** masterbe mergelni, ha:
+> - `npm run test:coverage` hibával fut
+> - Bármely coverage threshold **nem teljesül**
+> - Playwright E2E tesztek **nem futnak le sikeresen** lokálisan
+> - Új komponenshez/hook-hoz/store action-höz nincs unit teszt
