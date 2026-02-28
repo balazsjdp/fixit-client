@@ -6,13 +6,45 @@ import {
   useReportForm,
   useReportActions,
 } from "@/store/report/report-store-provider";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Input } from "../ui/input";
+import { MapPin, Loader2, CheckCircle2 } from "lucide-react";
+import { reverseGeocode } from "@/lib/geocoding";
 
 export function AddressForm() {
   const address = useReportForm().address;
-  const { setAddress } = useReportActions();
+  const coordinates = useReportForm().coordinates;
+  const { setAddress, setCoordinates } = useReportActions();
   const config = useConfigFromStore();
+  const [gpsLoading, setGpsLoading] = useState(false);
+
+  const handleGpsClick = () => {
+    if (!navigator.geolocation) {
+      logger.error("Geolocation is not supported by this browser.");
+      return;
+    }
+    setGpsLoading(true);
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        const coords = {
+          lat: position.coords.latitude,
+          lng: position.coords.longitude,
+        };
+        setCoordinates(coords);
+
+        const resolved = await reverseGeocode(coords);
+        if (resolved) {
+          setAddress(resolved);
+        }
+
+        setGpsLoading(false);
+      },
+      (err) => {
+        logger.error({ err }, "GPS error");
+        setGpsLoading(false);
+      }
+    );
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -37,12 +69,32 @@ export function AddressForm() {
             });
           }
         })
-        .catch((error) => logger.error("Error fetching city:", error));
+        .catch((err) => logger.error({ err }, "Error fetching city"));
     }
   }, [address.postcode, setAddress]);
 
   return (
     <div className="space-y-4">
+      <button
+        type="button"
+        onClick={handleGpsClick}
+        disabled={gpsLoading}
+        className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl border-2 border-dashed border-primary/40 hover:border-primary hover:bg-primary/5 transition-all text-sm font-semibold text-primary disabled:opacity-50 disabled:cursor-not-allowed"
+      >
+        {gpsLoading ? (
+          <Loader2 className="w-4 h-4 animate-spin" />
+        ) : coordinates ? (
+          <CheckCircle2 className="w-4 h-4 text-green-500" />
+        ) : (
+          <MapPin className="w-4 h-4" />
+        )}
+        {gpsLoading
+          ? "Helymeghatározás..."
+          : coordinates
+          ? "Helyzet rögzítve"
+          : "Helyzet automatikus meghatározása"}
+      </button>
+
       <div className="grid grid-cols-2 gap-4">
         <div className="flex flex-col gap-2">
           <label
