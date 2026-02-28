@@ -26,7 +26,7 @@ export const KeycloakProvider = ({
 
     kc.init({
       onLoad: "login-required",
-      checkLoginIframe: true, // Thi
+      checkLoginIframe: true,
       pkceMethod: "S256",
       silentCheckSsoRedirectUri:
         window.location.origin + "/silent-check-sso.html",
