@@ -9,6 +9,7 @@ import {
   useReportActions,
 } from "@/store/report/report-store-provider";
 import { createReport } from "@/app/api/client/reports";
+import { geocodeAddress } from "@/lib/geocoding";
 import { toast } from "sonner";
 import { Textarea } from "@/components/ui/textarea";
 import { Send } from "lucide-react";
@@ -20,9 +21,15 @@ export default function New() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
+      let coords = form.coordinates;
+
+      if (!coords) {
+        coords = await geocodeAddress(form.address);
+      }
+
       const formData = new FormData();
       for (const key of Object.keys(form) as (keyof typeof form)[]) {
-        if (key === "files") {
+        if (key === "files" || key === "coordinates") {
           continue;
         }
 
@@ -31,6 +38,11 @@ export default function New() {
         } else if (form[key] !== null && form[key] !== undefined) {
           formData.append(key, (form[key] as string).toString());
         }
+      }
+
+      if (coords) {
+        formData.append("lat", coords.lat.toString());
+        formData.append("lng", coords.lng.toString());
       }
 
       form.files.forEach((file) => {

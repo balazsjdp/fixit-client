@@ -15,6 +15,7 @@ describe('ReportStore – singleton', () => {
     expect(form.description).toBe('')
     expect(form.urgency).toBe(50)
     expect(form.address.postcode).toBe('')
+    expect(form.coordinates).toBeNull()
   })
 
   it('setCategory updates category', () => {
@@ -55,11 +56,24 @@ describe('ReportStore – singleton', () => {
     expect(reportStore.getState().form.files[0].name).toBe('photo.jpg')
   })
 
-  it('resetForm clears all fields to defaults', () => {
+  it('setCoordinates stores GPS coordinates', () => {
+    reportStore.getState().actions.setCoordinates({ lat: 47.6172, lng: 18.9812 })
+    const { coordinates } = reportStore.getState().form
+    expect(coordinates).toEqual({ lat: 47.6172, lng: 18.9812 })
+  })
+
+  it('setCoordinates accepts null to clear', () => {
+    reportStore.getState().actions.setCoordinates({ lat: 47.6172, lng: 18.9812 })
+    reportStore.getState().actions.setCoordinates(null)
+    expect(reportStore.getState().form.coordinates).toBeNull()
+  })
+
+  it('resetForm clears all fields to defaults including coordinates', () => {
     reportStore.getState().actions.setCategory(testCategory as never)
     reportStore.getState().actions.setDescription('test')
     reportStore.getState().actions.setUrgency(100)
     reportStore.getState().actions.setAddress({ city: 'Miskolc' })
+    reportStore.getState().actions.setCoordinates({ lat: 47.6172, lng: 18.9812 })
 
     reportStore.getState().actions.resetForm()
 
@@ -68,5 +82,6 @@ describe('ReportStore – singleton', () => {
     expect(form.description).toBe('')
     expect(form.urgency).toBe(50)
     expect(form.address.city).toBe('')
+    expect(form.coordinates).toBeNull()
   })
 })
