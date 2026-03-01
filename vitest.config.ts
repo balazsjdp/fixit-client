@@ -29,6 +29,7 @@ export default defineConfig({
         'e2e/**',
         'lib/api.ts',
         'store/**/*-provider.tsx',
+        'components/features/pro-dashboard-map.tsx',
       ],
     },
   },

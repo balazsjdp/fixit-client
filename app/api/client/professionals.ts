@@ -19,3 +19,11 @@ export async function registerProfessional(
 export const useMyProfessionalProfile = () => {
   return useApi<Professional>("/api/professionals/me");
 };
+
+export async function updateProRadius(radiusKm: number): Promise<void> {
+  await api.patch("/api/professionals/me", { radiusKm });
+}
+
+export async function updateProLocation(lat: number, lng: number): Promise<void> {
+  await api.patch("/api/professionals/me/location", { lat, lng });
+}
