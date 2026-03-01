@@ -34,6 +34,7 @@ export type ReportActions = {
   setAddress: (address: Partial<Address>) => void;
   setCoordinates: (coordinates: Coordinates | null) => void;
   resetForm: () => void;
+  initForm: (data: Partial<ReportForm>) => void;
 };
 
 export type ReportStore = ReportState & { actions: ReportActions };
@@ -71,5 +72,7 @@ export const reportStore = createStore<ReportStore>((set) => ({
     setCoordinates: (coordinates) =>
       set((state) => ({ form: { ...state.form, coordinates } })),
     resetForm: () => set({ form: defaultInitState.form }),
+    initForm: (data) =>
+      set((state) => ({ form: { ...state.form, ...data } })),
   },
 }));
