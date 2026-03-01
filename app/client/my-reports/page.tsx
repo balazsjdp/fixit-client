@@ -13,7 +13,7 @@ import {
   AlertDialogFooter,
   AlertDialogCancel,
 } from "@/components/ui/alert-dialog";
-import { Calendar, Plus, Pencil, Trash2, ArrowRight, MessageSquare, ImageOff } from "lucide-react";
+import { Calendar, Plus, Trash2, ArrowRight, MessageSquare, ImageOff } from "lucide-react";
 import Link from "next/link";
 import { config } from "@/app.config";
 import { useState } from "react";
@@ -160,12 +160,6 @@ function ReportCard({
       <div className="flex items-center gap-2 shrink-0">
         {!report.hasAccepted && (
           <>
-            <Link href={`/client/my-reports/${report.id}/edit`}>
-              <Button variant="outline" size="icon" aria-label="Szerkesztés">
-                <Pencil className="w-4 h-4" />
-              </Button>
-            </Link>
-
             <AlertDialog open={dialogOpen} onOpenChange={setDialogOpen}>
               <AlertDialogTrigger asChild>
                 <Button

@@ -183,23 +183,12 @@ describe("MyReports page – report cards", () => {
   });
 });
 
-describe("MyReports page – edit and delete buttons", () => {
-  it("shows edit and delete buttons only for non-accepted reports", () => {
+describe("MyReports page – delete button", () => {
+  it("shows delete button only for non-accepted reports", () => {
     setup();
     render(<MyReports />);
-    const editButtons = screen.getAllByRole("button", { name: "Szerkesztés" });
-    expect(editButtons).toHaveLength(1);
     const deleteButtons = screen.getAllByRole("button", { name: "Törlés" });
     expect(deleteButtons).toHaveLength(1);
-  });
-
-  it("edit button links to the correct edit route", () => {
-    setup([mockReports[0]]);
-    render(<MyReports />);
-    const editLink = screen
-      .getByRole("button", { name: "Szerkesztés" })
-      .closest("a");
-    expect(editLink?.getAttribute("href")).toBe("/client/my-reports/1/edit");
   });
 
   it("always shows the details button", () => {

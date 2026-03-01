@@ -9,16 +9,3 @@ export interface MyReport {
   createdAt: string;
 }
 
-export interface UpdateReportRequest {
-  description: string;
-  urgency: number;
-  categoryId: number;
-  address: {
-    postcode: string;
-    city: string;
-    street: string;
-    houseNumber: string;
-  };
-  lat: number;
-  lng: number;
-}
