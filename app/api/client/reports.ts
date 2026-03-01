@@ -10,3 +10,8 @@ export async function createReport(formData: FormData) {
 
   return response.data;
 }
+
+export async function deleteReport(id: number) {
+  const response = await api.delete(`/api/reports/${id}`);
+  return response.data;
+}
