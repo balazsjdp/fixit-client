@@ -9,6 +9,7 @@ import { RadiusSlider } from "@/components/features/radius-slider";
 import { ProReportCard } from "@/components/features/pro-report-card";
 import { ProLocationSection } from "@/components/features/pro-location-section";
 import { OfferModal } from "@/components/features/offer-modal";
+import { ProfessionalCard } from "@/components/features/professional-card";
 import {
   useMyProfessionalProfile,
   updateProRadius,
@@ -131,7 +132,7 @@ export default function ProDashboard() {
   return (
     <main>
       {/* Page header */}
-      <div className="mb-8 flex flex-row justify-between items-center">
+      <div className="mb-8 flex flex-row justify-between items-start gap-4">
         <div>
           <h1 className="text-4xl font-black leading-tight tracking-tight mb-1">
             Dashboard
@@ -140,9 +141,17 @@ export default function ProDashboard() {
             Kezeld a közelben lévő bejelentéseket és ajánlataidat.
           </p>
         </div>
-        <div className="flex items-center gap-1.5 text-sm font-semibold text-primary">
-          <Coins className="w-4 h-4" />
-          <span data-testid="credit-balance">{pro.creditBalance} kredit</span>
+        <div className="flex flex-col items-end gap-2 shrink-0">
+          <div className="flex items-center gap-1.5 text-sm font-semibold text-primary">
+            <Coins className="w-4 h-4" />
+            <span data-testid="credit-balance">{pro.creditBalance} kredit</span>
+          </div>
+          <ProfessionalCard
+            name={pro.name}
+            avgRating={pro.avgRating}
+            ratingCount={pro.ratingCount}
+            badges={pro.badges}
+          />
         </div>
       </div>
 

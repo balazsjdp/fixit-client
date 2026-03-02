@@ -1,3 +1,5 @@
+import { Badge } from "./offer";
+
 export type ProfessionalStatus = "pending" | "approved";
 
 export interface Professional {
@@ -12,6 +14,9 @@ export interface Professional {
   creditBalance: number;
   status: ProfessionalStatus;
   createdAt: string;
+  avgRating: number;
+  ratingCount: number;
+  badges: Badge[];
 }
 
 export interface RegisterProfessionalRequest {
