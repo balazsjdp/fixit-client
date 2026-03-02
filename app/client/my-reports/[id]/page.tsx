@@ -20,9 +20,9 @@ import {
   CheckCircle,
   ImageOff,
   Phone,
-  Star,
   User,
 } from "lucide-react";
+import { ProfessionalCard } from "@/components/features/professional-card";
 import Link from "next/link";
 import { isAxiosError } from "axios";
 import { config } from "@/app.config";
@@ -275,33 +275,28 @@ function OfferCard({
     >
       <div className="flex items-start justify-between gap-4">
         <div className="flex-1">
-          <div className="flex items-center gap-3 mb-2">
-            <p className="font-bold text-slate-900 dark:text-white">
-              {offer.professional.name}
-            </p>
-            {offer.status === "accepted" && (
-              <Badge
-                variant="secondary"
-                className="text-green-700 bg-green-100 dark:bg-green-900/30 dark:text-green-400"
-              >
-                Elfogadott
-              </Badge>
-            )}
-            {offer.status === "rejected" && (
-              <Badge variant="secondary" className="text-slate-500">
-                Elutasított
-              </Badge>
-            )}
-          </div>
-
-          <div className="flex items-center gap-1 mb-3">
-            <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />
-            <span className="text-sm font-semibold">
-              {offer.professional.avgRating.toFixed(1)}
-            </span>
-            <span className="text-xs text-muted-foreground">
-              ({offer.professional.ratingCount} értékelés)
-            </span>
+          <div className="flex items-center gap-3 mb-3">
+            <ProfessionalCard
+              name={offer.professional.name}
+              avgRating={offer.professional.avgRating}
+              ratingCount={offer.professional.ratingCount}
+              badges={offer.professional.badges}
+            />
+            <div className="flex gap-2 self-start">
+              {offer.status === "accepted" && (
+                <Badge
+                  variant="secondary"
+                  className="text-green-700 bg-green-100 dark:bg-green-900/30 dark:text-green-400"
+                >
+                  Elfogadott
+                </Badge>
+              )}
+              {offer.status === "rejected" && (
+                <Badge variant="secondary" className="text-slate-500">
+                  Elutasított
+                </Badge>
+              )}
+            </div>
           </div>
 
           <div className="flex flex-wrap gap-4 text-sm">
@@ -356,19 +351,6 @@ function OfferCard({
         )}
       </div>
 
-      {offer.professional.badges.length > 0 && (
-        <div className="flex flex-wrap gap-2 mt-3 pt-3 border-t border-slate-100 dark:border-slate-800">
-          {offer.professional.badges.map((badge) => (
-            <span
-              key={badge.id}
-              title={badge.description}
-              className="text-xs bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded-full"
-            >
-              {badge.icon} {badge.name}
-            </span>
-          ))}
-        </div>
-      )}
     </div>
   );
 }

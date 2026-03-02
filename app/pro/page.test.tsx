@@ -122,6 +122,9 @@ const approvedPro: Professional = {
   creditBalance: 150,
   status: "approved",
   createdAt: "2024-01-01T00:00:00Z",
+  avgRating: 4.5,
+  ratingCount: 12,
+  badges: [],
 };
 
 const pendingPro: Professional = { ...approvedPro, status: "pending" };
