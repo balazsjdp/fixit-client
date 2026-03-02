@@ -150,16 +150,18 @@ export default function ProDashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
         {/* Left column */}
         <div className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
+          <div className="bg-primary/5 rounded-xl border border-gray-100 dark:border-gray-800 divide-y divide-gray-100 dark:divide-gray-800">
             <ProLocationSection
               initialLat={pro.lat}
               initialLng={pro.lng}
               onLocationChange={handleLocationChange}
+              className="p-5 space-y-4"
             />
             <RadiusSlider
               value={radiusValue}
               onChange={handleRadiusChange}
               saving={saving}
+              className="p-5"
             />
           </div>
 

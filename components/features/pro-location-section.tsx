@@ -19,9 +19,10 @@ interface ProLocationSectionProps {
   initialLat: number;
   initialLng: number;
   onLocationChange: (lat: number, lng: number) => void;
+  className?: string;
 }
 
-export function ProLocationSection({ initialLat, initialLng, onLocationChange }: ProLocationSectionProps) {
+export function ProLocationSection({ initialLat, initialLng, onLocationChange, className }: ProLocationSectionProps) {
   const config = useConfigFromStore();
   const [address, setAddress] = useState<AddressFields>({
     postcode: "",
@@ -121,7 +122,7 @@ export function ProLocationSection({ initialLat, initialLng, onLocationChange }:
   };
 
   return (
-    <div className="bg-primary/5 p-5 rounded-xl border border-gray-100 dark:border-gray-800 space-y-4">
+    <div className={className ?? "bg-primary/5 p-5 rounded-xl border border-gray-100 dark:border-gray-800 space-y-4"}>
       <div className="flex items-center gap-2">
         <MapPin className="w-4 h-4 text-primary" />
         <span className="text-sm font-bold uppercase tracking-wider">

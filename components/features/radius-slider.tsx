@@ -7,11 +7,12 @@ interface RadiusSliderProps {
   value: number;
   onChange: (value: number) => void;
   saving?: boolean;
+  className?: string;
 }
 
-export function RadiusSlider({ value, onChange, saving = false }: RadiusSliderProps) {
+export function RadiusSlider({ value, onChange, saving = false, className }: RadiusSliderProps) {
   return (
-    <div className="bg-primary/5 p-5 rounded-xl border border-gray-100 dark:border-gray-800">
+    <div className={className ?? "bg-primary/5 p-5 rounded-xl border border-gray-100 dark:border-gray-800"}>
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
           <MapPin className="w-4 h-4 text-primary" />
