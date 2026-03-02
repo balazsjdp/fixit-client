@@ -3,6 +3,7 @@
 import { Calendar, Navigation } from "lucide-react";
 import { ProReport } from "@/types/report";
 import { Category } from "@/types/category";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 interface ProReportCardProps {
@@ -11,6 +12,7 @@ interface ProReportCardProps {
   highlighted?: boolean;
   onMouseEnter?: () => void;
   onMouseLeave?: () => void;
+  onOffer?: (reportId: number) => void;
 }
 
 function urgencyDotColor(urgency: number) {
@@ -31,6 +33,7 @@ export function ProReportCard({
   highlighted = false,
   onMouseEnter,
   onMouseLeave,
+  onOffer,
 }: ProReportCardProps) {
   return (
     <div
@@ -72,14 +75,30 @@ export function ProReportCard({
                 day: "numeric",
               })}
             </p>
-            <span
-              className={cn(
-                "text-xs font-bold text-white px-2 py-0.5 rounded",
-                urgencyDotColor(report.urgency)
+            <div className="flex items-center gap-2">
+              <span
+                className={cn(
+                  "text-xs font-bold text-white px-2 py-0.5 rounded",
+                  urgencyDotColor(report.urgency)
+                )}
+              >
+                {urgencyLabel(report.urgency)}
+              </span>
+              {onOffer && (
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="h-6 text-xs px-2"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onOffer(report.id);
+                  }}
+                  data-testid={`offer-btn-${report.id}`}
+                >
+                  Ajánlatot adok
+                </Button>
               )}
-            >
-              {urgencyLabel(report.urgency)}
-            </span>
+            </div>
           </div>
         </div>
       </div>

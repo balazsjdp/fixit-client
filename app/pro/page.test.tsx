@@ -66,6 +66,29 @@ vi.mock("@/app/api/client/professionals", () => ({
   updateProLocation: vi.fn().mockResolvedValue(undefined),
 }));
 
+vi.mock("@/components/features/offer-modal", () => ({
+  OfferModal: ({
+    open,
+    reportId,
+    onOpenChange,
+  }: {
+    open: boolean;
+    reportId: number;
+    onOpenChange: (open: boolean) => void;
+    onSuccess: () => void;
+  }) =>
+    open ? (
+      <div data-testid="offer-modal" data-report-id={reportId}>
+        <button
+          data-testid="close-offer-modal"
+          onClick={() => onOpenChange(false)}
+        >
+          Bezár
+        </button>
+      </div>
+    ) : null,
+}));
+
 vi.mock("@/app/api/client/use-nearby-reports", () => ({
   useNearbyReports: vi.fn(),
 }));
@@ -321,5 +344,43 @@ describe("ProDashboard – no profile redirect", () => {
     const { container } = render(<ProDashboard />);
     expect(replaceFn).toHaveBeenCalledWith("/pro/register");
     expect(container.firstChild).toBeNull();
+  });
+});
+
+describe("ProDashboard – offer modal", () => {
+  it("does not render the offer modal initially", () => {
+    setupApproved();
+    render(<ProDashboard />);
+    expect(screen.queryByTestId("offer-modal")).toBeNull();
+  });
+
+  it("opens the offer modal when the offer button on a report card is clicked", async () => {
+    setupApproved();
+    render(<ProDashboard />);
+
+    const offerBtn = screen.getByTestId(`offer-btn-${mockReports[0].id}`);
+    fireEvent.click(offerBtn);
+
+    await waitFor(() => {
+      expect(screen.getByTestId("offer-modal")).toBeDefined();
+    });
+    expect(
+      screen.getByTestId("offer-modal").getAttribute("data-report-id")
+    ).toBe(String(mockReports[0].id));
+  });
+
+  it("closes the offer modal when onOpenChange(false) is called", async () => {
+    setupApproved();
+    render(<ProDashboard />);
+
+    fireEvent.click(screen.getByTestId(`offer-btn-${mockReports[0].id}`));
+    await waitFor(() => {
+      expect(screen.getByTestId("offer-modal")).toBeDefined();
+    });
+
+    fireEvent.click(screen.getByTestId("close-offer-modal"));
+    await waitFor(() => {
+      expect(screen.queryByTestId("offer-modal")).toBeNull();
+    });
   });
 });

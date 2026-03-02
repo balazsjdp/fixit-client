@@ -109,3 +109,28 @@ describe("ProReportCard – mouse events", () => {
     expect(onMouseLeave).toHaveBeenCalledOnce();
   });
 });
+
+describe("ProReportCard – offer button", () => {
+  it("does not render the offer button when onOffer is not provided", () => {
+    render(<ProReportCard report={baseReport} category={category} />);
+    expect(screen.queryByTestId(`offer-btn-${baseReport.id}`)).toBeNull();
+  });
+
+  it("renders the offer button when onOffer is provided", () => {
+    const onOffer = vi.fn();
+    render(
+      <ProReportCard report={baseReport} category={category} onOffer={onOffer} />
+    );
+    expect(screen.getByTestId(`offer-btn-${baseReport.id}`)).toBeDefined();
+    expect(screen.getByText("Ajánlatot adok")).toBeDefined();
+  });
+
+  it("calls onOffer with the report id when button is clicked", () => {
+    const onOffer = vi.fn();
+    render(
+      <ProReportCard report={baseReport} category={category} onOffer={onOffer} />
+    );
+    fireEvent.click(screen.getByTestId(`offer-btn-${baseReport.id}`));
+    expect(onOffer).toHaveBeenCalledWith(baseReport.id);
+  });
+});
