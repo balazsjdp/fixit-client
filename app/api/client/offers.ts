@@ -6,3 +6,19 @@ export async function acceptOffer(reportId: number, offerId: number) {
   );
   return response.data;
 }
+
+export interface SubmitOfferRequest {
+  estimatedPrice: number;
+  travelFee: number;
+}
+
+export async function submitOffer(
+  reportId: number,
+  data: SubmitOfferRequest
+): Promise<{ id: number; message: string }> {
+  const response = await api.post<{ id: number; message: string }>(
+    `/api/pro/reports/${reportId}/offers`,
+    data
+  );
+  return response.data;
+}

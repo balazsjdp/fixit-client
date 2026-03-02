@@ -8,6 +8,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { RadiusSlider } from "@/components/features/radius-slider";
 import { ProReportCard } from "@/components/features/pro-report-card";
 import { ProLocationSection } from "@/components/features/pro-location-section";
+import { OfferModal } from "@/components/features/offer-modal";
 import {
   useMyProfessionalProfile,
   updateProRadius,
@@ -43,6 +44,9 @@ export default function ProDashboard() {
   const [highlightedId, setHighlightedId] = useState<number | null>(null);
   const [center, setCenter] = useState<[number, number] | null>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [offerModalReportId, setOfferModalReportId] = useState<number | null>(
+    null
+  );
 
   // Sync local state with fetched profile (once)
   useEffect(() => {
@@ -151,7 +155,7 @@ export default function ProDashboard() {
         </div>
 
         {/* Map */}
-        <div className="h-72 md:h-96 rounded-2xl overflow-hidden shadow-sm border border-slate-200 dark:border-slate-800">
+        <div className="isolate h-72 md:h-96 rounded-2xl overflow-hidden shadow-sm border border-slate-200 dark:border-slate-800">
           <ProDashboardMap
             center={centerValue}
             radiusKm={radiusValue}
@@ -198,12 +202,25 @@ export default function ProDashboard() {
                   highlighted={highlightedId === report.id}
                   onMouseEnter={() => setHighlightedId(report.id)}
                   onMouseLeave={() => setHighlightedId(null)}
+                  onOffer={setOfferModalReportId}
                 />
               ))}
             </div>
           )}
         </div>
       </div>
+
+      {/* Offer modal – rendered once at dashboard level, shared across all report cards */}
+      {offerModalReportId !== null && (
+        <OfferModal
+          reportId={offerModalReportId}
+          open={offerModalReportId !== null}
+          onOpenChange={(open) => {
+            if (!open) setOfferModalReportId(null);
+          }}
+          onSuccess={mutateReports}
+        />
+      )}
     </div>
   );
 }
