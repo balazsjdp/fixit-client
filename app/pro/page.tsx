@@ -129,44 +129,53 @@ export default function ProDashboard() {
   const centerValue = center as [number, number];
 
   return (
-    <div className="flex flex-col">
-      {/* Header */}
-      <header className="sticky top-0 z-10 flex items-center justify-between px-4 py-3 border-b bg-background">
-        <h1 className="text-xl font-black tracking-tight">Dashboard</h1>
+    <main>
+      {/* Page header */}
+      <div className="mb-8 flex flex-row justify-between items-center">
+        <div>
+          <h1 className="text-4xl font-black leading-tight tracking-tight mb-1">
+            Dashboard
+          </h1>
+          <p className="text-lg text-muted-foreground">
+            Kezeld a közelben lévő bejelentéseket és ajánlataidat.
+          </p>
+        </div>
         <div className="flex items-center gap-1.5 text-sm font-semibold text-primary">
           <Coins className="w-4 h-4" />
           <span data-testid="credit-balance">{pro.creditBalance} kredit</span>
         </div>
-      </header>
+      </div>
 
-      <div className="flex-1 p-4 space-y-4 max-w-4xl mx-auto w-full">
-        {/* Controls row: location + radius */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <ProLocationSection
-            initialLat={pro.lat}
-            initialLng={pro.lng}
-            onLocationChange={handleLocationChange}
-          />
-          <RadiusSlider
-            value={radiusValue}
-            onChange={handleRadiusChange}
-            saving={saving}
-          />
+      {/* Two-column layout: left = controls + map, right = report list */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+        {/* Left column */}
+        <div className="space-y-4">
+          <div className="grid grid-cols-2 gap-4">
+            <ProLocationSection
+              initialLat={pro.lat}
+              initialLng={pro.lng}
+              onLocationChange={handleLocationChange}
+            />
+            <RadiusSlider
+              value={radiusValue}
+              onChange={handleRadiusChange}
+              saving={saving}
+            />
+          </div>
+
+          <div className="isolate h-72 lg:h-96 rounded-2xl overflow-hidden shadow-sm border border-slate-200 dark:border-slate-800">
+            <ProDashboardMap
+              center={centerValue}
+              radiusKm={radiusValue}
+              reports={reportList}
+              categories={categories ?? []}
+              highlightedId={highlightedId}
+              onPinClick={setHighlightedId}
+            />
+          </div>
         </div>
 
-        {/* Map */}
-        <div className="isolate h-72 md:h-96 rounded-2xl overflow-hidden shadow-sm border border-slate-200 dark:border-slate-800">
-          <ProDashboardMap
-            center={centerValue}
-            radiusKm={radiusValue}
-            reports={reportList}
-            categories={categories ?? []}
-            highlightedId={highlightedId}
-            onPinClick={setHighlightedId}
-          />
-        </div>
-
-        {/* Report list */}
+        {/* Right column: report list */}
         <div>
           <p
             className="text-sm text-muted-foreground font-medium mb-3"
@@ -221,6 +230,6 @@ export default function ProDashboard() {
           onSuccess={mutateReports}
         />
       )}
-    </div>
+    </main>
   );
 }
