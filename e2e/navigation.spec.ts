@@ -13,7 +13,6 @@ test.describe('Navigation', () => {
     await page.goto('/client/new')
     await page.waitForLoadState('networkidle')
 
-    // Sidebar link label from /api/config menuItems
     const myReportsLink = page.getByRole('link', { name: /bejelentéseim/i })
     await expect(myReportsLink).toBeVisible()
     await myReportsLink.click()
@@ -26,7 +25,6 @@ test.describe('Navigation', () => {
     await page.goto('/client/my-reports')
     await page.waitForLoadState('networkidle')
 
-    // Sidebar link label from /api/config menuItems
     const newReportLink = page.getByRole('link', { name: /új bejelentés/i })
     await expect(newReportLink).toBeVisible()
     await newReportLink.click()

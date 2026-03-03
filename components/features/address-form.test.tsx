@@ -41,7 +41,6 @@ function renderForm(zipCodeResolverEnabled = false) {
   const cfgStore = createConfigStore()
   cfgStore.getState().actions.setConfig({
     version: '1.0.0',
-    menuItems: [],
     featureFlags: { zipCodeResolver: zipCodeResolverEnabled },
   })
 

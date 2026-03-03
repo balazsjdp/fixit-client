@@ -20,11 +20,39 @@ import { useAuthActions, useAuthStore } from "@/store/auth/auth-store-provider";
 import { Button } from "./ui/button";
 import { useConfigFromStore } from "@/store/config/config-store-provider";
 import { DynamicIcon } from "lucide-react/dynamic";
+import { useNavItems, NavGroup } from "@/hooks/use-nav-items";
+
+function NavGroupSection({ group }: { group: NavGroup }) {
+  return (
+    <SidebarGroup>
+      {group.label && <SidebarGroupLabel>{group.label}</SidebarGroupLabel>}
+      <SidebarMenu>
+        {group.items.map((item) => (
+          <SidebarMenuItem key={item.title}>
+            <SidebarMenuButton asChild>
+              <Link href={item.url}>
+                <DynamicIcon
+                  name={item.icon}
+                  className="text-primary"
+                  size={24}
+                />
+                {item.title}
+              </Link>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        ))}
+      </SidebarMenu>
+    </SidebarGroup>
+  );
+}
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const user = useAuthStore().user;
   const logout = useAuthActions().logout;
   const config = useConfigFromStore();
+  const { groups, isLoading } = useNavItems();
+
+  const isGrouped = groups.length > 1;
 
   return (
     <Sidebar {...props}>
@@ -34,25 +62,38 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </h2>
       </SidebarHeader>
       <SidebarContent>
-        <SidebarGroupLabel>Menü</SidebarGroupLabel>
-        <SidebarMenu>
-          <React.Suspense fallback={<SidebarMenuSkeleton />}>
-            {config?.menuItems.map((item) => (
-              <SidebarMenuItem key={item.title}>
-                <SidebarMenuButton asChild>
-                  <Link href={item.url}>
-                    <DynamicIcon
-                      name={item.icon}
-                      className="text-primary"
-                      size={24}
-                    />
-                    {item.title}
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            ))}
-          </React.Suspense>
-        </SidebarMenu>
+        {isLoading ? (
+          <SidebarGroup>
+            <SidebarGroupLabel>Menü</SidebarGroupLabel>
+            <React.Suspense fallback={<SidebarMenuSkeleton />}>
+              <SidebarMenuSkeleton />
+            </React.Suspense>
+          </SidebarGroup>
+        ) : isGrouped ? (
+          groups.map((group) => (
+            <NavGroupSection key={group.label} group={group} />
+          ))
+        ) : (
+          <SidebarGroup>
+            <SidebarGroupLabel>Menü</SidebarGroupLabel>
+            <SidebarMenu>
+              {groups[0]?.items.map((item) => (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton asChild>
+                    <Link href={item.url}>
+                      <DynamicIcon
+                        name={item.icon}
+                        className="text-primary"
+                        size={24}
+                      />
+                      {item.title}
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroup>
+        )}
       </SidebarContent>
       <SidebarRail></SidebarRail>
       <SidebarFooter>

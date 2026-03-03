@@ -3,9 +3,6 @@ import { createConfigStore } from './config-store'
 
 const testConfig = {
   version: '1.0.0',
-  menuItems: [
-    { title: 'Főoldal', url: '/', icon: 'house' as const },
-  ],
   featureFlags: { zipCodeResolver: true },
 }
 
@@ -36,7 +33,6 @@ describe('ConfigStore', () => {
     store.getState().actions.setConfig(testConfig)
     const cfg = store.getState().config!
     expect(cfg.version).toBe('1.0.0')
-    expect(cfg.menuItems).toHaveLength(1)
     expect(cfg.featureFlags.zipCodeResolver).toBe(true)
   })
 })
