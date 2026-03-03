@@ -17,6 +17,7 @@ export interface Professional {
   avgRating: number;
   ratingCount: number;
   badges: Badge[];
+  notifyEmail: boolean;
 }
 
 export interface RegisterProfessionalRequest {

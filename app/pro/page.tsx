@@ -8,11 +8,13 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { RadiusSlider } from "@/components/features/radius-slider";
 import { ProReportCard } from "@/components/features/pro-report-card";
 import { ProLocationSection } from "@/components/features/pro-location-section";
+import { NotificationToggle } from "@/components/features/notification-toggle";
 import { OfferModal } from "@/components/features/offer-modal";
 import { ProfessionalCard } from "@/components/features/professional-card";
 import {
   useMyProfessionalProfile,
   updateProRadius,
+  updateProNotificationPreference,
 } from "@/app/api/client/professionals";
 import { useNearbyReports } from "@/app/api/client/use-nearby-reports";
 import { useCategories } from "@/app/api/client/categories";
@@ -42,6 +44,7 @@ export default function ProDashboard() {
 
   const [radius, setRadius] = useState<number | null>(null);
   const [saving, setSaving] = useState(false);
+  const [notifyToggling, setNotifyToggling] = useState(false);
   const [highlightedId, setHighlightedId] = useState<number | null>(null);
   const [center, setCenter] = useState<[number, number] | null>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -85,6 +88,16 @@ export default function ProDashboard() {
   const handleLocationChange = useCallback((lat: number, lng: number) => {
     setCenter([lat, lng]);
     mutatePro();
+  }, [mutatePro]);
+
+  const handleToggleNotification = useCallback(async (value: boolean) => {
+    setNotifyToggling(true);
+    try {
+      await updateProNotificationPreference(value);
+      await mutatePro();
+    } finally {
+      setNotifyToggling(false);
+    }
   }, [mutatePro]);
 
   if (proLoading || (!proError && (radius === null || center === null))) {
@@ -172,6 +185,13 @@ export default function ProDashboard() {
               saving={saving}
               className="p-5"
             />
+            <div className="p-5">
+              <NotificationToggle
+                enabled={pro.notifyEmail}
+                onToggle={handleToggleNotification}
+                isLoading={notifyToggling}
+              />
+            </div>
           </div>
 
           <div className="isolate h-72 lg:h-96 rounded-2xl overflow-hidden shadow-sm border border-slate-200 dark:border-slate-800">

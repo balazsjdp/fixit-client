@@ -64,6 +64,7 @@ vi.mock("@/app/api/client/professionals", () => ({
   useMyProfessionalProfile: vi.fn(),
   updateProRadius: vi.fn().mockResolvedValue(undefined),
   updateProLocation: vi.fn().mockResolvedValue(undefined),
+  updateProNotificationPreference: vi.fn().mockResolvedValue(undefined),
 }));
 
 vi.mock("@/components/features/offer-modal", () => ({
@@ -97,7 +98,7 @@ vi.mock("@/app/api/client/categories", () => ({
   useCategories: vi.fn(),
 }));
 
-import { useMyProfessionalProfile, updateProRadius } from "@/app/api/client/professionals";
+import { useMyProfessionalProfile, updateProRadius, updateProNotificationPreference } from "@/app/api/client/professionals";
 import { useNearbyReports } from "@/app/api/client/use-nearby-reports";
 import { useCategories } from "@/app/api/client/categories";
 import { useRouter } from "next/navigation";
@@ -107,6 +108,7 @@ const mockUseReports = useNearbyReports as ReturnType<typeof vi.fn>;
 const mockUseCategories = useCategories as ReturnType<typeof vi.fn>;
 const mockUseRouter = useRouter as ReturnType<typeof vi.fn>;
 const mockUpdateProRadius = updateProRadius as ReturnType<typeof vi.fn>;
+const mockUpdateProNotificationPreference = updateProNotificationPreference as ReturnType<typeof vi.fn>;
 
 // ── Fixtures ─────────────────────────────────────────────────────────────────
 
@@ -125,6 +127,7 @@ const approvedPro: Professional = {
   avgRating: 4.5,
   ratingCount: 12,
   badges: [],
+  notifyEmail: true,
 };
 
 const pendingPro: Professional = { ...approvedPro, status: "pending" };
@@ -347,6 +350,27 @@ describe("ProDashboard – no profile redirect", () => {
     const { container } = render(<ProDashboard />);
     expect(replaceFn).toHaveBeenCalledWith("/pro/register");
     expect(container.firstChild).toBeNull();
+  });
+});
+
+describe("ProDashboard – notification toggle", () => {
+  it("renders the email notification toggle", () => {
+    setupApproved();
+    render(<ProDashboard />);
+    expect(screen.getByText("Email értesítők")).toBeDefined();
+    expect(screen.getByRole("switch", { name: "Email értesítők" })).toBeDefined();
+  });
+
+  it("calls updateProNotificationPreference when toggled", async () => {
+    const { mutatePro } = setupApproved();
+    render(<ProDashboard />);
+
+    fireEvent.click(screen.getByRole("switch", { name: "Email értesítők" }));
+
+    await waitFor(() => {
+      expect(mockUpdateProNotificationPreference).toHaveBeenCalledWith(false);
+      expect(mutatePro).toHaveBeenCalled();
+    });
   });
 });
 

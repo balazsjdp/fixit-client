@@ -27,3 +27,7 @@ export async function updateProRadius(radiusKm: number): Promise<void> {
 export async function updateProLocation(lat: number, lng: number): Promise<void> {
   await api.patch("/api/professionals/me/location", { lat, lng });
 }
+
+export async function updateProNotificationPreference(notifyEmail: boolean): Promise<void> {
+  await api.patch("/api/professionals/me/notifications", { notifyEmail });
+}
