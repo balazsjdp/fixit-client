@@ -6,10 +6,11 @@ import {
   useReportForm,
   useReportActions,
 } from "@/store/report/report-store-provider";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { Input } from "../ui/input";
 import { MapPin, Loader2, CheckCircle2 } from "lucide-react";
-import { reverseGeocode, geocodeAddress } from "@/lib/geocoding";
+import { reverseGeocode } from "@/lib/geocoding";
+import { useDebouncedGeocoding } from "@/hooks/use-debounced-geocoding";
 
 export function AddressForm() {
   const address = useReportForm().address;
@@ -17,8 +18,9 @@ export function AddressForm() {
   const { setAddress, setCoordinates } = useReportActions();
   const config = useConfigFromStore();
   const [gpsLoading, setGpsLoading] = useState(false);
-  const [geocoding, setGeocoding] = useState(false);
-  const skipNextGeocode = useRef(false);
+  const { geocoding, skipNextGeocode } = useDebouncedGeocoding(address, (coords) => {
+    setCoordinates(coords);
+  });
 
   const handleGpsClick = () => {
     if (!navigator.geolocation) {
@@ -56,30 +58,6 @@ export function AddressForm() {
       [name]: value,
     });
   };
-
-  // Debounced forward geocoding – triggered when address fields change
-  useEffect(() => {
-    if (skipNextGeocode.current) {
-      skipNextGeocode.current = false;
-      return;
-    }
-    if (!address.postcode && !address.city && !address.street) return;
-
-    setGeocoding(true);
-    const timer = setTimeout(async () => {
-      const coords = await geocodeAddress(address);
-      if (coords) {
-        setCoordinates(coords);
-      }
-      setGeocoding(false);
-    }, 1000);
-
-    return () => {
-      clearTimeout(timer);
-      setGeocoding(false);
-    };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [address.postcode, address.city, address.street, address.houseNumber]);
 
   useEffect(() => {
     if (

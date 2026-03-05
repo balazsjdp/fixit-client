@@ -1,12 +1,13 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { MapPin, Loader2, CheckCircle2, Save } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { reverseGeocode, geocodeAddress } from "@/lib/geocoding";
 import { updateProLocation } from "@/app/api/client/professionals";
 import { useConfigFromStore } from "@/store/config/config-store-provider";
 import logger from "@/lib/logger";
+import { useDebouncedGeocoding } from "@/hooks/use-debounced-geocoding";
 
 interface AddressFields {
   postcode: string;
@@ -33,11 +34,17 @@ export function ProLocationSection({ initialLat, initialLng, onLocationChange, c
   const [gpsLoading, setGpsLoading] = useState(false);
   const [saveLoading, setSaveLoading] = useState(false);
   const [detected, setDetected] = useState(false);
+  const { geocoding, skipNextGeocode } = useDebouncedGeocoding(address, async (coords) => {
+    await updateProLocation(coords.lat, coords.lng);
+    onLocationChange(coords.lat, coords.lng);
+    setDetected(true);
+  });
 
   // Reverse-geocode the initial position on mount
   useEffect(() => {
     reverseGeocode({ lat: initialLat, lng: initialLng }).then((addr) => {
       if (addr) {
+        skipNextGeocode.current = true;
         setAddress({
           postcode: addr.postcode ?? "",
           city: addr.city ?? "",
@@ -46,7 +53,7 @@ export function ProLocationSection({ initialLat, initialLng, onLocationChange, c
         });
       }
     });
-  }, [initialLat, initialLng]);
+  }, [initialLat, initialLng, skipNextGeocode]);
 
   // Auto-fill city from postcode (feature flag guarded)
   useEffect(() => {
@@ -88,6 +95,7 @@ export function ProLocationSection({ initialLat, initialLng, onLocationChange, c
 
         const addr = await reverseGeocode({ lat, lng });
         if (addr) {
+          skipNextGeocode.current = true; // prevent forward geocoding on GPS-filled address
           setAddress({
             postcode: addr.postcode ?? "",
             city: addr.city ?? "",
@@ -134,10 +142,10 @@ export function ProLocationSection({ initialLat, initialLng, onLocationChange, c
       <button
         type="button"
         onClick={handleDetect}
-        disabled={gpsLoading}
+        disabled={gpsLoading || geocoding}
         className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl border-2 border-dashed border-primary/40 hover:border-primary hover:bg-primary/5 transition-all text-sm font-semibold text-primary disabled:opacity-50 disabled:cursor-not-allowed"
       >
-        {gpsLoading ? (
+        {gpsLoading || geocoding ? (
           <Loader2 className="w-4 h-4 animate-spin" />
         ) : detected ? (
           <CheckCircle2 className="w-4 h-4 text-green-500" />
@@ -146,6 +154,8 @@ export function ProLocationSection({ initialLat, initialLng, onLocationChange, c
         )}
         {gpsLoading
           ? "Helymeghatározás..."
+          : geocoding
+          ? "Cím alapján helyzet meghatározása..."
           : detected
           ? "Helyzet rögzítve"
           : "Helyzet automatikus meghatározása"}

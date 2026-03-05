@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { ProLocationSection } from "./pro-location-section";
 
@@ -158,6 +158,75 @@ describe("ProLocationSection – address input", () => {
     await waitFor(() => {
       expect(screen.getByText("Helyzet rögzítve")).toBeDefined();
     });
+  });
+});
+
+describe("ProLocationSection – debounced address geocoding", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    vi.useFakeTimers();
+  });
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it("auto-geocodes after 1s when user types city", async () => {
+    mockReverseGeocode.mockResolvedValueOnce(null);
+    render(<ProLocationSection {...defaultProps} />);
+
+    fireEvent.change(screen.getByLabelText("Város"), {
+      target: { name: "city", value: "Budapest" },
+    });
+
+    expect(mockGeocodeAddress).not.toHaveBeenCalled();
+    vi.advanceTimersByTime(1000);
+    await Promise.resolve();
+    await Promise.resolve();
+    expect(mockGeocodeAddress).toHaveBeenCalled();
+  });
+
+  it("calls updateProLocation and onLocationChange after auto-geocoding", async () => {
+    mockReverseGeocode.mockResolvedValueOnce(null);
+    const onLocationChange = vi.fn();
+    render(<ProLocationSection {...defaultProps} onLocationChange={onLocationChange} />);
+
+    fireEvent.change(screen.getByLabelText("Város"), {
+      target: { name: "city", value: "Budapest" },
+    });
+
+    vi.advanceTimersByTime(1000);
+    await Promise.resolve();
+    await Promise.resolve();
+    expect(mockUpdateProLocation).toHaveBeenCalledWith(47.6, 18.9);
+    expect(onLocationChange).toHaveBeenCalledWith(47.6, 18.9);
+  });
+
+  it("does not auto-geocode when address was filled by initial reverseGeocode", async () => {
+    render(<ProLocationSection {...defaultProps} />);
+    // reverseGeocode resolves and sets address (skipNextGeocode = true consumed)
+    await Promise.resolve();
+    await Promise.resolve();
+    vi.clearAllMocks();
+
+    vi.advanceTimersByTime(2000);
+    await Promise.resolve();
+    expect(mockGeocodeAddress).not.toHaveBeenCalled();
+  });
+
+  it("debounces – only fires once after rapid changes", async () => {
+    mockReverseGeocode.mockResolvedValueOnce(null);
+    render(<ProLocationSection {...defaultProps} />);
+
+    const cityInput = screen.getByLabelText("Város");
+    fireEvent.change(cityInput, { target: { name: "city", value: "B" } });
+    vi.advanceTimersByTime(500);
+    fireEvent.change(cityInput, { target: { name: "city", value: "Bu" } });
+    vi.advanceTimersByTime(500);
+    expect(mockGeocodeAddress).not.toHaveBeenCalled();
+    vi.advanceTimersByTime(500);
+    await Promise.resolve();
+    await Promise.resolve();
+    expect(mockGeocodeAddress).toHaveBeenCalledTimes(1);
   });
 });
 
