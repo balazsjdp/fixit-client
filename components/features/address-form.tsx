@@ -6,10 +6,10 @@ import {
   useReportForm,
   useReportActions,
 } from "@/store/report/report-store-provider";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Input } from "../ui/input";
 import { MapPin, Loader2, CheckCircle2 } from "lucide-react";
-import { reverseGeocode } from "@/lib/geocoding";
+import { reverseGeocode, geocodeAddress } from "@/lib/geocoding";
 
 export function AddressForm() {
   const address = useReportForm().address;
@@ -17,6 +17,8 @@ export function AddressForm() {
   const { setAddress, setCoordinates } = useReportActions();
   const config = useConfigFromStore();
   const [gpsLoading, setGpsLoading] = useState(false);
+  const [geocoding, setGeocoding] = useState(false);
+  const skipNextGeocode = useRef(false);
 
   const handleGpsClick = () => {
     if (!navigator.geolocation) {
@@ -34,6 +36,7 @@ export function AddressForm() {
 
         const resolved = await reverseGeocode(coords);
         if (resolved) {
+          skipNextGeocode.current = true;
           setAddress(resolved);
         }
 
@@ -53,6 +56,30 @@ export function AddressForm() {
       [name]: value,
     });
   };
+
+  // Debounced forward geocoding – triggered when address fields change
+  useEffect(() => {
+    if (skipNextGeocode.current) {
+      skipNextGeocode.current = false;
+      return;
+    }
+    if (!address.postcode && !address.city && !address.street) return;
+
+    setGeocoding(true);
+    const timer = setTimeout(async () => {
+      const coords = await geocodeAddress(address);
+      if (coords) {
+        setCoordinates(coords);
+      }
+      setGeocoding(false);
+    }, 1000);
+
+    return () => {
+      clearTimeout(timer);
+      setGeocoding(false);
+    };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [address.postcode, address.city, address.street, address.houseNumber]);
 
   useEffect(() => {
     if (
@@ -81,7 +108,7 @@ export function AddressForm() {
         disabled={gpsLoading}
         className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl border-2 border-dashed border-primary/40 hover:border-primary hover:bg-primary/5 transition-all text-sm font-semibold text-primary disabled:opacity-50 disabled:cursor-not-allowed"
       >
-        {gpsLoading ? (
+        {gpsLoading || geocoding ? (
           <Loader2 className="w-4 h-4 animate-spin" />
         ) : coordinates ? (
           <CheckCircle2 className="w-4 h-4 text-green-500" />
@@ -90,6 +117,8 @@ export function AddressForm() {
         )}
         {gpsLoading
           ? "Helymeghatározás..."
+          : geocoding
+          ? "Cím alapján helyzet meghatározása..."
           : coordinates
           ? "Helyzet rögzítve"
           : "Helyzet automatikus meghatározása"}

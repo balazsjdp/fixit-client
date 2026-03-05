@@ -43,6 +43,10 @@ export default function New() {
       if (coords) {
         formData.append("lat", coords.lat.toString());
         formData.append("lng", coords.lng.toString());
+      } else {
+        toast.warning(
+          "Helyszín nem sikerült meghatározni – a bejelentés koordináták nélkül kerül beküldésre. Szakemberek nem fogják látni a térképen."
+        );
       }
 
       form.files.forEach((file) => {

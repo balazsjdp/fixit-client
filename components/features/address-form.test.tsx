@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import { AddressForm } from './address-form'
 import { createStore } from 'zustand/vanilla'
@@ -169,6 +169,72 @@ describe('AddressForm', () => {
     fireEvent.click(screen.getByText('Helyzet automatikus meghatározása'))
     await waitFor(() => expect(reportStore.getState().form.coordinates).not.toBeNull())
     expect(screen.getByText('Helyzet rögzítve')).toBeDefined()
+  })
+
+  describe('debounced address geocoding', () => {
+    beforeEach(() => {
+      vi.clearAllMocks()
+      vi.useFakeTimers()
+    })
+    afterEach(() => {
+      vi.useRealTimers()
+    })
+
+    it('calls geocodeAddress after 1s debounce when city is changed', async () => {
+      const { geocodeAddress: mockGeocode } = await import('@/lib/geocoding')
+      const geocodeSpy = vi.mocked(mockGeocode).mockResolvedValue({ lat: 47.5, lng: 19.0 })
+
+      renderForm()
+      fireEvent.change(screen.getByPlaceholderText('Pilisvörösvár'), {
+        target: { name: 'city', value: 'Budapest' },
+      })
+
+      expect(geocodeSpy).not.toHaveBeenCalled()
+      vi.advanceTimersByTime(1000)
+      await Promise.resolve() // flush microtasks
+      expect(geocodeSpy).toHaveBeenCalled()
+    })
+
+    it('sets coordinates in store when geocoding succeeds', async () => {
+      const { geocodeAddress: mockGeocode } = await import('@/lib/geocoding')
+      vi.mocked(mockGeocode).mockResolvedValue({ lat: 47.5, lng: 19.0 })
+
+      const { reportStore } = renderForm()
+      fireEvent.change(screen.getByPlaceholderText('Pilisvörösvár'), {
+        target: { name: 'city', value: 'Budapest' },
+      })
+
+      vi.advanceTimersByTime(1000)
+      await Promise.resolve()
+      await Promise.resolve()
+      expect(reportStore.getState().form.coordinates).toEqual({ lat: 47.5, lng: 19.0 })
+    })
+
+    it('does not call geocodeAddress if all address fields are empty', async () => {
+      const { geocodeAddress: mockGeocode } = await import('@/lib/geocoding')
+      const geocodeSpy = vi.mocked(mockGeocode)
+
+      renderForm()
+      // Don't change any fields – all are empty by default
+      vi.advanceTimersByTime(2000)
+      expect(geocodeSpy).not.toHaveBeenCalled()
+    })
+
+    it('debounces – cancels previous timer on rapid changes', async () => {
+      const { geocodeAddress: mockGeocode } = await import('@/lib/geocoding')
+      const geocodeSpy = vi.mocked(mockGeocode).mockResolvedValue({ lat: 47.5, lng: 19.0 })
+
+      renderForm()
+      const cityInput = screen.getByPlaceholderText('Pilisvörösvár')
+      fireEvent.change(cityInput, { target: { name: 'city', value: 'B' } })
+      vi.advanceTimersByTime(500) // only half debounce
+      fireEvent.change(cityInput, { target: { name: 'city', value: 'Bu' } })
+      vi.advanceTimersByTime(500) // only half of the new debounce
+      expect(geocodeSpy).not.toHaveBeenCalled()
+      vi.advanceTimersByTime(500) // now the second debounce fires
+      await Promise.resolve()
+      expect(geocodeSpy).toHaveBeenCalledTimes(1)
+    })
   })
 
   it('auto-fills address fields after GPS via reverse geocoding', async () => {

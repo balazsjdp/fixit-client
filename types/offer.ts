@@ -1,5 +1,23 @@
 export type OfferStatus = "pending" | "accepted" | "rejected";
 
+export interface MyOffer {
+  id: number;
+  reportId: number;
+  categoryId: number;
+  description: string;
+  urgency: number;
+  estimatedPrice: number;
+  travelFee: number;
+  status: OfferStatus;
+  createdAt: string;
+  address?: {
+    postcode: string;
+    city: string;
+    street: string;
+    houseNumber: string;
+  };
+}
+
 export interface Badge {
   id: number;
   name: string;
