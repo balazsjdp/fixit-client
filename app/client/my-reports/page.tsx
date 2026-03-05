@@ -13,7 +13,14 @@ import {
   AlertDialogFooter,
   AlertDialogCancel,
 } from "@/components/ui/alert-dialog";
-import { Calendar, Plus, Trash2, ArrowRight, MessageSquare, ImageOff } from "lucide-react";
+import {
+  Calendar,
+  Plus,
+  Trash2,
+  ArrowRight,
+  MessageSquare,
+  ImageOff,
+} from "lucide-react";
 import Link from "next/link";
 import { config } from "@/app.config";
 import { useState } from "react";
@@ -22,6 +29,8 @@ import { useCategories } from "@/app/api/client/categories";
 import { deleteReport } from "@/app/api/client/reports";
 import { MyReport } from "@/types/report";
 import { toast } from "sonner";
+import { urgencyColor, urgencyLabel } from "@/lib/urgency";
+import { cn } from "@/lib/utils";
 
 export default function MyReports() {
   const { data: reports, isLoading, error, mutate } = useMyReports();
@@ -29,7 +38,9 @@ export default function MyReports() {
   const [deletingId, setDeletingId] = useState<number | null>(null);
 
   const getCategoryLabel = (categoryId: number) =>
-    categories?.find((c) => c.id === String(categoryId))?.label ?? "Ismeretlen";
+    categories?.find((c) => Number(c.id) === categoryId)?.label ?? "Ismeretlen";
+
+  console.log(categories);
 
   const handleDelete = async (id: number) => {
     setDeletingId(id);
@@ -135,6 +146,12 @@ function ReportCard({
           </Badge>
           <Badge variant={report.hasAccepted ? "secondary" : "default"}>
             {report.hasAccepted ? "Lezárva" : "Folyamatban"}
+          </Badge>
+          <Badge
+            variant="outline"
+            className={cn("px-2 py-1 text-xs", urgencyColor(report.urgency))}
+          >
+            {urgencyLabel(report.urgency)}
           </Badge>
           {report.offerCount > 0 && (
             <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">

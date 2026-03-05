@@ -116,16 +116,6 @@ export default function New() {
                 step={50}
                 labels={["Ráér", "Pár napon belül", "Sürgős"]}
                 title="Sürgősségi szint"
-                outputLabel={(value) => {
-                  if (value === 0) return "Ráér";
-                  if (value === 50) return "Pár napon belül";
-                  return "Sürgős";
-                }}
-                labelColor={(value) => {
-                  if (value < 50) return "bg-green-600";
-                  if (value >= 50 && value < 100) return "bg-orange-600";
-                  return "bg-red-600";
-                }}
               />
             </section>
             <section>

@@ -5,23 +5,19 @@ import {
   useReportForm,
   useReportActions,
 } from "@/store/report/report-store-provider";
+import { UrgencyBadge } from "../ui/urgency-badge";
 
 interface SliderSelectorProps {
   max?: number;
   step?: number;
   labels: string[];
   title: string;
-  outputLabel: (value: number) => string;
-  labelColor: (value: number) => string;
 }
 
 export function SliderSelector({
   max = 100,
   step = 1,
   labels,
-  title,
-  outputLabel,
-  labelColor,
 }: SliderSelectorProps) {
   const urgency = useReportForm().urgency;
   const { setUrgency } = useReportActions();
@@ -33,11 +29,7 @@ export function SliderSelector({
   return (
     <div className="bg-primary/5 p-6 rounded-xl border border-gray-100 dark:border-gray-800">
       <div className="flex justify-between items-center mb-5">
-        <span
-          className={`text-xs font-bold text-white px-3 py-1 rounded ${labelColor(urgency)}`}
-        >
-          {outputLabel(urgency)}
-        </span>
+        <UrgencyBadge urgency={urgency} />
       </div>
       <Slider
         value={[urgency]}

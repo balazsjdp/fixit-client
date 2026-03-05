@@ -5,6 +5,8 @@ import { ProReport } from "@/types/report";
 import { Category } from "@/types/category";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { urgencyLabel, urgencyColor } from "@/lib/urgency";
+import { UrgencyBadge } from "../ui/urgency-badge";
 
 interface ProReportCardProps {
   report: ProReport;
@@ -13,18 +15,6 @@ interface ProReportCardProps {
   onMouseEnter?: () => void;
   onMouseLeave?: () => void;
   onOffer?: (reportId: number) => void;
-}
-
-function urgencyDotColor(urgency: number) {
-  if (urgency < 50) return "bg-green-500";
-  if (urgency < 100) return "bg-orange-500";
-  return "bg-red-500";
-}
-
-function urgencyLabel(urgency: number) {
-  if (urgency === 0) return "Ráér";
-  if (urgency === 50) return "Pár napon belül";
-  return "Sürgős";
 }
 
 export function ProReportCard({
@@ -50,7 +40,7 @@ export function ProReportCard({
         <div
           className={cn(
             "mt-1 w-2.5 h-2.5 rounded-full shrink-0",
-            urgencyDotColor(report.urgency)
+            urgencyColor(report.urgency)
           )}
           aria-label={urgencyLabel(report.urgency)}
         />
@@ -76,19 +66,10 @@ export function ProReportCard({
               })}
             </p>
             <div className="flex items-center gap-2">
-              <span
-                className={cn(
-                  "text-xs font-bold text-white px-2 py-0.5 rounded",
-                  urgencyDotColor(report.urgency)
-                )}
-              >
-                {urgencyLabel(report.urgency)}
-              </span>
+              <UrgencyBadge urgency={report.urgency} />
               {onOffer && (
                 <Button
-                  size="sm"
-                  variant="outline"
-                  className="h-6 text-xs px-2"
+                  className="h-7 rounded-full text-xs px-2 bg-primary cursor-pointer"
                   onClick={(e) => {
                     e.stopPropagation();
                     onOffer(report.id);

@@ -33,14 +33,8 @@ import { acceptOffer } from "@/app/api/client/offers";
 import { OfferWithProfessional } from "@/types/offer";
 import { MyReport } from "@/types/report";
 import { toast } from "sonner";
-
-const URGENCY_LABELS: Record<number, string> = {
-  1: "Alacsony",
-  2: "Közepes",
-  3: "Magas",
-  4: "Sürgős",
-  5: "Kritikus",
-};
+import { urgencyColor, urgencyLabel } from "@/lib/urgency";
+import { cn } from "@/lib/utils";
 
 export default function ReportDetailPage({
   params,
@@ -65,7 +59,7 @@ export default function ReportDetailPage({
 
   const report = reports?.find((r) => r.id === reportId);
   const categoryLabel =
-    categories?.find((c) => c.id === String(report?.categoryId))?.label ??
+    categories?.find((c) => Number(c.id) === report?.categoryId)?.label ??
     "Ismeretlen";
 
   const handleOfferAccepted = () => {
@@ -145,8 +139,11 @@ export default function ReportDetailPage({
             <Badge variant={report.hasAccepted ? "secondary" : "default"}>
               {report.hasAccepted ? "Lezárva" : "Folyamatban"}
             </Badge>
-            <Badge variant="outline" className="px-2 py-1 text-xs">
-              {URGENCY_LABELS[report.urgency] ?? String(report.urgency)}
+            <Badge
+              variant="outline"
+              className={cn("px-2 py-1 text-xs", urgencyColor(report.urgency))}
+            >
+              {urgencyLabel(report.urgency)}
             </Badge>
           </div>
           <p className="text-base font-bold text-slate-900 dark:text-white mb-2">
@@ -350,7 +347,6 @@ function OfferCard({
           </AlertDialog>
         )}
       </div>
-
     </div>
   );
 }

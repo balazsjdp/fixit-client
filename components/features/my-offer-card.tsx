@@ -5,6 +5,7 @@ import { MyOffer, OfferStatus } from "@/types/offer";
 import { Category } from "@/types/category";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import { urgencyLabel, urgencyColor } from "@/lib/urgency";
 
 interface MyOfferCardProps {
   offer: MyOffer;
@@ -34,18 +35,6 @@ function statusBadge(status: OfferStatus) {
   }
 }
 
-function urgencyLabel(urgency: number) {
-  if (urgency === 0) return "Ráér";
-  if (urgency === 50) return "Pár napon belül";
-  return "Sürgős";
-}
-
-function urgencyDotColor(urgency: number) {
-  if (urgency < 50) return "bg-green-500";
-  if (urgency < 100) return "bg-orange-500";
-  return "bg-red-500";
-}
-
 export function MyOfferCard({ offer, category }: MyOfferCardProps) {
   return (
     <div
@@ -61,7 +50,7 @@ export function MyOfferCard({ offer, category }: MyOfferCardProps) {
         <div
           className={cn(
             "mt-1 w-2.5 h-2.5 rounded-full shrink-0",
-            urgencyDotColor(offer.urgency)
+            urgencyColor(offer.urgency)
           )}
           aria-label={urgencyLabel(offer.urgency)}
         />

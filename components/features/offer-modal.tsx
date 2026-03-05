@@ -83,6 +83,8 @@ export function OfferModal({
           setAlreadySubmitted(true);
         } else if (err.response?.status === 403) {
           toast.error("Csak jóváhagyott szakemberek adhatnak ajánlatot.");
+        } else if (err.response?.status === 402) {
+          toast.error("Nincs elég kredited, hogy kiadd az ajánlatot.");
         } else {
           toast.error("Hiba az ajánlat beküldése során. Próbáld újra.");
         }
@@ -109,10 +111,7 @@ export function OfferModal({
         </AlertDialogHeader>
 
         {alreadySubmitted && submittedValues ? (
-          <div
-            className="space-y-3 py-2"
-            data-testid="offer-readonly"
-          >
+          <div className="space-y-3 py-2" data-testid="offer-readonly">
             <div className="flex items-center justify-between text-sm">
               <span className="text-muted-foreground">Becsült munkadíj:</span>
               <span className="font-semibold">
@@ -126,7 +125,9 @@ export function OfferModal({
               </span>
             </div>
             <div className="flex items-center justify-between text-sm border-t pt-3">
-              <span className="text-muted-foreground font-medium">Összesen:</span>
+              <span className="text-muted-foreground font-medium">
+                Összesen:
+              </span>
               <span className="font-bold text-primary">
                 {(
                   submittedValues.estimatedPrice + submittedValues.travelFee
