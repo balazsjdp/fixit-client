@@ -2,6 +2,7 @@
 
 import { Star } from "lucide-react";
 import { Badge as BadgeType } from "@/types/offer";
+import { ProfessionalBadges } from "./badges/professional-badges";
 
 interface ProfessionalCardProps {
   name: string;
@@ -28,22 +29,7 @@ export function ProfessionalCard({
         </span>
       </div>
 
-      {badges.length > 0 && (
-        <div
-          className="flex flex-wrap gap-2"
-          data-testid="badges"
-        >
-          {badges.map((badge) => (
-            <span
-              key={badge.id}
-              title={badge.description}
-              className="text-xs bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded-full"
-            >
-              {badge.icon} {badge.name}
-            </span>
-          ))}
-        </div>
-      )}
+      <ProfessionalBadges badges={badges} />
     </div>
   );
 }

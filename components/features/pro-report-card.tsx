@@ -5,8 +5,9 @@ import { ProReport } from "@/types/report";
 import { Category } from "@/types/category";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { urgencyLabel, urgencyColor } from "@/lib/urgency";
-import { UrgencyBadge } from "../ui/urgency-badge";
+import { CategoryBadge } from "./badges/category-badge";
+import { UrgencyBadge } from "./badges/urgency-badge";
+import { urgencyColor, urgencyLabel } from "@/lib/urgency";
 
 interface ProReportCardProps {
   report: ProReport;
@@ -46,9 +47,7 @@ export function ProReportCard({
         />
         <div className="flex-1 min-w-0">
           <div className="flex items-center justify-between gap-2 mb-1">
-            <span className="text-xs font-bold text-primary uppercase tracking-wide">
-              {category?.label ?? "Ismeretlen kategória"}
-            </span>
+            <CategoryBadge label={category?.label ?? "Ismeretlen"} />
             <span className="text-xs font-semibold text-muted-foreground whitespace-nowrap flex items-center gap-1">
               <Navigation className="w-3 h-3" />
               {report.distanceKm.toFixed(1)} km

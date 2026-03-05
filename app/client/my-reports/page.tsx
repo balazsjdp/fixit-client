@@ -1,6 +1,8 @@
 "use client";
 
-import { Badge } from "@/components/ui/badge";
+import { CategoryBadge } from "@/components/features/badges/category-badge";
+import { ReportStatusBadge } from "@/components/features/badges/report-status-badge";
+import { UrgencyBadge } from "@/components/features/badges/urgency-badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
@@ -141,20 +143,11 @@ function ReportCard({
       </div>
       <div className="flex-1 min-w-0">
         <div className="flex flex-wrap items-center gap-2 mb-2">
-          <Badge variant="outline" className="px-2 py-1 text-xs">
-            {categoryLabel}
-          </Badge>
-          <Badge variant={report.hasAccepted ? "secondary" : "default"}>
-            {report.hasAccepted ? "Lezárva" : "Folyamatban"}
-          </Badge>
-          <Badge
-            variant="outline"
-            className={cn("px-2 py-1 text-xs", urgencyColor(report.urgency))}
-          >
-            {urgencyLabel(report.urgency)}
-          </Badge>
+          <CategoryBadge label={categoryLabel} />
+          <ReportStatusBadge hasAccepted={report.hasAccepted} />
+          <UrgencyBadge urgency={report.urgency} />
           {report.offerCount > 0 && (
-            <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
+            <span className="inline-flex items-center gap-1 text-xs text-muted-foreground ml-1">
               <MessageSquare className="w-3 h-3" />
               {report.offerCount} ajánlat
             </span>

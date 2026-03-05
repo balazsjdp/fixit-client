@@ -1,7 +1,10 @@
 "use client";
 
 import { use, useState } from "react";
-import { Badge } from "@/components/ui/badge";
+import { CategoryBadge } from "@/components/features/badges/category-badge";
+import { ReportStatusBadge } from "@/components/features/badges/report-status-badge";
+import { OfferStatusBadge } from "@/components/features/badges/offer-status-badge";
+import { UrgencyBadge } from "@/components/features/badges/urgency-badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
@@ -133,18 +136,9 @@ export default function ReportDetailPage({
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex flex-wrap items-center gap-2 mb-2">
-            <Badge variant="outline" className="px-2 py-1 text-xs">
-              {categoryLabel}
-            </Badge>
-            <Badge variant={report.hasAccepted ? "secondary" : "default"}>
-              {report.hasAccepted ? "Lezárva" : "Folyamatban"}
-            </Badge>
-            <Badge
-              variant="outline"
-              className={cn("px-2 py-1 text-xs", urgencyColor(report.urgency))}
-            >
-              {urgencyLabel(report.urgency)}
-            </Badge>
+            <CategoryBadge label={categoryLabel} />
+            <ReportStatusBadge hasAccepted={report.hasAccepted} />
+            <UrgencyBadge urgency={report.urgency} />
           </div>
           <p className="text-base font-bold text-slate-900 dark:text-white mb-2">
             {report.description}
@@ -280,18 +274,8 @@ function OfferCard({
               badges={offer.professional.badges}
             />
             <div className="flex gap-2 self-start">
-              {offer.status === "accepted" && (
-                <Badge
-                  variant="secondary"
-                  className="text-green-700 bg-green-100 dark:bg-green-900/30 dark:text-green-400"
-                >
-                  Elfogadott
-                </Badge>
-              )}
-              {offer.status === "rejected" && (
-                <Badge variant="secondary" className="text-slate-500">
-                  Elutasított
-                </Badge>
+              {offer.status !== "pending" && (
+                <OfferStatusBadge status={offer.status} />
               )}
             </div>
           </div>

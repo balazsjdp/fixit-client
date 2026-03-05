@@ -3,36 +3,14 @@
 import { Calendar, MapPin } from "lucide-react";
 import { MyOffer, OfferStatus } from "@/types/offer";
 import { Category } from "@/types/category";
-import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { urgencyLabel, urgencyColor } from "@/lib/urgency";
+import { CategoryBadge } from "./badges/category-badge";
+import { OfferStatusBadge } from "./badges/offer-status-badge";
 
 interface MyOfferCardProps {
   offer: MyOffer;
   category: Category | undefined;
-}
-
-function statusBadge(status: OfferStatus) {
-  switch (status) {
-    case "accepted":
-      return (
-        <Badge className="bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400 border-0">
-          Elfogadva
-        </Badge>
-      );
-    case "rejected":
-      return (
-        <Badge variant="destructive" className="border-0">
-          Elutasítva
-        </Badge>
-      );
-    default:
-      return (
-        <Badge variant="secondary" className="border-0">
-          Függőben
-        </Badge>
-      );
-  }
 }
 
 export function MyOfferCard({ offer, category }: MyOfferCardProps) {
@@ -57,10 +35,8 @@ export function MyOfferCard({ offer, category }: MyOfferCardProps) {
         <div className="flex-1 min-w-0">
           {/* Header row */}
           <div className="flex items-center justify-between gap-2 mb-1">
-            <span className="text-xs font-bold text-primary uppercase tracking-wide">
-              {category?.label ?? "Ismeretlen kategória"}
-            </span>
-            {statusBadge(offer.status)}
+            <CategoryBadge label={category?.label ?? "Ismeretlen"} />
+            <OfferStatusBadge status={offer.status} />
           </div>
 
           {/* Description */}

@@ -6,15 +6,13 @@ type UrgencyBadgeProps = {
   urgency: number;
 };
 
-const UrgencyBadge = ({ urgency }: UrgencyBadgeProps) => {
+export const UrgencyBadge = ({ urgency }: UrgencyBadgeProps) => {
   return (
     <Badge
       variant="outline"
-      className={cn("px-2 py-1 text-xs", urgencyColor(urgency))}
+      className={cn("px-2 py-1 text-xs whitespace-nowrap", urgencyColor(urgency))}
     >
       {urgencyLabel(urgency)}
     </Badge>
   );
 };
-
-export { UrgencyBadge };

@@ -5,7 +5,7 @@ import {
   useReportForm,
   useReportActions,
 } from "@/store/report/report-store-provider";
-import { UrgencyBadge } from "../ui/urgency-badge";
+import { UrgencyBadge } from "./badges/urgency-badge";
 
 interface SliderSelectorProps {
   max?: number;
