@@ -1,8 +1,10 @@
 export interface ProReport {
   id: number;
   categoryId: number;
+  shortDescription: string;
   description: string;
   urgency: number;
+  filePath: string;
   distanceKm: number;
   lat: number;
   lng: number;
@@ -12,6 +14,7 @@ export interface ProReport {
 export interface MyReport {
   id: number;
   categoryId: number;
+  shortDescription: string;
   description: string;
   urgency: number;
   filePath: string;

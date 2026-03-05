@@ -154,7 +154,7 @@ function ReportCard({
           )}
         </div>
         <p className="text-base font-bold text-slate-900 dark:text-white line-clamp-1 mb-1">
-          {report.description}
+          {report.shortDescription}
         </p>
         <p className="text-xs text-slate-500 flex items-center gap-1">
           <Calendar size={15} />

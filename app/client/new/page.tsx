@@ -16,7 +16,7 @@ import { Send } from "lucide-react";
 
 export default function New() {
   const form = useReportForm();
-  const { setDescription, resetForm } = useReportActions();
+  const { setShortDescription, setDescription, resetForm } = useReportActions();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -28,8 +28,10 @@ export default function New() {
       }
 
       const formData = new FormData();
+      formData.append("short_description", form.shortDescription);
+
       for (const key of Object.keys(form) as (keyof typeof form)[]) {
-        if (key === "files" || key === "coordinates") {
+        if (key === "files" || key === "coordinates" || key === "shortDescription") {
           continue;
         }
 
@@ -95,13 +97,25 @@ export default function New() {
             </section>
             <section>
               <h3 className="text-sm font-bold uppercase tracking-wider mb-5">
-                3. Hiba részletei
+                3. Hiba rövid leírása
+              </h3>
+              <input
+                type="text"
+                className="w-full p-4 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-base focus:ring-2 focus:ring-primary focus:border-transparent mb-6"
+                placeholder="Rövid, figyelemfelkeltő cím (pl. Csöpögő konyhai csap)"
+                value={form.shortDescription}
+                onChange={(e) => setShortDescription(e.target.value)}
+                required
+              />
+              <h3 className="text-sm font-bold uppercase tracking-wider mb-5">
+                4. Hiba részletei
               </h3>
               <Textarea
                 className="w-full min-h-[150px] p-5 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-base focus:ring-2 focus:ring-primary focus:border-transparent resize-none"
                 placeholder="Kérjük, fejtse ki a hibát részletesen (pl. A konyhai mosogató alatti cső szivárog, amikor folyik a víz...)"
                 value={form.description}
                 onChange={(e) => setDescription(e.target.value)}
+                required
               ></Textarea>
             </section>
           </div>
@@ -109,7 +123,7 @@ export default function New() {
           <div className="space-y-10">
             <section>
               <h3 className="text-sm font-bold uppercase tracking-wider mb-5">
-                4. Sürgősségi szint
+                5. Sürgősségi szint
               </h3>
               <SliderSelector
                 max={100}
@@ -120,7 +134,7 @@ export default function New() {
             </section>
             <section>
               <h3 className="dark:text-white text-sm font-bold uppercase tracking-wider mb-5">
-                4. HELYSZÍN MEGADÁSA
+                6. HELYSZÍN MEGADÁSA
               </h3>
               <AddressForm />
             </section>

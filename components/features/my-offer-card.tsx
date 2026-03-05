@@ -41,7 +41,7 @@ export function MyOfferCard({ offer, category }: MyOfferCardProps) {
 
           {/* Description */}
           <p className="text-sm text-slate-700 dark:text-slate-300 line-clamp-2 mb-2">
-            {offer.description}
+            {offer.shortDescription}
           </p>
 
           {/* Price row */}

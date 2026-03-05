@@ -4,6 +4,7 @@ export interface MyOffer {
   id: number;
   reportId: number;
   categoryId: number;
+  shortDescription: string;
   description: string;
   urgency: number;
   estimatedPrice: number;

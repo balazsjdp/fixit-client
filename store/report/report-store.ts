@@ -16,6 +16,7 @@ export interface Coordinates {
 export interface ReportForm {
   category: Category | null;
   files: File[];
+  shortDescription: string;
   description: string;
   urgency: number;
   address: Address;
@@ -29,6 +30,7 @@ export type ReportState = {
 export type ReportActions = {
   setCategory: (category: Category | null) => void;
   setFiles: (files: File[]) => void;
+  setShortDescription: (shortDescription: string) => void;
   setDescription: (description: string) => void;
   setUrgency: (urgency: number) => void;
   setAddress: (address: Partial<Address>) => void;
@@ -43,6 +45,7 @@ export const defaultInitState: ReportState = {
   form: {
     category: null,
     files: [],
+    shortDescription: "",
     description: "",
     urgency: 50,
     address: {
@@ -61,6 +64,8 @@ export const reportStore = createStore<ReportStore>((set) => ({
     setCategory: (category) =>
       set((state) => ({ form: { ...state.form, category } })),
     setFiles: (files) => set((state) => ({ form: { ...state.form, files } })),
+    setShortDescription: (shortDescription) =>
+      set((state) => ({ form: { ...state.form, shortDescription } })),
     setDescription: (description) =>
       set((state) => ({ form: { ...state.form, description } })),
     setUrgency: (urgency) =>

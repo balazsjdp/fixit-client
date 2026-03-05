@@ -141,7 +141,7 @@ export default function ReportDetailPage({
             <UrgencyBadge urgency={report.urgency} />
           </div>
           <p className="text-base font-bold text-slate-900 dark:text-white mb-2">
-            {report.description}
+            {report.shortDescription}
           </p>
           <p className="text-xs text-slate-500 flex items-center gap-1">
             <Calendar size={14} />
@@ -152,6 +152,16 @@ export default function ReportDetailPage({
             })}
           </p>
         </div>
+      </div>
+
+      {/* Description */}
+      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 mb-6">
+        <h2 className="text-sm font-bold uppercase tracking-wider mb-3 text-muted-foreground">
+          Részletes leírás
+        </h2>
+        <p className="text-slate-700 dark:text-slate-300 whitespace-pre-wrap">
+          {report.description}
+        </p>
       </div>
 
       {/* Accepted professional contact */}
