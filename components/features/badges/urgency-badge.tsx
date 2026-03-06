@@ -9,8 +9,7 @@ type UrgencyBadgeProps = {
 export const UrgencyBadge = ({ urgency }: UrgencyBadgeProps) => {
   return (
     <Badge
-      variant="outline"
-      className={cn("px-2 py-1 text-xs whitespace-nowrap", urgencyColor(urgency))}
+      className={cn("px-2 py-1 text-xs whitespace-nowrap text-white border-none", urgencyColor(urgency))}
     >
       {urgencyLabel(urgency)}
     </Badge>

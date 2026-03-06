@@ -40,19 +40,16 @@ export function CategorySelector() {
                   type="button"
                   className={cn(
                     "flex flex-col items-center gap-3 rounded-xl border border-gray-100 dark:border-gray-800 bg-primary/5 p-5 transition-all hover:border-primary cursor-pointer",
-                    isSelected && "border-primary bg-foreground text-background"
+                    isSelected && "border-primary bg-primary/10 text-primary ring-2 ring-primary/20"
                   )}
                   onClick={() => onSelectHandler(category)}
                 >
                   <DynamicIcon
                     name={category.icon}
-                    className={cn(
-                      "text-primary",
-                      isSelected && "text-background"
-                    )}
+                    className="text-primary"
                     size={24}
                   />
-                  <span className="text-xs font-bold">{category.label}</span>
+                  <span className="text-xs font-black uppercase tracking-tight">{category.label}</span>
                 </button>
               );
             })}

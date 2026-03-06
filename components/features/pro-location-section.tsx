@@ -1,5 +1,6 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import { MapPin, Loader2, CheckCircle2, Save } from "lucide-react";
 import { Input } from "@/components/ui/input";
@@ -220,11 +221,11 @@ export function ProLocationSection({ initialLat, initialLng, onLocationChange, c
       </div>
 
       {/* Save address button */}
-      <button
+      <Button
         type="button"
         onClick={handleSaveAddress}
         disabled={saveLoading || (!address.city && !address.postcode)}
-        className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-primary text-background text-sm font-semibold hover:bg-primary/90 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+        className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl font-bold"
       >
         {saveLoading ? (
           <Loader2 className="w-4 h-4 animate-spin" />
@@ -232,7 +233,7 @@ export function ProLocationSection({ initialLat, initialLng, onLocationChange, c
           <Save className="w-4 h-4" />
         )}
         {saveLoading ? "Mentés..." : "Cím mentése"}
-      </button>
+      </Button>
     </div>
   );
 }

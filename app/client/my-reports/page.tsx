@@ -62,13 +62,12 @@ export default function MyReports() {
             Kövesse nyomon folyamatban lévő és lezárt szerviz igényeit.
           </p>
         </div>
-        <Link
-          className="bg-primary hover:bg-primary/90 text-background px-6 py-3 rounded-xl font-bold flex items-center gap-2 shadow-lg shadow-primary/20 transition-all active:scale-95"
-          href="/client/new"
-        >
-          <Plus className="text-xl" />
-          Új hiba bejelentése
-        </Link>
+        <Button asChild className="shadow-lg shadow-primary/20">
+          <Link href="/client/new" className="flex items-center gap-2">
+            <Plus className="w-5 h-5" />
+            Új hiba bejelentése
+          </Link>
+        </Button>
       </div>
 
       {isLoading ? (
@@ -153,16 +152,12 @@ export default function MyReports() {
                     </AlertDialog>
                   )}
 
-                  <Link href={`/client/my-reports/${report.id}`}>
-                    <Button 
-                      variant="outline" 
-                      size="sm"
-                      className="h-9 px-4 rounded-lg font-bold border-slate-200 dark:border-slate-800 hover:bg-primary/10 hover:text-primary transition-all flex items-center gap-2 group/btn"
-                    >
+                  <Button variant="outline" asChild className="group/btn h-10 px-6">
+                    <Link href={`/client/my-reports/${report.id}`} className="flex items-center gap-2">
                       Részletek
                       <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
-                    </Button>
-                  </Link>
+                    </Link>
+                  </Button>
                 </div>
               }
             />

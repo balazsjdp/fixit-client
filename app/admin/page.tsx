@@ -1,5 +1,9 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
 import { useAuth } from "@/components/auth/KeycloakProvider";
 import {
   useAdminProfessionals,
@@ -86,9 +90,9 @@ export default function AdminPage() {
   ];
 
   return (
-    <main>
+    <main className="container mx-auto py-8">
       <div className="mb-10">
-        <h1 className="text-4xl font-black leading-tight tracking-tight mb-1">
+        <h1 className="text-4xl font-black leading-tight tracking-tight mb-2">
           Admin – Szakemberek
         </h1>
         <p className="text-lg text-muted-foreground">
@@ -98,136 +102,146 @@ export default function AdminPage() {
 
       <div className="flex gap-2 mb-8">
         {FILTERS.map((f) => (
-          <button
+          <Button
             key={f.value}
+            variant={filter === f.value ? "default" : "outline"}
             onClick={() => setFilter(f.value)}
-            className={`px-4 py-2 rounded-xl text-sm font-semibold border transition-all ${
-              filter === f.value
-                ? "bg-foreground text-background border-foreground"
-                : "bg-primary/5 border-gray-200 dark:border-gray-700 hover:border-primary"
-            }`}
+            className="rounded-xl font-bold"
           >
             {f.label}
-          </button>
+          </Button>
         ))}
       </div>
 
       {isLoading ? (
         <div className="space-y-4">
           {[1, 2, 3].map((i) => (
-            <Skeleton key={i} className="h-28 w-full rounded-xl" />
+            <Skeleton key={i} className="h-32 w-full rounded-2xl" />
           ))}
         </div>
       ) : !professionals?.length ? (
-        <p className="text-muted-foreground py-12 text-center">
-          Nincs találat ebben a kategóriában.
-        </p>
+        <div className="text-center py-20 border-2 border-dashed rounded-3xl">
+          <p className="text-muted-foreground font-medium">
+            Nincs találat ebben a kategóriában.
+          </p>
+        </div>
       ) : (
-        <div className="space-y-4">
+        <div className="grid gap-4">
           {professionals.map((pro) => {
             const isPending = pro.status === "pending";
             const isExpanded = expandedCreditId === pro.id;
             const isWorking = loadingId === pro.id;
 
             return (
-              <div
+              <Card
                 key={pro.id}
-                className="rounded-2xl border border-gray-200 dark:border-gray-700 p-5 space-y-4"
+                className="rounded-2xl border-border shadow-sm overflow-hidden"
               >
-                <div className="flex items-center justify-between gap-4">
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-1">
-                      <h3 className="font-bold text-lg">{pro.name}</h3>
-                      <span
-                        className={`inline-flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded-full ${
-                          isPending
-                            ? "bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400"
-                            : "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
-                        }`}
-                      >
-                        {isPending ? (
-                          <Clock className="w-3 h-3" />
-                        ) : (
-                          <CheckCircle2 className="w-3 h-3" />
-                        )}
-                        {isPending ? "Jóváhagyásra vár" : "Jóváhagyott"}
-                      </span>
+                <CardContent className="p-6">
+                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-3 mb-2">
+                        <h3 className="font-black text-xl tracking-tight">{pro.name}</h3>
+                        <Badge
+                          className={`flex items-center gap-1 px-3 py-1 text-xs font-bold uppercase tracking-wider text-white border-none ${
+                            isPending 
+                              ? "bg-orange-500 hover:bg-orange-600" 
+                              : "bg-primary hover:bg-primary/90"
+                          }`}
+                        >
+                          {isPending ? (
+                            <Clock className="w-3 h-3" />
+                          ) : (
+                            <CheckCircle2 className="w-3 h-3" />
+                          )}
+                          {isPending ? "Várólistás" : "Aktív"}
+                        </Badge>
+                      </div>
+                      <p className="text-sm text-muted-foreground font-medium flex flex-wrap gap-x-6 gap-y-1">
+                        <span className="flex items-center gap-1.5">
+                          <span className="material-symbols-outlined text-base">phone</span>
+                          {pro.phone}
+                        </span>
+                        <span className="flex items-center gap-1.5">
+                          <span className="material-symbols-outlined text-base">map</span>
+                          {pro.radiusKm} km sugár
+                        </span>
+                        <span className="flex items-center gap-1.5 text-foreground font-bold">
+                          <span className="material-symbols-outlined text-base">payments</span>
+                          {pro.creditBalance} kredit
+                        </span>
+                      </p>
                     </div>
-                    <p className="text-sm text-muted-foreground">
-                      {pro.phone} · {pro.radiusKm} km sugár ·{" "}
-                      <span className="font-medium text-foreground">
-                        {pro.creditBalance} kredit
-                      </span>
-                    </p>
-                  </div>
 
-                  <div className="flex items-center gap-2 shrink-0">
-                    {isPending && (
-                      <button
-                        onClick={() => handleApprove(pro)}
-                        disabled={isWorking}
-                        className="flex items-center gap-1.5 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-xl text-sm font-semibold transition-all disabled:opacity-50"
-                      >
-                        <CheckCircle2 className="w-4 h-4" />
-                        {isWorking ? "..." : "Jóváhagyás"}
-                      </button>
-                    )}
-                    <button
-                      onClick={() => {
-                        setExpandedCreditId(isExpanded ? null : pro.id);
-                        setCreditAmount("");
-                        setCreditNote("");
-                      }}
-                      className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold border border-gray-200 dark:border-gray-700 hover:border-primary transition-all"
-                    >
-                      <CreditCard className="w-4 h-4" />
-                      Kredit
-                      {isExpanded ? (
-                        <ChevronUp className="w-3 h-3" />
-                      ) : (
-                        <ChevronDown className="w-3 h-3" />
+                    <div className="flex items-center gap-3 shrink-0">
+                      {isPending && (
+                        <Button
+                          onClick={() => handleApprove(pro)}
+                          disabled={isWorking}
+                          className="font-bold bg-green-600 hover:bg-green-600/90 text-white rounded-xl shadow-md"
+                        >
+                          <CheckCircle2 className="w-4 h-4 mr-2" />
+                          {isWorking ? "..." : "Jóváhagyás"}
+                        </Button>
                       )}
-                    </button>
+                      <Button
+                        variant="outline"
+                        onClick={() => {
+                          setExpandedCreditId(isExpanded ? null : pro.id);
+                          setCreditAmount("");
+                          setCreditNote("");
+                        }}
+                        className="font-bold rounded-xl border-2"
+                      >
+                        <CreditCard className="w-4 h-4 mr-2" />
+                        Kredit
+                        {isExpanded ? (
+                          <ChevronUp className="w-4 h-4 ml-2" />
+                        ) : (
+                          <ChevronDown className="w-4 h-4 ml-2" />
+                        )}
+                      </Button>
+                    </div>
                   </div>
-                </div>
 
-                {isExpanded && (
-                  <div className="flex items-end gap-3 pt-2 border-t border-gray-100 dark:border-gray-800">
-                    <div className="flex flex-col gap-1">
-                      <label className="text-xs font-semibold text-muted-foreground">
-                        Összeg (kredit)
-                      </label>
-                      <input
-                        type="number"
-                        min="1"
-                        value={creditAmount}
-                        onChange={(e) => setCreditAmount(e.target.value)}
-                        placeholder="pl. 10"
-                        className="w-28 px-3 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm focus:ring-2 focus:ring-primary focus:border-transparent"
-                      />
+                  {isExpanded && (
+                    <div className="mt-6 pt-6 border-t flex flex-col md:flex-row items-end gap-4 animate-in slide-in-from-top-2 duration-200">
+                      <div className="w-full md:w-32 space-y-1.5">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">
+                          Összeg
+                        </label>
+                        <Input
+                          type="number"
+                          min="1"
+                          value={creditAmount}
+                          onChange={(e) => setCreditAmount(e.target.value)}
+                          placeholder="pl. 50"
+                          className="rounded-xl border-2 font-bold focus-visible:ring-primary h-10"
+                        />
+                      </div>
+                      <div className="w-full md:flex-1 space-y-1.5">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">
+                          Megjegyzés
+                        </label>
+                        <Input
+                          type="text"
+                          value={creditNote}
+                          onChange={(e) => setCreditNote(e.target.value)}
+                          placeholder="pl. Bónusz kredit az induláshoz"
+                          className="rounded-xl border-2 font-medium focus-visible:ring-primary h-10"
+                        />
+                      </div>
+                      <Button
+                        onClick={() => handleAddCredits(pro)}
+                        disabled={isWorking || !creditAmount}
+                        className="w-full md:w-auto font-black px-8 rounded-xl h-10"
+                      >
+                        {isWorking ? "..." : "Hozzáadás"}
+                      </Button>
                     </div>
-                    <div className="flex flex-col gap-1 flex-1">
-                      <label className="text-xs font-semibold text-muted-foreground">
-                        Megjegyzés (opcionális)
-                      </label>
-                      <input
-                        type="text"
-                        value={creditNote}
-                        onChange={(e) => setCreditNote(e.target.value)}
-                        placeholder="pl. Induló kredit"
-                        className="w-full px-3 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm focus:ring-2 focus:ring-primary focus:border-transparent"
-                      />
-                    </div>
-                    <button
-                      onClick={() => handleAddCredits(pro)}
-                      disabled={isWorking || !creditAmount}
-                      className="px-4 py-2 bg-primary text-background rounded-xl text-sm font-semibold hover:bg-primary/90 transition-all disabled:opacity-50"
-                    >
-                      {isWorking ? "..." : "Hozzáad"}
-                    </button>
-                  </div>
-                )}
-              </div>
+                  )}
+                </CardContent>
+              </Card>
             );
           })}
         </div>

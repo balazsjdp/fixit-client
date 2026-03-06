@@ -12,6 +12,8 @@ import { createReport } from "@/app/api/client/reports";
 import { geocodeAddress } from "@/lib/geocoding";
 import { toast } from "sonner";
 import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Send } from "lucide-react";
 
 export default function New() {
@@ -31,7 +33,11 @@ export default function New() {
       formData.append("short_description", form.shortDescription);
 
       for (const key of Object.keys(form) as (keyof typeof form)[]) {
-        if (key === "files" || key === "coordinates" || key === "shortDescription") {
+        if (
+          key === "files" ||
+          key === "coordinates" ||
+          key === "shortDescription"
+        ) {
           continue;
         }
 
@@ -99,9 +105,8 @@ export default function New() {
               <h3 className="text-sm font-bold uppercase tracking-wider mb-5">
                 3. Hiba rövid leírása
               </h3>
-              <input
-                type="text"
-                className="w-full p-4 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-base focus:ring-2 focus:ring-primary focus:border-transparent mb-6"
+              <Input
+                className="w-full p-5 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-base focus:ring-2 focus:ring-primary focus:border-transparent transition-all shadow-sm mb-8"
                 placeholder="Rövid, figyelemfelkeltő cím (pl. Csöpögő konyhai csap)"
                 value={form.shortDescription}
                 onChange={(e) => setShortDescription(e.target.value)}
@@ -139,15 +144,16 @@ export default function New() {
               <AddressForm />
             </section>
             <section>
-              <button
+              <Button
                 type="submit"
-                className="w-full flex items-center justify-center gap-3 py-5 bg-primary text-background rounded-xl font-bold text-xl shadow-lg shadow-primary/30 hover:bg-primary/90 transition-all active:scale-[0.98] cursor-pointer"
+                size="lg"
+                className="w-full h-16 flex items-center justify-center gap-3 rounded-xl font-black text-xl shadow-xl shadow-primary/20"
               >
-                <Send className="text-xl" />
+                <Send className="w-6 h-6" />
                 Probléma beküldése
-              </button>
-              <p className="text-center text-xs text-foreground mt-8 max-w-lg mx-auto">
-                Az gombra kattintva elfogadja az általános szerződési
+              </Button>
+              <p className="text-center text-xs text-muted-foreground mt-8 max-w-lg mx-auto italic">
+                A gombra kattintva elfogadja az általános szerződési
                 feltételeket, és lehetővé teszi a helyi szakemberek számára a
                 kérés részleteinek megtekintését.
               </p>
