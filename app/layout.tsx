@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Manrope, Geist, Geist_Mono } from "next/font/google";
 import { ThemeProvider } from "../components/theme-provider";
 import "./globals.css";
 import { AppSidebar } from "@/components/app-sidebar";
@@ -15,6 +15,11 @@ import { AuthStoreProvider } from "@/store/auth/auth-store-provider";
 import { ConfigStoreProvider } from "@/store/config/config-store-provider";
 import { Toaster } from "@/components/ui/sonner";
 import { KeycloakProvider } from "@/components/auth/KeycloakProvider";
+
+const manrope = Manrope({
+  variable: "--font-manrope",
+  subsets: ["latin"],
+});
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -38,9 +43,9 @@ export default function RootLayout({
 }>) {
   return (
     <html
-      lang="en"
+      lang="hu"
       suppressHydrationWarning
-      className={`${geistSans.variable} ${geistMono.variable}`}
+      className={`${manrope.variable} ${geistSans.variable} ${geistMono.variable}`}
     >
       <head></head>
 
