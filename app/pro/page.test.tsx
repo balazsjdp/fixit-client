@@ -136,8 +136,10 @@ const mockReports: ProReport[] = [
   {
     id: 10,
     categoryId: 7,
-    description: "Csőtörés a fürdőszobában",
+    shortDescription: "Csőtörés a fürdőszobában",
+    description: "Csőtörés a fürdőszobában részletesen",
     urgency: 100,
+    filePath: "",
     distanceKm: 5.2,
     lat: 47.51,
     lng: 19.05,

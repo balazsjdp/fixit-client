@@ -17,7 +17,11 @@ export default defineConfig({
   projects: [
     {
       name: 'setup',
-      testMatch: /auth\.setup\.ts/,
+      testMatch: '**/auth.setup.ts',
+    },
+    {
+      name: 'pro-setup',
+      testMatch: /pro-auth\.setup\.ts/,
     },
     {
       name: 'chromium',
@@ -26,6 +30,16 @@ export default defineConfig({
         storageState: 'e2e/.auth/user.json',
       },
       dependencies: ['setup'],
+      testIgnore: '**/pro-*.spec.ts',
+    },
+    {
+      name: 'pro-chromium',
+      use: {
+        ...devices['Desktop Chrome'],
+        storageState: 'e2e/.auth/pro.json',
+      },
+      dependencies: ['pro-setup'],
+      testMatch: '**/pro-*.spec.ts',
     },
   ],
 })

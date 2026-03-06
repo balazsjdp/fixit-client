@@ -7,8 +7,10 @@ import { Category } from "@/types/category";
 const baseReport: ProReport = {
   id: 1,
   categoryId: 7,
-  description: "Csöpögő csap a konyhában",
+  shortDescription: "Csöpögő csap a konyhában",
+  description: "Csöpögő csap a konyhában részletesen",
   urgency: 0,
+  filePath: "",
   distanceKm: 3.4,
   lat: 47.49,
   lng: 19.04,
@@ -28,9 +30,9 @@ describe("ProReportCard – content", () => {
     expect(screen.getByText("Vízvezeték")).toBeDefined();
   });
 
-  it('renders "Ismeretlen kategória" when category is undefined', () => {
+  it('renders "Ismeretlen" when category is undefined', () => {
     render(<ProReportCard report={baseReport} category={undefined} />);
-    expect(screen.getByText("Ismeretlen kategória")).toBeDefined();
+    expect(screen.getByText("Ismeretlen")).toBeDefined();
   });
 
   it("renders the distance", () => {
@@ -122,7 +124,7 @@ describe("ProReportCard – offer button", () => {
       <ProReportCard report={baseReport} category={category} onOffer={onOffer} />
     );
     expect(screen.getByTestId(`offer-btn-${baseReport.id}`)).toBeDefined();
-    expect(screen.getByText("Ajánlatot adok")).toBeDefined();
+    expect(screen.getByText("Ajánlat")).toBeDefined();
   });
 
   it("calls onOffer with the report id when button is clicked", () => {

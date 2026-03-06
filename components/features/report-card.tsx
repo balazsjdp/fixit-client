@@ -49,6 +49,7 @@ export function ReportCard({
   return (
     <>
       <div
+        data-testid="report-card"
         onMouseEnter={onMouseEnter}
         onMouseLeave={onMouseLeave}
         className={cn(

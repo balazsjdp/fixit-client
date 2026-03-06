@@ -10,7 +10,8 @@ const baseOffer: MyOffer = {
   id: 1,
   reportId: 5,
   categoryId: 1,
-  description: "Csöpög a konyhai csap",
+  shortDescription: "Csöpög a konyhai csap",
+  description: "Csöpög a konyhai csap részletesen",
   urgency: 50,
   estimatedPrice: 25000,
   travelFee: 3000,
@@ -36,14 +37,14 @@ describe("MyOfferCard", () => {
     expect(screen.getByText("Függőben")).toBeInTheDocument();
   });
 
-  it("shows 'Elfogadva' badge for accepted status", () => {
+  it("shows 'Elfogadott' badge for accepted status", () => {
     render(<MyOfferCard offer={{ ...baseOffer, status: "accepted" }} category={category} />);
-    expect(screen.getByText("Elfogadva")).toBeInTheDocument();
+    expect(screen.getByText("Elfogadott")).toBeInTheDocument();
   });
 
-  it("shows 'Elutasítva' badge for rejected status", () => {
+  it("shows 'Elutasított' badge for rejected status", () => {
     render(<MyOfferCard offer={{ ...baseOffer, status: "rejected" }} category={category} />);
-    expect(screen.getByText("Elutasítva")).toBeInTheDocument();
+    expect(screen.getByText("Elutasított")).toBeInTheDocument();
   });
 
   it("does not show address for pending offer", () => {
@@ -77,7 +78,7 @@ describe("MyOfferCard", () => {
 
   it("shows fallback category label when category is undefined", () => {
     render(<MyOfferCard offer={baseOffer} category={undefined} />);
-    expect(screen.getByText("Ismeretlen kategória")).toBeInTheDocument();
+    expect(screen.getByText("Ismeretlen")).toBeInTheDocument();
   });
 
   it("does not show travel fee row when travelFee is 0", () => {

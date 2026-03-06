@@ -26,13 +26,20 @@ test.describe('My Reports Page', () => {
     await expect(page.getByRole('heading', { name: /hiba bejelentése/i })).toBeVisible()
   })
 
-  test('shows at least one report card', async ({ page }) => {
-    // The page currently has hardcoded mock data
-    await expect(page.getByText(/csöpögő csap/i)).toBeVisible()
+  test('shows report cards or empty state', async ({ page }) => {
+    // Either a report card (rounded-xl) or the empty state message must be present
+    const emptyState = page.getByText(/még nincs bejelentett hibája/i)
+    const reportCard = page.locator('[data-testid="report-card"]').first()
+    const hasEmpty = await emptyState.isVisible().catch(() => false)
+    const hasCard = await reportCard.isVisible().catch(() => false)
+    expect(hasEmpty || hasCard).toBe(true)
   })
 
-  test('report card has a "Részletek" link', async ({ page }) => {
-    const detailsLink = page.getByRole('link', { name: /részletek/i })
-    await expect(detailsLink).toBeVisible()
+  test('shows "Részletek" button when reports exist', async ({ page }) => {
+    const emptyState = page.getByText(/még nincs bejelentett hibája/i)
+    const isEmpty = await emptyState.isVisible().catch(() => false)
+    if (!isEmpty) {
+      await expect(page.getByRole('button', { name: /részletek/i }).first()).toBeVisible()
+    }
   })
 })

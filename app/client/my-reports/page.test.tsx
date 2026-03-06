@@ -55,7 +55,8 @@ const mockReports: MyReport[] = [
   {
     id: 1,
     categoryId: 1,
-    description: "Csöpögő csap a konyhában",
+    shortDescription: "Csöpögő csap a konyhában",
+    description: "Csöpögő csap a konyhában részletesen",
     urgency: 50,
     filePath: "",
     offerCount: 2,
@@ -65,7 +66,8 @@ const mockReports: MyReport[] = [
   {
     id: 2,
     categoryId: 2,
-    description: "Nem működik a kapcsoló",
+    shortDescription: "Nem működik a kapcsoló",
+    description: "Nem működik a kapcsoló részletesen",
     urgency: 0,
     filePath: "",
     offerCount: 0,

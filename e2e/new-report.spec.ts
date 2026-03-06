@@ -36,6 +36,13 @@ test.describe('New Report Form', () => {
     await expect(page.getByText(/kattintson vagy húzza ide a képeket/i)).toBeVisible()
   })
 
+  test('short description input accepts input', async ({ page }) => {
+    const shortDescInput = page.getByPlaceholder(/rövid, figyelemfelkeltő cím/i)
+    await expect(shortDescInput).toBeVisible()
+    await shortDescInput.fill('Csöpögő konyhai csap')
+    await expect(shortDescInput).toHaveValue('Csöpögő konyhai csap')
+  })
+
   test('description textarea accepts input', async ({ page }) => {
     const textarea = page.locator('textarea')
     await expect(textarea).toBeVisible()

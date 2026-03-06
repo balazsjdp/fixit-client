@@ -64,7 +64,8 @@ const mockCategories: Category[] = [
 const mockReport: MyReport = {
   id: 1,
   categoryId: 1,
-  description: "Csöpögő csap a konyhában",
+  shortDescription: "Csöpögő csap a konyhában",
+  description: "Csöpögő csap a konyhában részletesen",
   urgency: 3,
   filePath: "",
   offerCount: 2,
@@ -169,10 +170,10 @@ describe("ReportDetailPage – report header", () => {
     expect(screen.getByText("Vízvezeték")).toBeDefined();
   });
 
-  it("renders the urgency label (Magas for urgency=3)", () => {
+  it("renders the urgency label (Sürgős for urgency=3)", () => {
     setup();
     render(<ReportDetailPage params={params} />);
-    expect(screen.getByText("Magas")).toBeDefined();
+    expect(screen.getByText("Sürgős")).toBeDefined();
   });
 
   it('renders "Folyamatban" badge for non-accepted report', () => {

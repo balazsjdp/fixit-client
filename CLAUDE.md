@@ -222,12 +222,22 @@ npm run e2e:ui
 
 **Szükséges ENV változók E2E-hez** (`.env.local`):
 ```
-E2E_USERNAME=testuser
-E2E_PASSWORD=password
+# Client (homeowner) test user
+E2E_USERNAME=e2e-testuser@fixit.local
+E2E_PASSWORD=e2etest1234
+
+# Pro test user (registered professional)
+E2E_PRO_USERNAME=e2e-prouser@fixit.local
+E2E_PRO_PASSWORD=e2etest1234
+
 KEYCLOAK_URL=http://localhost:8081
 KEYCLOAK_REALM=FixIt
 BASE_URL=http://localhost:3000
 ```
+
+**Playwright projektek:**
+- `chromium` – kliens user, minden `*.spec.ts` KIVÉVE `pro-*.spec.ts`
+- `pro-chromium` – pro user, csak `pro-*.spec.ts` fájlok
 
 ### Mock stratégia
 
