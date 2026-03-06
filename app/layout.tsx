@@ -9,7 +9,8 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { Separator } from "@radix-ui/react-separator";
-import { ModeToggle } from "@/components/ui/modeToggle";
+import { ModeToggle } from "@/components/ui/mode-toggle";
+import { NotificationBell } from "@/components/features/notification-bell";
 
 import { AuthStoreProvider } from "@/store/auth/auth-store-provider";
 import { ConfigStoreProvider } from "@/store/config/config-store-provider";
@@ -68,7 +69,10 @@ export default function RootLayout({
                         orientation="vertical"
                         className="mr-2 data-[orientation=vertical]:h-4"
                       />
-                      <ModeToggle />
+                      <div className="flex items-center gap-1">
+                        <NotificationBell />
+                        <ModeToggle />
+                      </div>
                     </header>
                     <div className="flex flex p-6 justify-center flex-col lg:px-24 md:px-12 sm:px-6">
                       {children}
