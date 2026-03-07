@@ -27,6 +27,8 @@ export interface Job {
 
 export interface JobWithDetails extends Job {
   shortDescription: string;
+  description: string;
+  filePath?: string;
   categoryId: number;
   urgency: number;
   professionalName: string;
