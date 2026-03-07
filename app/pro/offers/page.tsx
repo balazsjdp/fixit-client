@@ -2,18 +2,27 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { Skeleton } from "@/components/ui/skeleton";
-import { MyOfferCard } from "@/components/features/my-offer-card";
+import { OfferStatusBadge } from "@/components/features/badges/offer-status-badge";
+import { CategoryBadge } from "@/components/features/badges/category-badge";
+import { UrgencyBadge } from "@/components/features/badges/urgency-badge";
 import { useMyOffers } from "@/app/api/client/use-my-offers";
 import { useCategories } from "@/app/api/client/categories";
 import { useMyProfessionalProfile } from "@/app/api/client/professionals";
+import { DataCard } from "@/components/ui/data-card";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function MyOffersPage() {
   const router = useRouter();
-  const { data: pro, isLoading: proLoading, error: proError } =
-    useMyProfessionalProfile();
-  const { data: offers, isLoading: offersLoading, error: offersError } =
-    useMyOffers();
+  const {
+    data: pro,
+    isLoading: proLoading,
+    error: proError,
+  } = useMyProfessionalProfile();
+  const {
+    data: offers,
+    isLoading: offersLoading,
+    error: offersError,
+  } = useMyOffers();
   const { data: categories } = useCategories();
 
   useEffect(() => {
@@ -22,17 +31,7 @@ export default function MyOffersPage() {
     }
   }, [proError, router]);
 
-  if (proLoading) {
-    return (
-      <div className="space-y-4">
-        {[1, 2, 3].map((i) => (
-          <Skeleton key={i} className="h-28 w-full rounded-xl" />
-        ))}
-      </div>
-    );
-  }
-
-  if (!pro) return null;
+  if (!pro && !proLoading) return null;
 
   return (
     <main>
@@ -45,37 +44,48 @@ export default function MyOffersPage() {
         </p>
       </div>
 
-      {offersLoading ? (
-        <div className="space-y-4">
-          {[1, 2, 3].map((i) => (
-            <Skeleton key={i} className="h-28 w-full rounded-xl" />
+      {offersLoading || proLoading ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {[1, 2, 3, 4].map((i) => (
+            <Skeleton key={i} className="h-64 w-full rounded-2xl" />
           ))}
         </div>
       ) : offersError ? (
-        <p
-          className="text-muted-foreground py-12 text-center"
-          data-testid="offers-error"
-        >
-          Hiba az ajánlatok betöltése során.
-        </p>
+        <div className="text-center py-20 bg-destructive/5 rounded-2xl border-2 border-dashed border-destructive/20">
+          <p className="text-destructive font-medium">
+            Hiba az ajánlatok betöltése során.
+          </p>
+        </div>
       ) : !offers?.length ? (
-        <p
-          className="text-muted-foreground py-12 text-center"
-          data-testid="no-offers"
-        >
-          Még nem adtál be ajánlatot.
-        </p>
+        <div className="text-center py-20 bg-muted/30 rounded-2xl border-2 border-dashed">
+          <p className="text-muted-foreground text-lg font-medium">
+            Még nem adtál be ajánlatot.
+          </p>
+        </div>
       ) : (
-        <div className="space-y-3" data-testid="offers-list">
-          {offers.map((offer) => (
-            <MyOfferCard
-              key={offer.id}
-              offer={offer}
-              category={categories?.find(
-                (c) => String(c.id) === String(offer.categoryId)
-              )}
-            />
-          ))}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {offers.map((offer) => {
+            const category = categories?.find(
+              (c) => String(c.id) === String(offer.categoryId)
+            );
+            return (
+              <DataCard
+                key={offer.id}
+                id={offer.id}
+                title={offer.shortDescription}
+                statusBadge={<OfferStatusBadge status={offer.status} />}
+                categoryBadge={<CategoryBadge label={category?.label ?? "Ismeretlen"} />}
+                urgencyBadge={<UrgencyBadge urgency={offer.urgency} />}
+                date={offer.createdAt}
+                price={offer.estimatedPrice}
+                travelFee={offer.travelFee}
+                location={offer.status === "accepted" && offer.address 
+                  ? `${offer.address.city}, ${offer.address.street}` 
+                  : "Csak elfogadás után látható"}
+                detailsUrl={`/pro/reports/${offer.reportId}`}
+              />
+            );
+          })}
         </div>
       )}
     </main>
