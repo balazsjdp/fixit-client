@@ -19,7 +19,7 @@ export interface DataCardProps {
   location?: string;
   personName?: string;
   role?: 'pro' | 'client';
-  detailsUrl: string;
+  detailsUrl?: string;
   actions?: React.ReactNode;
   className?: string;
 }
@@ -103,12 +103,14 @@ export function DataCard({
             {actions}
           </div>
           
-          <Button variant="outline" asChild className="group/btn h-10 px-5 rounded-xl border-2 hover:bg-primary/5 hover:text-primary hover:border-primary/30 transition-all">
-            <Link href={detailsUrl} className="flex items-center gap-2 font-semibold">
-              Részletek
-              <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
-            </Link>
-          </Button>
+          {detailsUrl && detailsUrl !== "#" && (
+            <Button variant="outline" asChild className="group/btn h-10 px-5 rounded-xl border-2 hover:bg-primary/5 hover:text-primary hover:border-primary/30 transition-all">
+              <Link href={detailsUrl} className="flex items-center gap-2 font-semibold">
+                Részletek
+                <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
+              </Link>
+            </Button>
+          )}
         </div>
       </div>
     </div>

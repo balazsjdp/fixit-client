@@ -1,15 +1,29 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { OfferStatusBadge } from "@/components/features/badges/offer-status-badge";
 import { CategoryBadge } from "@/components/features/badges/category-badge";
 import { UrgencyBadge } from "@/components/features/badges/urgency-badge";
 import { useMyOffers } from "@/app/api/client/use-my-offers";
 import { useCategories } from "@/app/api/client/categories";
 import { useMyProfessionalProfile } from "@/app/api/client/professionals";
+import { deleteOffer } from "@/app/api/client/offers";
 import { DataCard } from "@/components/ui/data-card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
+import {
+  AlertDialog,
+  AlertDialogTrigger,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogCancel,
+} from "@/components/ui/alert-dialog";
+import { Trash2 } from "lucide-react";
+import { toast } from "sonner";
 
 export default function MyOffersPage() {
   const router = useRouter();
@@ -22,14 +36,29 @@ export default function MyOffersPage() {
     data: offers,
     isLoading: offersLoading,
     error: offersError,
+    mutate,
   } = useMyOffers();
   const { data: categories } = useCategories();
+  const [withdrawingId, setWithdrawingId] = useState<number | null>(null);
 
   useEffect(() => {
     if (proError) {
       router.replace("/pro/register");
     }
   }, [proError, router]);
+
+  const handleWithdraw = async (id: number) => {
+    setWithdrawingId(id);
+    try {
+      await deleteOffer(id);
+      toast.success("Ajánlat sikeresen visszavonva!");
+      mutate();
+    } catch {
+      toast.error("Hiba a visszavonás során!");
+    } finally {
+      setWithdrawingId(null);
+    }
+  };
 
   if (!pro && !proLoading) return null;
 
@@ -82,7 +111,46 @@ export default function MyOffersPage() {
                 location={offer.status === "accepted" && offer.address 
                   ? `${offer.address.city}, ${offer.address.street}` 
                   : "Csak elfogadás után látható"}
-                detailsUrl={`/pro/reports/${offer.reportId}`}
+                detailsUrl="#" // We remove the details button, but DataCard requires it. 
+                // Let's hide it by passing custom actions and maybe adjusting DataCard later.
+                className={offer.status === 'accepted' ? 'border-green-100 dark:border-green-900/30' : ''}
+                actions={
+                  offer.status === "pending" && (
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="text-muted-foreground hover:text-destructive hover:bg-destructive/10 gap-2 font-medium"
+                          disabled={withdrawingId === offer.id}
+                        >
+                          <Trash2 className="w-4 h-4" />
+                          Visszavonás
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>
+                            Biztosan visszavonja az ajánlatot?
+                          </AlertDialogTitle>
+                          <AlertDialogDescription>
+                            Ezt a műveletet nem lehet visszavonni.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Mégsem</AlertDialogCancel>
+                          <Button
+                            variant="destructive"
+                            onClick={() => handleWithdraw(offer.id)}
+                            disabled={withdrawingId === offer.id}
+                          >
+                            Visszavonás
+                          </Button>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  )
+                }
               />
             );
           })}

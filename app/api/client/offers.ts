@@ -22,3 +22,8 @@ export async function submitOffer(
   );
   return response.data;
 }
+
+export async function deleteOffer(offerId: number) {
+  const response = await api.delete(`/api/pro/offers/${offerId}`);
+  return response.data;
+}
