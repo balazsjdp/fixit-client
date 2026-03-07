@@ -78,7 +78,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   let RoleIcon = UserIcon;
 
   if (isAdmin) {
-    roleLabel;
     roleLabel = "Adminisztrátor";
     RoleIcon = Shield;
   } else if (isPro) {

@@ -12,7 +12,6 @@ import { Separator } from "@radix-ui/react-separator";
 import { ModeToggle } from "@/components/ui/mode-toggle";
 import { NotificationBell } from "@/components/features/notification-bell";
 
-import { AuthStoreProvider } from "@/store/auth/auth-store-provider";
 import { ConfigStoreProvider } from "@/store/config/config-store-provider";
 import { Toaster } from "@/components/ui/sonner";
 import { KeycloakProvider } from "@/components/auth/KeycloakProvider";
@@ -58,29 +57,27 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
-            <AuthStoreProvider>
-              <ConfigStoreProvider>
-                <SidebarProvider>
-                  <AppSidebar />
-                  <SidebarInset>
-                    <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4 place-content-between">
-                      <SidebarTrigger className="-ml-1" />
-                      <Separator
-                        orientation="vertical"
-                        className="mr-2 data-[orientation=vertical]:h-4"
-                      />
-                      <div className="flex items-center gap-1">
-                        <NotificationBell />
-                        <ModeToggle />
-                      </div>
-                    </header>
-                    <div className="flex flex p-6 justify-center flex-col lg:px-24 md:px-12 sm:px-6">
-                      {children}
+            <ConfigStoreProvider>
+              <SidebarProvider>
+                <AppSidebar />
+                <SidebarInset>
+                  <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4 place-content-between">
+                    <SidebarTrigger className="-ml-1" />
+                    <Separator
+                      orientation="vertical"
+                      className="mr-2 data-[orientation=vertical]:h-4"
+                    />
+                    <div className="flex items-center gap-1">
+                      <NotificationBell />
+                      <ModeToggle />
                     </div>
-                  </SidebarInset>
-                </SidebarProvider>
-              </ConfigStoreProvider>
-            </AuthStoreProvider>
+                  </header>
+                  <div className="flex flex p-6 justify-center flex-col lg:px-24 md:px-12 sm:px-6">
+                    {children}
+                  </div>
+                </SidebarInset>
+              </SidebarProvider>
+            </ConfigStoreProvider>
           </ThemeProvider>
         </KeycloakProvider>
         <Toaster position="top-right" richColors />

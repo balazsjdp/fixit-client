@@ -4,7 +4,7 @@ import { useProJobs } from "@/app/api/client/jobs";
 import { Badge } from "@/components/ui/badge";
 import { UrgencyBadge } from "@/components/features/badges/urgency-badge";
 import { Briefcase } from "lucide-react";
-import { JobStatus, JobWithDetails } from "@/types/job";
+import { JobStatus } from "@/types/job";
 import { DataCard } from "@/components/ui/data-card";
 import { Skeleton } from "@/components/ui/skeleton";
 

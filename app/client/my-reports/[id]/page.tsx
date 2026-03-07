@@ -36,8 +36,6 @@ import { acceptOffer } from "@/app/api/client/offers";
 import { OfferWithProfessional } from "@/types/offer";
 import { MyReport } from "@/types/report";
 import { toast } from "sonner";
-import { urgencyColor, urgencyLabel } from "@/lib/urgency";
-import { cn } from "@/lib/utils";
 
 export default function ReportDetailPage({
   params,

@@ -1,7 +1,7 @@
 "use client";
 
 import { Calendar, MapPin } from "lucide-react";
-import { MyOffer, OfferStatus } from "@/types/offer";
+import { MyOffer } from "@/types/offer";
 import { Category } from "@/types/category";
 import { cn } from "@/lib/utils";
 import { urgencyLabel, urgencyColor } from "@/lib/urgency";

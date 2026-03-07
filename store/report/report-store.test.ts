@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest'
-import { ReportStore, defaultInitState, reportStore } from './report-store'
+import { reportStore } from './report-store'
 
 const testCategory = { ID: 1, Label: 'Vízvezetékszerelő', Icon: 'wrench' }
 

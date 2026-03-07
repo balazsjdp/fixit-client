@@ -3,7 +3,6 @@ import { Calendar, ArrowRight, MapPin, Banknote, User, Wrench } from "lucide-rea
 import { format } from "date-fns";
 import { hu } from "date-fns/locale";
 import { cn } from "@/lib/utils";
-import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
