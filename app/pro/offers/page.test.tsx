@@ -61,12 +61,15 @@ const pendingOffer: MyOffer = {
   id: 20,
   reportId: 5,
   categoryId: 1,
+  shortDescription: "Csöpögő csap",
   description: "Csöpög a konyhai csap",
   urgency: 50,
   estimatedPrice: 25000,
   travelFee: 3000,
   status: "pending",
   createdAt: "2026-03-05T10:00:00Z",
+  reportStatusSlug: "open",
+  filePath: "",
 };
 
 const acceptedOffer: MyOffer = {

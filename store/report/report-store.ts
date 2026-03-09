@@ -19,6 +19,7 @@ export interface ReportForm {
   shortDescription: string;
   description: string;
   urgency: number;
+  phone: string;
   address: Address;
   coordinates: Coordinates | null;
 }
@@ -33,6 +34,7 @@ export type ReportActions = {
   setShortDescription: (shortDescription: string) => void;
   setDescription: (description: string) => void;
   setUrgency: (urgency: number) => void;
+  setPhone: (phone: string) => void;
   setAddress: (address: Partial<Address>) => void;
   setCoordinates: (coordinates: Coordinates | null) => void;
   resetForm: () => void;
@@ -48,6 +50,7 @@ export const defaultInitState: ReportState = {
     shortDescription: "",
     description: "",
     urgency: 50,
+    phone: "",
     address: {
       postcode: "",
       city: "",
@@ -70,6 +73,8 @@ export const reportStore = createStore<ReportStore>((set) => ({
       set((state) => ({ form: { ...state.form, description } })),
     setUrgency: (urgency) =>
       set((state) => ({ form: { ...state.form, urgency } })),
+    setPhone: (phone) =>
+      set((state) => ({ form: { ...state.form, phone } })),
     setAddress: (address) =>
       set((state) => ({
         form: { ...state.form, address: { ...state.form.address, ...address } },

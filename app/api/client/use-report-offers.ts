@@ -1,6 +1,13 @@
 import { OfferWithProfessional } from "@/types/offer";
-import { useApi } from "@/app/api/use-api";
+import api from "@/lib/api";
+import useSWR from "swr";
 
-export const useReportOffers = (reportId: number) => {
-  return useApi<OfferWithProfessional[]>(`/api/reports/${reportId}/offers`);
+const fetcher = (url: string) =>
+  api.get<OfferWithProfessional[]>(url).then((r) => r.data);
+
+export const useReportOffers = (reportId: number | null) => {
+  return useSWR<OfferWithProfessional[]>(
+    reportId !== null ? `/api/reports/${reportId}/offers` : null,
+    fetcher
+  );
 };

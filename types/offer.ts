@@ -1,3 +1,5 @@
+import { ReportStatusSlug } from "./report";
+
 export type OfferStatus = "pending" | "accepted" | "rejected";
 
 export interface MyOffer {
@@ -11,6 +13,10 @@ export interface MyOffer {
   travelFee: number;
   status: OfferStatus;
   createdAt: string;
+  reportStatusSlug: ReportStatusSlug;
+  filePath: string;
+  clientName?: string;
+  clientPhone?: string;
   address?: {
     postcode: string;
     city: string;

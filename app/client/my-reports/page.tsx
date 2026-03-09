@@ -89,11 +89,11 @@ export default function MyReports() {
                 key={report.id}
                 id={report.id}
                 title={report.shortDescription}
-                statusBadge={<ReportStatusBadge hasAccepted={report.hasAccepted} />}
+                statusBadge={<ReportStatusBadge status={report.statusSlug} />}
                 categoryBadge={<CategoryBadge label={category?.label ?? "Ismeretlen"} />}
                 urgencyBadge={<UrgencyBadge urgency={report.urgency} />}
                 date={report.createdAt}
-                detailsUrl={`/client/my-reports/${report.id}`}
+                detailsUrl={`/reports/${report.id}`}
                 actions={
                   <div className="flex items-center gap-4">
                     <div className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">

@@ -1,6 +1,10 @@
+export type ReportStatusSlug = 'open' | 'assigned' | 'pending_completion' | 'completed' | 'disputed' | 'cancelled';
+
 export interface ProReport {
   id: number;
   categoryId: number;
+  statusId: number;
+  statusSlug: ReportStatusSlug;
   shortDescription: string;
   description: string;
   urgency: number;
@@ -14,6 +18,9 @@ export interface ProReport {
 export interface MyReport {
   id: number;
   categoryId: number;
+  statusId: number;
+  statusSlug: ReportStatusSlug;
+  assignedProId?: number;
   shortDescription: string;
   description: string;
   urgency: number;
@@ -21,5 +28,7 @@ export interface MyReport {
   offerCount: number;
   hasAccepted: boolean;
   createdAt: string;
+  price?: number;
+  travelFee?: number;
 }
 

@@ -111,8 +111,7 @@ export default function MyOffersPage() {
                 location={offer.status === "accepted" && offer.address 
                   ? `${offer.address.city}, ${offer.address.street}` 
                   : "Csak elfogadás után látható"}
-                detailsUrl="#" // We remove the details button, but DataCard requires it. 
-                // Let's hide it by passing custom actions and maybe adjusting DataCard later.
+                detailsUrl={`/reports/${offer.reportId}`}
                 className={offer.status === 'accepted' ? 'border-green-100 dark:border-green-900/30' : ''}
                 actions={
                   offer.status === "pending" && (

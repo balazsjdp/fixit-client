@@ -17,28 +17,24 @@ const CLIENT_ITEMS: NavItem[] = [
   { title: "Főoldal", url: "/", icon: "house" },
   { title: "Új bejelentés", url: "/client/new", icon: "octagon-alert" },
   { title: "Bejelentéseim", url: "/client/my-reports", icon: "list" },
-  { title: "Munkáim", url: "/client/jobs", icon: "briefcase" },
   { title: "Legyen szakember", url: "/pro/register", icon: "hard-hat" },
 ];
 
 const PRO_ITEMS: NavItem[] = [
   { title: "Főoldal", url: "/", icon: "house" },
   { title: "Pro dashboard", url: "/pro", icon: "briefcase" },
-  { title: "Munkáim", url: "/pro/jobs", icon: "wrench" },
-  { title: "Ajánlataim", url: "/pro/offers", icon: "file-text" },
+  { title: "Munkáim", url: "/pro/offers", icon: "wrench" },
 ];
 
 const ADMIN_CLIENT_ITEMS: NavItem[] = [
   { title: "Főoldal", url: "/", icon: "house" },
   { title: "Új bejelentés", url: "/client/new", icon: "octagon-alert" },
   { title: "Bejelentéseim", url: "/client/my-reports", icon: "list" },
-  { title: "Munkáim", url: "/client/jobs", icon: "briefcase" },
 ];
 
 const ADMIN_PRO_ITEMS: NavItem[] = [
   { title: "Pro dashboard", url: "/pro", icon: "briefcase" },
-  { title: "Munkáim", url: "/pro/jobs", icon: "wrench" },
-  { title: "Ajánlataim", url: "/pro/offers", icon: "file-text" },
+  { title: "Munkáim", url: "/pro/offers", icon: "wrench" },
 ];
 
 const ADMIN_ITEMS: NavItem[] = [

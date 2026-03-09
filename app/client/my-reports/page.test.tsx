@@ -55,6 +55,8 @@ const mockReports: MyReport[] = [
   {
     id: 1,
     categoryId: 1,
+    statusId: 1,
+    statusSlug: "open",
     shortDescription: "Csöpögő csap a konyhában",
     description: "Csöpögő csap a konyhában részletesen",
     urgency: 50,
@@ -66,6 +68,8 @@ const mockReports: MyReport[] = [
   {
     id: 2,
     categoryId: 2,
+    statusId: 2,
+    statusSlug: "assigned",
     shortDescription: "Nem működik a kapcsoló",
     description: "Nem működik a kapcsoló részletesen",
     urgency: 0,
@@ -160,16 +164,16 @@ describe("MyReports page – report cards", () => {
     expect(screen.getByText("Ismeretlen")).toBeDefined();
   });
 
-  it('renders "Folyamatban" badge for non-accepted reports', () => {
+  it('renders "Nyitott" badge for non-accepted reports', () => {
     setup();
     render(<MyReports />);
-    expect(screen.getByText("Folyamatban")).toBeDefined();
+    expect(screen.getByText("Nyitott")).toBeDefined();
   });
 
-  it('renders "Lezárva" badge for accepted reports', () => {
+  it('renders "Hozzárendelve" badge for accepted reports', () => {
     setup();
     render(<MyReports />);
-    expect(screen.getByText("Lezárva")).toBeDefined();
+    expect(screen.getByText("Hozzárendelve")).toBeDefined();
   });
 
   it("renders offer count for reports with offers", () => {

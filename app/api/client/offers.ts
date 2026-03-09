@@ -27,3 +27,8 @@ export async function deleteOffer(offerId: number) {
   const response = await api.delete(`/api/pro/offers/${offerId}`);
   return response.data;
 }
+
+export async function releaseReport(reportId: number) {
+  const response = await api.post(`/api/pro/reports/${reportId}/release`);
+  return response.data;
+}

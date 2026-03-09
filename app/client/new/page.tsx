@@ -18,7 +18,7 @@ import { Send } from "lucide-react";
 
 export default function New() {
   const form = useReportForm();
-  const { setShortDescription, setDescription, resetForm } = useReportActions();
+  const { setShortDescription, setDescription, setPhone, resetForm } = useReportActions();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -31,12 +31,14 @@ export default function New() {
 
       const formData = new FormData();
       formData.append("short_description", form.shortDescription);
+      formData.append("client_phone", form.phone);
 
       for (const key of Object.keys(form) as (keyof typeof form)[]) {
         if (
           key === "files" ||
           key === "coordinates" ||
-          key === "shortDescription"
+          key === "shortDescription" ||
+          key === "phone"
         ) {
           continue;
         }
@@ -138,8 +140,24 @@ export default function New() {
               />
             </section>
             <section>
+              <h3 className="text-sm font-bold uppercase tracking-wider mb-5">
+                6. Telefonszám
+              </h3>
+              <Input
+                type="tel"
+                className="w-full p-5 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-base focus:ring-2 focus:ring-primary focus:border-transparent transition-all shadow-sm"
+                placeholder="+36 30 123 4567"
+                value={form.phone}
+                onChange={(e) => setPhone(e.target.value)}
+                required
+              />
+              <p className="text-xs text-muted-foreground mt-2">
+                Csak az elfogadott ajánlat szakembere látja majd.
+              </p>
+            </section>
+            <section>
               <h3 className="dark:text-white text-sm font-bold uppercase tracking-wider mb-5">
-                6. HELYSZÍN MEGADÁSA
+                7. HELYSZÍN MEGADÁSA
               </h3>
               <AddressForm />
             </section>

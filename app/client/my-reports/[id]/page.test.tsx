@@ -64,6 +64,8 @@ const mockCategories: Category[] = [
 const mockReport: MyReport = {
   id: 1,
   categoryId: 1,
+  statusId: 1,
+  statusSlug: "open",
   shortDescription: "Csöpögő csap a konyhában",
   description: "Csöpögő csap a konyhában részletesen",
   urgency: 3,
@@ -138,13 +140,13 @@ describe("ReportDetailPage – error / not found state", () => {
   it("shows not found message when report list is empty", () => {
     setup({ reports: [] });
     render(<ReportDetailPage params={params} />);
-    expect(screen.getByText("A bejelentés nem található.")).toBeDefined();
+    expect(screen.getByText(/A bejelentés nem található/)).toBeDefined();
   });
 
   it("shows not found message when reports fail to load", () => {
     setup({ reportsError: new Error("Network error") });
     render(<ReportDetailPage params={params} />);
-    expect(screen.getByText("A bejelentés nem található.")).toBeDefined();
+    expect(screen.getByText(/A bejelentés nem található/)).toBeDefined();
   });
 
   it('renders back link in error state', () => {
@@ -176,16 +178,16 @@ describe("ReportDetailPage – report header", () => {
     expect(screen.getByText("Sürgős")).toBeDefined();
   });
 
-  it('renders "Folyamatban" badge for non-accepted report', () => {
+  it('renders "Nyitott" badge for non-accepted report', () => {
     setup();
     render(<ReportDetailPage params={params} />);
-    expect(screen.getByText("Folyamatban")).toBeDefined();
+    expect(screen.getByText("Nyitott")).toBeDefined();
   });
 
-  it('renders "Lezárva" badge for accepted report', () => {
-    setup({ reports: [{ ...mockReport, hasAccepted: true }] });
+  it('renders "Hozzárendelve" badge for accepted report', () => {
+    setup({ reports: [{ ...mockReport, hasAccepted: true, statusSlug: "assigned" }] });
     render(<ReportDetailPage params={params} />);
-    expect(screen.getByText("Lezárva")).toBeDefined();
+    expect(screen.getByText("Hozzárendelve")).toBeDefined();
   });
 
   it("renders image when filePath is set", () => {
@@ -214,26 +216,26 @@ describe("ReportDetailPage – accepted professional card", () => {
   it("does not show accepted professional card for non-accepted report", () => {
     setup();
     render(<ReportDetailPage params={params} />);
-    expect(screen.queryByText("Elfogadott szakember")).toBeNull();
+    expect(screen.queryByText("Hozzárendelt szakember")).toBeNull();
   });
 
   it("shows professional name and phone after acceptance", () => {
-    const acceptedReport = { ...mockReport, hasAccepted: true };
+    const acceptedReport = { ...mockReport, hasAccepted: true, statusSlug: "assigned" as const };
     const acceptedOffer = { ...mockOffer, status: "accepted" as const };
     setup({ reports: [acceptedReport], offers: [acceptedOffer] });
     render(<ReportDetailPage params={params} />);
-    expect(screen.getByText("Elfogadott szakember")).toBeDefined();
+    expect(screen.getByText("Hozzárendelt szakember")).toBeDefined();
     // name appears in both accepted card and offer list - check at least one exists
-    expect(screen.getAllByText("Kiss János").length).toBeGreaterThanOrEqual(1);
-    expect(screen.getByText("+36301234567")).toBeDefined();
+    expect(screen.getByText(/Kiss János/)).toBeDefined();
+    expect(screen.getByText(/\+36301234567/)).toBeDefined();
   });
 
   it("phone is a tel: link", () => {
-    const acceptedReport = { ...mockReport, hasAccepted: true };
+    const acceptedReport = { ...mockReport, hasAccepted: true, statusSlug: "assigned" as const };
     const acceptedOffer = { ...mockOffer, status: "accepted" as const };
     setup({ reports: [acceptedReport], offers: [acceptedOffer] });
     render(<ReportDetailPage params={params} />);
-    const phoneLink = screen.getByText("+36301234567").closest("a");
+    const phoneLink = screen.getByText(/\+36301234567/).closest("a");
     expect(phoneLink?.getAttribute("href")).toBe("tel:+36301234567");
   });
 });
@@ -269,9 +271,10 @@ describe("ReportDetailPage – offers list", () => {
   it("renders price labels", () => {
     setup();
     render(<ReportDetailPage params={params} />);
-    expect(screen.getByText("Munkadíj:")).toBeDefined();
-    expect(screen.getByText("Kiszállási díj:")).toBeDefined();
-    expect(screen.getByText("Összesen:")).toBeDefined();
+    expect(screen.getByText(/Munkadíj/)).toBeDefined();
+    expect(screen.getByText(/Kiszállás/)).toBeDefined();
+    expect(screen.getByText(/Összesen/)).toBeDefined();
+
   });
 
   it("renders badges for professionals with badges", () => {
@@ -333,14 +336,14 @@ describe("ReportDetailPage – accept offer flow", () => {
   it("opens confirmation dialog on Elfogad click", () => {
     setup();
     render(<ReportDetailPage params={params} />);
-    fireEvent.click(screen.getByRole("button", { name: "Elfogad" }));
+    fireEvent.click(screen.getByRole("button", { name: /Elfogad/ }));
     expect(screen.getByText("Elfogadja az ajánlatot?")).toBeDefined();
   });
 
   it("shows professional name in confirmation dialog", () => {
     setup();
     render(<ReportDetailPage params={params} />);
-    fireEvent.click(screen.getByRole("button", { name: "Elfogad" }));
+    fireEvent.click(screen.getByRole("button", { name: /Elfogad/ }));
     const dialog = screen.getByRole("dialog");
     expect(within(dialog).getByText("Kiss János")).toBeDefined();
   });
@@ -348,7 +351,7 @@ describe("ReportDetailPage – accept offer flow", () => {
   it("does not call acceptOffer when Mégsem is clicked", async () => {
     setup();
     render(<ReportDetailPage params={params} />);
-    fireEvent.click(screen.getByRole("button", { name: "Elfogad" }));
+    fireEvent.click(screen.getByRole("button", { name: /Elfogad/ }));
     fireEvent.click(screen.getByText("Mégsem"));
     await waitFor(() => {
       expect(mockAcceptOffer).not.toHaveBeenCalled();
@@ -359,7 +362,7 @@ describe("ReportDetailPage – accept offer flow", () => {
     mockAcceptOffer.mockResolvedValue({ message: "ok" });
     setup();
     render(<ReportDetailPage params={params} />);
-    fireEvent.click(screen.getByRole("button", { name: "Elfogad" }));
+    fireEvent.click(screen.getByRole("button", { name: /Elfogad/ }));
     const dialog = screen.getByRole("dialog");
     fireEvent.click(within(dialog).getByRole("button", { name: "Elfogadom" }));
     await waitFor(() => {
@@ -374,7 +377,7 @@ describe("ReportDetailPage – accept offer flow", () => {
     mockAcceptOffer.mockResolvedValue({ message: "ok" });
     setup();
     render(<ReportDetailPage params={params} />);
-    fireEvent.click(screen.getByRole("button", { name: "Elfogad" }));
+    fireEvent.click(screen.getByRole("button", { name: /Elfogad/ }));
     const dialog = screen.getByRole("dialog");
     fireEvent.click(within(dialog).getByRole("button", { name: "Elfogadom" }));
     await waitFor(() => {
@@ -390,7 +393,7 @@ describe("ReportDetailPage – accept offer flow", () => {
     });
     setup();
     render(<ReportDetailPage params={params} />);
-    fireEvent.click(screen.getByRole("button", { name: "Elfogad" }));
+    fireEvent.click(screen.getByRole("button", { name: /Elfogad/ }));
     const dialog = screen.getByRole("dialog");
     fireEvent.click(within(dialog).getByRole("button", { name: "Elfogadom" }));
     await waitFor(() => {
@@ -407,7 +410,7 @@ describe("ReportDetailPage – accept offer flow", () => {
     });
     setup();
     render(<ReportDetailPage params={params} />);
-    fireEvent.click(screen.getByRole("button", { name: "Elfogad" }));
+    fireEvent.click(screen.getByRole("button", { name: /Elfogad/ }));
     const dialog = screen.getByRole("dialog");
     fireEvent.click(within(dialog).getByRole("button", { name: "Elfogadom" }));
     await waitFor(() => {
@@ -424,7 +427,7 @@ describe("ReportDetailPage – accept offer flow", () => {
     });
     setup();
     render(<ReportDetailPage params={params} />);
-    fireEvent.click(screen.getByRole("button", { name: "Elfogad" }));
+    fireEvent.click(screen.getByRole("button", { name: /Elfogad/ }));
     const dialog = screen.getByRole("dialog");
     fireEvent.click(within(dialog).getByRole("button", { name: "Elfogadom" }));
     await waitFor(() => {
@@ -438,7 +441,7 @@ describe("ReportDetailPage – accept offer flow", () => {
     mockAcceptOffer.mockRejectedValue(new Error("Network failure"));
     setup();
     render(<ReportDetailPage params={params} />);
-    fireEvent.click(screen.getByRole("button", { name: "Elfogad" }));
+    fireEvent.click(screen.getByRole("button", { name: /Elfogad/ }));
     const dialog = screen.getByRole("dialog");
     fireEvent.click(within(dialog).getByRole("button", { name: "Elfogadom" }));
     await waitFor(() => {
