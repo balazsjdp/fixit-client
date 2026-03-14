@@ -8,14 +8,7 @@ import { reverseGeocode, geocodeAddress } from "@/lib/geocoding";
 import { updateProLocation } from "@/app/api/client/professionals";
 import { useConfigFromStore } from "@/store/config/config-store-provider";
 import logger from "@/lib/logger";
-import { useDebouncedGeocoding } from "@/hooks/use-debounced-geocoding";
-
-interface AddressFields {
-  postcode: string;
-  city: string;
-  street: string;
-  houseNumber: string;
-}
+import { useAddressDetection, AddressFields } from "@/hooks/use-address-detection";
 
 interface ProLocationSectionProps {
   initialLat: number;
@@ -32,13 +25,16 @@ export function ProLocationSection({ initialLat, initialLng, onLocationChange, c
     street: "",
     houseNumber: "",
   });
-  const [gpsLoading, setGpsLoading] = useState(false);
   const [saveLoading, setSaveLoading] = useState(false);
-  const [detected, setDetected] = useState(false);
-  const { geocoding, skipNextGeocode } = useDebouncedGeocoding(address, async (coords) => {
-    await updateProLocation(coords.lat, coords.lng);
-    onLocationChange(coords.lat, coords.lng);
-    setDetected(true);
+
+  const { gpsLoading, geocoding, detected, handleDetect, skipNextGeocode, markDetected } = useAddressDetection({
+    address,
+    onAddressChange: (fields) => setAddress((prev) => ({ ...prev, ...fields })),
+    onCoordsChange: async (coords) => {
+      await updateProLocation(coords.lat, coords.lng);
+      onLocationChange(coords.lat, coords.lng);
+    },
+    zipResolverEnabled: config?.featureFlags?.zipCodeResolver ?? false,
   });
 
   // Reverse-geocode the initial position on mount
@@ -54,64 +50,12 @@ export function ProLocationSection({ initialLat, initialLng, onLocationChange, c
         });
       }
     });
-  }, [initialLat, initialLng, skipNextGeocode]);
-
-  // Auto-fill city from postcode (feature flag guarded)
-  useEffect(() => {
-    if (address.postcode.length === 4 && config?.featureFlags?.zipCodeResolver) {
-      fetch(`https://hur.webmania.cc/zips/${address.postcode}.json`)
-        .then((r) => r.json())
-        .then((data) => {
-          if (data.zips?.length > 0) {
-            setAddress((prev) => ({ ...prev, city: data.zips[0].name }));
-          }
-        })
-        .catch((err) => logger.error({ err }, "Zip lookup error"));
-    }
-  }, [address.postcode, config]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialLat, initialLng]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setAddress((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleDetect = () => {
-    if (!navigator.geolocation) {
-      logger.error("Geolocation not supported");
-      return;
-    }
-    setGpsLoading(true);
-    navigator.geolocation.getCurrentPosition(
-      async (position) => {
-        const lat = position.coords.latitude;
-        const lng = position.coords.longitude;
-
-        try {
-          await updateProLocation(lat, lng);
-          onLocationChange(lat, lng);
-          setDetected(true);
-        } catch (err) {
-          logger.error({ err }, "Failed to save location");
-        }
-
-        const addr = await reverseGeocode({ lat, lng });
-        if (addr) {
-          skipNextGeocode.current = true; // prevent forward geocoding on GPS-filled address
-          setAddress({
-            postcode: addr.postcode ?? "",
-            city: addr.city ?? "",
-            street: addr.street ?? "",
-            houseNumber: addr.houseNumber ?? "",
-          });
-        }
-
-        setGpsLoading(false);
-      },
-      (err) => {
-        logger.error({ err }, "GPS error");
-        setGpsLoading(false);
-      }
-    );
   };
 
   const handleSaveAddress = async () => {
@@ -121,7 +65,7 @@ export function ProLocationSection({ initialLat, initialLng, onLocationChange, c
       if (coords) {
         await updateProLocation(coords.lat, coords.lng);
         onLocationChange(coords.lat, coords.lng);
-        setDetected(true);
+        markDetected();
       }
     } catch (err) {
       logger.error({ err }, "Failed to geocode/save address");

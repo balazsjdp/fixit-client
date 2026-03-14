@@ -1,4 +1,4 @@
-import { createStore } from "zustand";
+import { createStore } from "zustand/vanilla";
 
 export interface Config {
   version: string;

@@ -1,94 +1,42 @@
 "use client";
 
-import logger from "@/lib/logger";
 import { useConfigFromStore } from "@/store/config/config-store-provider";
 import {
   useReportForm,
   useReportActions,
 } from "@/store/report/report-store-provider";
-import { useEffect, useState } from "react";
 import { Input } from "../ui/input";
 import { MapPin, Loader2, CheckCircle2 } from "lucide-react";
-import { reverseGeocode } from "@/lib/geocoding";
-import { useDebouncedGeocoding } from "@/hooks/use-debounced-geocoding";
+import { useAddressDetection } from "@/hooks/use-address-detection";
 
 export function AddressForm() {
   const address = useReportForm().address;
-  const coordinates = useReportForm().coordinates;
   const { setAddress, setCoordinates } = useReportActions();
   const config = useConfigFromStore();
-  const [gpsLoading, setGpsLoading] = useState(false);
-  const { geocoding, skipNextGeocode } = useDebouncedGeocoding(address, (coords) => {
-    setCoordinates(coords);
+
+  const { gpsLoading, geocoding, detected, handleDetect } = useAddressDetection({
+    address,
+    onAddressChange: setAddress,
+    onCoordsChange: setCoordinates,
+    zipResolverEnabled: config?.featureFlags?.zipCodeResolver ?? false,
   });
-
-  const handleGpsClick = () => {
-    if (!navigator.geolocation) {
-      logger.error("Geolocation is not supported by this browser.");
-      return;
-    }
-    setGpsLoading(true);
-    navigator.geolocation.getCurrentPosition(
-      async (position) => {
-        const coords = {
-          lat: position.coords.latitude,
-          lng: position.coords.longitude,
-        };
-        setCoordinates(coords);
-
-        const resolved = await reverseGeocode(coords);
-        if (resolved) {
-          skipNextGeocode.current = true;
-          setAddress(resolved);
-        }
-
-        setGpsLoading(false);
-      },
-      (err) => {
-        logger.error({ err }, "GPS error");
-        setGpsLoading(false);
-      }
-    );
-  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setAddress({
-      ...address,
-      [name]: value,
-    });
+    setAddress({ [name]: value });
   };
-
-  useEffect(() => {
-    if (
-      address.postcode.length === 4 &&
-      config?.featureFlags?.zipCodeResolver
-    ) {
-      fetch(`https://hur.webmania.cc/zips/${address.postcode}.json`)
-        .then((response) => response.json())
-        .then((data) => {
-          if (data.zips && data.zips.length > 0) {
-            setAddress({
-              ...address,
-              city: data.zips[0].name,
-            });
-          }
-        })
-        .catch((err) => logger.error({ err }, "Error fetching city"));
-    }
-  }, [address.postcode, setAddress]);
 
   return (
     <div className="space-y-4">
       <button
         type="button"
-        onClick={handleGpsClick}
+        onClick={handleDetect}
         disabled={gpsLoading}
         className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl border-2 border-dashed border-primary/40 hover:border-primary hover:bg-primary/5 transition-all text-sm font-semibold text-primary disabled:opacity-50 disabled:cursor-not-allowed"
       >
         {gpsLoading || geocoding ? (
           <Loader2 className="w-4 h-4 animate-spin" />
-        ) : coordinates ? (
+        ) : detected ? (
           <CheckCircle2 className="w-4 h-4 text-green-500" />
         ) : (
           <MapPin className="w-4 h-4" />
@@ -97,7 +45,7 @@ export function AddressForm() {
           ? "Helymeghatározás..."
           : geocoding
           ? "Cím alapján helyzet meghatározása..."
-          : coordinates
+          : detected
           ? "Helyzet rögzítve"
           : "Helyzet automatikus meghatározása"}
       </button>
