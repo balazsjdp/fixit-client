@@ -28,7 +28,6 @@ import {
   Wrench,
 } from "lucide-react";
 import { useAuth } from "./auth/KeycloakProvider";
-import { useMyProfessionalProfile } from "@/app/api/client/professionals";
 
 function NavGroupSection({ group }: { group: NavGroup }) {
   return (
@@ -56,10 +55,8 @@ function NavGroupSection({ group }: { group: NavGroup }) {
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const config = useConfigFromStore();
-  const { groups, isLoading } = useNavItems();
+  const { groups, isLoading, isPro } = useNavItems();
   const { keycloak, isReady } = useAuth();
-  const { data: pro, isLoading: proLoading } = useMyProfessionalProfile();
-
   const isGrouped = groups.length > 1;
 
   const user = keycloak?.idTokenParsed;
@@ -72,7 +69,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const initials = (lastName[0] || "") + (firstName[0] || "");
 
   const isAdmin = keycloak?.hasRealmRole("admin");
-  const isPro = !!pro;
 
   let roleLabel = "Ügyfél";
   let RoleIcon = UserIcon;
@@ -96,7 +92,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </h2>
       </SidebarHeader>
       <SidebarContent>
-        {isLoading || proLoading ? (
+        {isLoading ? (
           <SidebarGroup>
             <SidebarGroupLabel>Menü</SidebarGroupLabel>
             <React.Suspense fallback={<SidebarMenuSkeleton />}>

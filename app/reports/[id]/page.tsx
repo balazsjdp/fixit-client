@@ -76,18 +76,23 @@ export default function TicketDetailPage({
     isLoading: reportsLoading,
     mutate: mutateReports,
   } = useMyReports();
-  const { isLoading: proLoading } = useMyProfessionalProfile();
+
+  // Determine if this report belongs to the current user (client view)
+  const myReport = reports?.find((r) => r.id === reportId);
+  const isKnownClient = !reportsLoading && !!myReport;
+
+  // Only query professional profile if the user is NOT a known client
+  const needsProCheck = !reportsLoading && !myReport;
+  const { data: pro, isLoading: proLoading } = useMyProfessionalProfile(needsProCheck);
   const {
     data: myOffers,
     isLoading: offersLoading,
     mutate: mutateMyOffers,
-  } = useMyOffers();
+  } = useMyOffers(!!pro);
   const { data: categories } = useCategories();
 
-  // Role determination
-  const myReport = reports?.find((r) => r.id === reportId);
   const proOffer = myOffers?.find((o) => o.reportId === reportId);
-  const isClient = !!myReport;
+  const isClient = isKnownClient;
   const isProView = !isClient && !!proOffer;
 
   // Fetch report offers only for the client (SWR skips when key is null)
@@ -95,7 +100,7 @@ export default function TicketDetailPage({
     isClient ? reportId : null
   );
 
-  const isLoading = reportsLoading || proLoading || offersLoading;
+  const isLoading = reportsLoading || (needsProCheck && (proLoading || (!!pro && offersLoading)));
 
   // Derived shared values
   const categoryId = myReport?.categoryId ?? proOffer?.categoryId;

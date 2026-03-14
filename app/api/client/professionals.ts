@@ -1,5 +1,6 @@
 import { config } from "@/app.config";
 import api from "@/lib/api";
+import useSWR from "swr";
 import { useApi } from "@/app/api/use-api";
 import {
   Professional,
@@ -16,8 +17,13 @@ export async function registerProfessional(
   return response.data;
 }
 
-export const useMyProfessionalProfile = () => {
-  return useApi<Professional>("/api/professionals/me");
+const fetcher = (url: string) =>
+  api.get<Professional>(url).then((res) => res.data);
+
+export const useMyProfessionalProfile = (enabled = true) => {
+  return useSWR<Professional>(enabled ? "/api/professionals/me" : null, fetcher, {
+    revalidateOnFocus: false,
+  });
 };
 
 export async function updateProRadius(radiusKm: number): Promise<void> {

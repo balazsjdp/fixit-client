@@ -41,12 +41,12 @@ const ADMIN_ITEMS: NavItem[] = [
   { title: "Admin panel", url: "/admin", icon: "shield-check" },
 ];
 
-export function useNavItems(): { groups: NavGroup[]; isLoading: boolean } {
+export function useNavItems(): { groups: NavGroup[]; isLoading: boolean; isPro: boolean } {
   const { keycloak, isReady } = useAuth();
   const { data: pro, isLoading: proLoading } = useMyProfessionalProfile();
 
   if (!isReady || proLoading) {
-    return { groups: [], isLoading: true };
+    return { groups: [], isLoading: true, isPro: false };
   }
 
   const isAdmin = keycloak?.hasRealmRole("admin") ?? false;
@@ -60,6 +60,7 @@ export function useNavItems(): { groups: NavGroup[]; isLoading: boolean } {
         { label: "Adminisztráció", items: ADMIN_ITEMS },
       ],
       isLoading: false,
+      isPro: false,
     };
   }
 
@@ -67,11 +68,13 @@ export function useNavItems(): { groups: NavGroup[]; isLoading: boolean } {
     return {
       groups: [{ items: PRO_ITEMS }],
       isLoading: false,
+      isPro: true,
     };
   }
 
   return {
     groups: [{ items: CLIENT_ITEMS }],
     isLoading: false,
+    isPro: false,
   };
 }
