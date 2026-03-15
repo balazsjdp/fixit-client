@@ -123,9 +123,10 @@ describe('AdminPage – professional list', () => {
   it('shows pending and approved status badges', () => {
     setupAdmin()
     render(<AdminPage />)
-    // "Jóváhagyásra vár" appears in both filter button and status badge
+    // "Jóváhagyásra vár" appears in the filter button
     expect(screen.getAllByText('Jóváhagyásra vár').length).toBeGreaterThanOrEqual(1)
-    expect(screen.getByText('Jóváhagyott')).toBeTruthy()
+    // Status badge text for approved professional
+    expect(screen.getByText('Aktív')).toBeTruthy()
   })
 
   it('shows credit balance', () => {
@@ -213,7 +214,7 @@ describe('AdminPage – credit form', () => {
     const creditButtons = screen.getAllByText('Kredit')
     fireEvent.click(creditButtons[0])
 
-    expect(screen.getByPlaceholderText('pl. 10')).toBeTruthy()
+    expect(screen.getByPlaceholderText('pl. 50')).toBeTruthy()
   })
 
   it('calls addCredits with correct args when form submitted', async () => {
@@ -224,28 +225,28 @@ describe('AdminPage – credit form', () => {
     const creditButtons = screen.getAllByText('Kredit')
     fireEvent.click(creditButtons[0])
 
-    fireEvent.change(screen.getByPlaceholderText('pl. 10'), {
+    fireEvent.change(screen.getByPlaceholderText('pl. 50'), {
       target: { value: '10' },
     })
-    fireEvent.change(screen.getByPlaceholderText('pl. Induló kredit'), {
+    fireEvent.change(screen.getByPlaceholderText('pl. Bónusz kredit az induláshoz'), {
       target: { value: 'Teszt' },
     })
 
-    fireEvent.click(screen.getByText('Hozzáad'))
+    fireEvent.click(screen.getByText('Hozzáadás'))
 
     await waitFor(() => {
       expect(mockAddCredits).toHaveBeenCalledWith(1, 10, 'Teszt')
     })
   })
 
-  it('disables the Hozzáad button when amount is empty', () => {
+  it('disables the Hozzáadás button when amount is empty', () => {
     setupAdmin()
     render(<AdminPage />)
 
     const creditButtons = screen.getAllByText('Kredit')
     fireEvent.click(creditButtons[0])
 
-    const addButton = screen.getByText('Hozzáad').closest('button')!
+    const addButton = screen.getByText('Hozzáadás').closest('button')!
     expect(addButton.disabled).toBe(true)
   })
 
@@ -257,10 +258,10 @@ describe('AdminPage – credit form', () => {
     const creditButtons = screen.getAllByText('Kredit')
     fireEvent.click(creditButtons[0])
 
-    fireEvent.change(screen.getByPlaceholderText('pl. 10'), {
+    fireEvent.change(screen.getByPlaceholderText('pl. 50'), {
       target: { value: '5' },
     })
-    fireEvent.click(screen.getByText('Hozzáad'))
+    fireEvent.click(screen.getByText('Hozzáadás'))
 
     await waitFor(() => {
       expect(mockToast.success).toHaveBeenCalledWith('5 kredit hozzáadva – Kiss Péter')

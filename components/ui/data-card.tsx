@@ -16,11 +16,14 @@ export interface DataCardProps {
   price?: number;
   travelFee?: number;
   location?: string;
+  locationTestId?: string;
   personName?: string;
   role?: 'pro' | 'client';
   detailsUrl?: string;
   actions?: React.ReactNode;
   className?: string;
+  imageSrc?: string;
+  imageAlt?: string;
 }
 
 export function DataCard({
@@ -32,17 +35,27 @@ export function DataCard({
   price,
   travelFee,
   location,
+  locationTestId,
   personName,
   role,
   detailsUrl,
   actions,
   className,
+  imageSrc,
+  imageAlt,
 }: DataCardProps) {
   return (
     <div className={cn(
       "group bg-white dark:bg-slate-900 border-2 border-slate-100 dark:border-slate-800 rounded-2xl overflow-hidden shadow-sm hover:border-primary/40 transition-all duration-200",
       className
     )}>
+      {imageSrc ? (
+        <img src={imageSrc} alt={imageAlt} className="w-full h-40 object-cover" />
+      ) : imageAlt !== undefined ? (
+        <div className="w-full h-40 bg-muted flex items-center justify-center rounded-xl">
+          <span className="text-muted-foreground text-sm">Nincs fotó</span>
+        </div>
+      ) : null}
       <div className="p-5 sm:p-6 flex flex-col h-full">
         {/* Header: Badges */}
         <div className="flex flex-wrap items-center gap-2 mb-4">
@@ -89,7 +102,7 @@ export function DataCard({
           )}
 
           {location && (
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2" data-testid={locationTestId}>
               <MapPin className="w-4 h-4 text-primary shrink-0" />
               <span className="truncate">{location}</span>
             </div>

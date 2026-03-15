@@ -15,6 +15,7 @@ import {
   AlertDialogCancel,
 } from "@/components/ui/alert-dialog";
 import { Plus, Trash2, MessageSquare } from "lucide-react";
+import { config } from "@/app.config";
 import Link from "next/link";
 import { useState } from "react";
 import { useMyReports } from "@/app/api/client/use-my-reports";
@@ -94,12 +95,16 @@ export default function MyReports() {
                 urgencyBadge={<UrgencyBadge urgency={report.urgency} />}
                 date={report.createdAt}
                 detailsUrl={`/reports/${report.id}`}
+                imageSrc={report.filePath ? `${config.apiBaseUrl}/${report.filePath}` : undefined}
+                imageAlt="Hiba fotója"
                 actions={
                   <div className="flex items-center gap-4">
-                    <div className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
-                      <MessageSquare className="w-3.5 h-3.5" />
-                      {report.offerCount} ajánlat
-                    </div>
+                    {report.offerCount > 0 && (
+                      <div className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
+                        <MessageSquare className="w-3.5 h-3.5" />
+                        {report.offerCount} ajánlat
+                      </div>
+                    )}
                     {!report.hasAccepted && (
                       <AlertDialog
                         open={dialogOpenId === report.id}
@@ -111,6 +116,7 @@ export default function MyReports() {
                           <Button
                             variant="ghost"
                             size="icon"
+                            aria-label="Törlés"
                             disabled={deletingId === report.id}
                             className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-full"
                           >

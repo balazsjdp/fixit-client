@@ -11,6 +11,57 @@ vi.mock("next/navigation", () => ({
   useRouter: () => ({ push: mockPush }),
 }));
 
+// Radix DropdownMenu doesn't open properly in jsdom – use a simple controlled mock
+vi.mock("@/components/ui/dropdown-menu", () => {
+  const React = require("react");
+  function DropdownMenu({
+    children,
+    onOpenChange,
+  }: {
+    children: React.ReactNode;
+    onOpenChange?: (open: boolean) => void;
+  }) {
+    const [open, setOpen] = React.useState(false);
+    const toggle = () => {
+      const next = !open;
+      setOpen(next);
+      onOpenChange?.(next);
+    };
+    return React.createElement(
+      "div",
+      null,
+      React.Children.map(children, (child: React.ReactElement) =>
+        React.cloneElement(child, { __open: open, __toggle: toggle })
+      )
+    );
+  }
+  function DropdownMenuTrigger({
+    children,
+    asChild,
+    __toggle,
+  }: {
+    children: React.ReactElement;
+    asChild?: boolean;
+    __toggle?: () => void;
+  }) {
+    if (asChild && React.isValidElement(children)) {
+      return React.cloneElement(children as React.ReactElement<{ onClick?: () => void }>, { onClick: __toggle });
+    }
+    return React.createElement("button", { onClick: __toggle }, children);
+  }
+  function DropdownMenuContent({
+    children,
+    __open,
+  }: {
+    children: React.ReactNode;
+    __open?: boolean;
+  }) {
+    if (!__open) return null;
+    return React.createElement("div", null, children);
+  }
+  return { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent };
+});
+
 import { useNotifications } from "@/app/api/client/use-notifications";
 import { markNotificationsRead } from "@/app/api/client/notifications";
 
@@ -196,7 +247,7 @@ describe("notification routing", () => {
     await openAndClickItem(
       makeNotification({ type: "new_offer", payload: { reportId: 42 } })
     );
-    expect(mockPush).toHaveBeenCalledWith("/client/my-reports/42");
+    expect(mockPush).toHaveBeenCalledWith("/reports/42");
   });
 
   it("navigates to /client/my-reports for new_offer without reportId", async () => {

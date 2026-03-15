@@ -11,6 +11,10 @@ vi.mock("next/dynamic", () => ({
   default: () => () => <div data-testid="map-mock" />,
 }));
 
+vi.mock("@/components/auth/KeycloakProvider", () => ({
+  useAuth: vi.fn(() => ({ keycloak: null, isReady: true })),
+}));
+
 vi.mock("next/navigation", () => ({
   useRouter: vi.fn(() => ({ replace: vi.fn() })),
 }));

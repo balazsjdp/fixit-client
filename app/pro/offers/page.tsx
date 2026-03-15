@@ -80,26 +80,26 @@ export default function MyOffersPage() {
           ))}
         </div>
       ) : offersError ? (
-        <div className="text-center py-20 bg-destructive/5 rounded-2xl border-2 border-dashed border-destructive/20">
+        <div data-testid="offers-error" className="text-center py-20 bg-destructive/5 rounded-2xl border-2 border-dashed border-destructive/20">
           <p className="text-destructive font-medium">
             Hiba az ajánlatok betöltése során.
           </p>
         </div>
       ) : !offers?.length ? (
-        <div className="text-center py-20 bg-muted/30 rounded-2xl border-2 border-dashed">
+        <div data-testid="no-offers" className="text-center py-20 bg-muted/30 rounded-2xl border-2 border-dashed">
           <p className="text-muted-foreground text-lg font-medium">
             Még nem adtál be ajánlatot.
           </p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div data-testid="offers-list" className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {offers.map((offer) => {
             const category = categories?.find(
               (c) => String(c.id) === String(offer.categoryId)
             );
             return (
+              <div key={offer.id} data-testid={`my-offer-card-${offer.id}`}>
               <DataCard
-                key={offer.id}
                 id={offer.id}
                 title={offer.shortDescription}
                 statusBadge={<OfferStatusBadge status={offer.status} />}
@@ -108,9 +108,10 @@ export default function MyOffersPage() {
                 date={offer.createdAt}
                 price={offer.estimatedPrice}
                 travelFee={offer.travelFee}
-                location={offer.status === "accepted" && offer.address 
-                  ? `${offer.address.city}, ${offer.address.street}` 
+                location={offer.status === "accepted" && offer.address
+                  ? `${offer.address.city}, ${offer.address.street}`
                   : "Csak elfogadás után látható"}
+                locationTestId={offer.status === "accepted" ? "accepted-address" : undefined}
                 detailsUrl={`/reports/${offer.reportId}`}
                 className={offer.status === 'accepted' ? 'border-green-100 dark:border-green-900/30' : ''}
                 actions={
@@ -151,6 +152,7 @@ export default function MyOffersPage() {
                   )
                 }
               />
+              </div>
             );
           })}
         </div>

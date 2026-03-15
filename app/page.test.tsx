@@ -2,6 +2,10 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import Home from './page'
 
+vi.mock('@/components/auth/KeycloakProvider', () => ({
+  useAuth: vi.fn(() => ({ keycloak: null, isReady: true })),
+}))
+
 vi.mock('@/app/api/client/professionals', () => ({
   useMyProfessionalProfile: vi.fn(),
 }))

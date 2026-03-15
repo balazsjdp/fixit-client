@@ -200,8 +200,8 @@ describe("MyReports page – delete button", () => {
   it("always shows the details button", () => {
     setup();
     render(<MyReports />);
-    const detailButtons = screen.getAllByRole("button", { name: "Részletek" });
-    expect(detailButtons).toHaveLength(2);
+    const detailLinks = screen.getAllByRole("link", { name: /Részletek/ });
+    expect(detailLinks).toHaveLength(2);
   });
 });
 

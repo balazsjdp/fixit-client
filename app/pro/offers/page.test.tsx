@@ -120,9 +120,9 @@ describe("MyOffersPage", () => {
     mockUsePro.mockReturnValue({ data: null, isLoading: true, error: null, mutate: vi.fn() });
     mockUseOffers.mockReturnValue({ data: null, isLoading: false, error: null });
     mockUseCategories.mockReturnValue({ data: [] });
-    render(<MyOffersPage />);
-    // Skeleton renders, no header
-    expect(screen.queryByText("Ajánlataim")).not.toBeInTheDocument();
+    const { container } = render(<MyOffersPage />);
+    const skeletons = container.querySelectorAll('[class*="animate-pulse"]');
+    expect(skeletons.length).toBeGreaterThan(0);
   });
 
   it("redirects to register if no pro profile", () => {
