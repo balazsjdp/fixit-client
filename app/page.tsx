@@ -1,6 +1,7 @@
 "use client";
 
 import { useMyProfessionalProfile } from "@/app/api/client/professionals";
+import { useAuth } from "@/components/auth/KeycloakProvider";
 import Link from "next/link";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
@@ -13,7 +14,9 @@ import {
 } from "lucide-react";
 
 export default function Home() {
-  const { data: profile, error, isLoading } = useMyProfessionalProfile();
+  const { keycloak, isReady } = useAuth();
+  const isPro = isReady && !!keycloak?.hasRealmRole("pro");
+  const { data: profile, error, isLoading } = useMyProfessionalProfile(isPro);
 
   const isNotRegistered =
     (error as { response?: { status?: number } })?.response?.status === 404;

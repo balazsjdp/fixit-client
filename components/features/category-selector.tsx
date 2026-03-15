@@ -9,6 +9,7 @@ import {
   useReportForm,
   useReportActions,
 } from "@/store/report/report-store-provider";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export function CategorySelector() {
   const isMobile = useIsMobile();
@@ -21,7 +22,43 @@ export function CategorySelector() {
   };
 
   if (isMobile) {
-    return <div>Mobile category selector</div>;
+    return (
+      <div>
+        <h3 className="text-sm font-bold uppercase tracking-wider mb-4">
+          1. Kategória kiválasztása
+        </h3>
+        {isLoading ? (
+          <Skeleton className="h-11 w-full rounded-xl" />
+        ) : (
+          <div className="flex flex-col gap-2">
+            {categories?.map((category) => {
+              const isSelected = selected?.id === category.id;
+              return (
+                <button
+                  key={category.id}
+                  type="button"
+                  className={cn(
+                    "flex items-center gap-3 w-full rounded-xl border border-gray-100 dark:border-gray-800 bg-primary/5 px-4 py-3 text-left transition-all hover:border-primary",
+                    isSelected &&
+                      "border-primary bg-primary/10 text-primary ring-2 ring-primary/20"
+                  )}
+                  onClick={() => onSelectHandler(category)}
+                >
+                  <DynamicIcon
+                    name={category.icon}
+                    className="text-primary shrink-0"
+                    size={20}
+                  />
+                  <span className="text-sm font-bold uppercase tracking-tight">
+                    {category.label}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        )}
+      </div>
+    );
   } else {
     return (
       <div>

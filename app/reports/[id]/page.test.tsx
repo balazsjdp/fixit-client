@@ -49,7 +49,7 @@ import { useMyOffers } from "@/app/api/client/use-my-offers";
 import { useMyProfessionalProfile } from "@/app/api/client/professionals";
 import { useReportOffers } from "@/app/api/client/use-report-offers";
 import { useCategories } from "@/app/api/client/categories";
-import { confirmReport, releaseTicket } from "@/app/api/client/reports";
+import { confirmReport, cancelReport, submitReview, releaseTicket } from "@/app/api/client/reports";
 import { toast } from "sonner";
 
 const mockUseMyReports = useMyReports as ReturnType<typeof vi.fn>;
@@ -58,6 +58,8 @@ const mockUsePro = useMyProfessionalProfile as ReturnType<typeof vi.fn>;
 const mockUseReportOffers = useReportOffers as ReturnType<typeof vi.fn>;
 const mockUseCategories = useCategories as ReturnType<typeof vi.fn>;
 const mockConfirmReport = confirmReport as ReturnType<typeof vi.fn>;
+const mockCancelReport = cancelReport as ReturnType<typeof vi.fn>;
+const mockSubmitReview = submitReview as ReturnType<typeof vi.fn>;
 const mockReleaseTicket = releaseTicket as ReturnType<typeof vi.fn>;
 const mockMutate = vi.fn();
 
@@ -355,5 +357,177 @@ describe("TicketDetailPage – pro view", () => {
     renderPage();
     expect(screen.getByText("Az ajánlatom")).toBeInTheDocument();
     expect(screen.getByText(/20.*000/)).toBeInTheDocument();
+  });
+});
+
+describe("TicketDetailPage – cancel flow (client)", () => {
+  it("opens cancel dialog when Visszavonás button clicked", () => {
+    setupClientView({ statusSlug: "assigned", hasAccepted: true }, [acceptedOfferWithPro]);
+    renderPage();
+
+    fireEvent.click(screen.getByText("Visszavonás"));
+    expect(screen.getByRole("dialog")).toBeInTheDocument();
+    expect(screen.getByText("Bejelentés visszavonása")).toBeInTheDocument();
+  });
+
+  it("disables confirm button when reason is shorter than 10 chars", () => {
+    setupClientView({ statusSlug: "assigned", hasAccepted: true }, [acceptedOfferWithPro]);
+    renderPage();
+
+    fireEvent.click(screen.getByText("Visszavonás"));
+    const textarea = screen.getByPlaceholderText("Visszavonás oka...");
+    fireEvent.change(textarea, { target: { value: "Rövid" } });
+
+    const confirmBtn = screen.getByText("Végleges visszavonás");
+    expect(confirmBtn).toBeDisabled();
+  });
+
+  it("calls cancelReport with reason after filling min 10 chars", async () => {
+    mockCancelReport.mockResolvedValue({});
+    setupClientView({ statusSlug: "assigned", hasAccepted: true }, [acceptedOfferWithPro]);
+    renderPage();
+
+    fireEvent.click(screen.getByText("Visszavonás"));
+    const textarea = screen.getByPlaceholderText("Visszavonás oka...");
+    fireEvent.change(textarea, { target: { value: "Meggondoltam magam, nem kell" } });
+
+    fireEvent.click(screen.getByText("Végleges visszavonás"));
+    await waitFor(() =>
+      expect(mockCancelReport).toHaveBeenCalledWith(REPORT_ID, "Meggondoltam magam, nem kell")
+    );
+  });
+
+  it("shows success toast and calls mutate after cancel", async () => {
+    mockCancelReport.mockResolvedValue({});
+    setupClientView({ statusSlug: "assigned", hasAccepted: true }, [acceptedOfferWithPro]);
+    renderPage();
+
+    fireEvent.click(screen.getByText("Visszavonás"));
+    fireEvent.change(screen.getByPlaceholderText("Visszavonás oka..."), {
+      target: { value: "Meggondoltam magam, nem kell" },
+    });
+    fireEvent.click(screen.getByText("Végleges visszavonás"));
+
+    await waitFor(() => expect(toast.success).toHaveBeenCalled());
+    expect(mockMutate).toHaveBeenCalled();
+  });
+
+  it("shows 409 specific error toast when cancel is not allowed", async () => {
+    const axiosError = { isAxiosError: true, response: { status: 409 } };
+    mockCancelReport.mockRejectedValue(axiosError);
+    // Make isAxiosError return true for this mock
+    vi.mock("axios", () => ({ isAxiosError: (e: unknown) => (e as { isAxiosError?: boolean }).isAxiosError === true }));
+    setupClientView({ statusSlug: "assigned", hasAccepted: true }, [acceptedOfferWithPro]);
+    renderPage();
+
+    fireEvent.click(screen.getByText("Visszavonás"));
+    fireEvent.change(screen.getByPlaceholderText("Visszavonás oka..."), {
+      target: { value: "Meggondoltam magam, nem kell" },
+    });
+    fireEvent.click(screen.getByText("Végleges visszavonás"));
+
+    await waitFor(() => expect(toast.error).toHaveBeenCalled());
+  });
+});
+
+describe("TicketDetailPage – review submission flow", () => {
+  it("shows review form for completed report", () => {
+    setupClientView({ statusSlug: "completed" }, [acceptedOfferWithPro]);
+    renderPage();
+    expect(screen.getByText(/Értékelje a szakembert/)).toBeInTheDocument();
+    expect(screen.getByText(/Értékelés elküldése/)).toBeInTheDocument();
+  });
+
+  it("submit button is disabled when no star selected", () => {
+    setupClientView({ statusSlug: "completed" }, [acceptedOfferWithPro]);
+    renderPage();
+
+    const submitBtn = screen.getByText(/Értékelés elküldése/);
+    expect(submitBtn).toBeDisabled();
+  });
+
+  it("submit button is enabled after selecting a star", () => {
+    setupClientView({ statusSlug: "completed" }, [acceptedOfferWithPro]);
+    renderPage();
+
+    fireEvent.click(screen.getByLabelText("3 csillag"));
+    const submitBtn = screen.getByText(/Értékelés elküldése/);
+    expect(submitBtn).not.toBeDisabled();
+  });
+
+  it("calls submitReview with rating and comment on submit", async () => {
+    mockSubmitReview.mockResolvedValue({});
+    setupClientView({ statusSlug: "completed" }, [acceptedOfferWithPro]);
+    renderPage();
+
+    fireEvent.click(screen.getByLabelText("4 csillag"));
+    fireEvent.change(screen.getByPlaceholderText(/Ossza meg véleményét/), {
+      target: { value: "Remek munka, ajánlom!" },
+    });
+    fireEvent.click(screen.getByText(/Értékelés elküldése/));
+
+    await waitFor(() =>
+      expect(mockSubmitReview).toHaveBeenCalledWith(REPORT_ID, {
+        rating: 8,
+        comment: "Remek munka, ajánlom!",
+        isAnonymous: false,
+      })
+    );
+  });
+
+  it("shows success toast after submitting review", async () => {
+    mockSubmitReview.mockResolvedValue({});
+    setupClientView({ statusSlug: "completed" }, [acceptedOfferWithPro]);
+    renderPage();
+
+    fireEvent.click(screen.getByLabelText("5 csillag"));
+    fireEvent.click(screen.getByText(/Értékelés elküldése/));
+
+    await waitFor(() => expect(toast.success).toHaveBeenCalled());
+  });
+
+  it("shows thank-you message after review submitted", async () => {
+    mockSubmitReview.mockResolvedValue({});
+    setupClientView({ statusSlug: "completed" }, [acceptedOfferWithPro]);
+    renderPage();
+
+    fireEvent.click(screen.getByLabelText("5 csillag"));
+    fireEvent.click(screen.getByText(/Értékelés elküldése/));
+
+    await waitFor(() => expect(screen.getByText(/Köszönjük az értékelést/)).toBeInTheDocument());
+  });
+
+  it("shows error toast and hides form on 409 (already reviewed)", async () => {
+    const axiosError = { isAxiosError: true, response: { status: 409 } };
+    mockSubmitReview.mockRejectedValue(axiosError);
+    setupClientView({ statusSlug: "completed" }, [acceptedOfferWithPro]);
+    renderPage();
+
+    fireEvent.click(screen.getByLabelText("5 csillag"));
+    fireEvent.click(screen.getByText(/Értékelés elküldése/));
+
+    await waitFor(() => expect(toast.error).toHaveBeenCalled());
+  });
+});
+
+describe("TicketDetailPage – error handling", () => {
+  it("shows error toast when confirmReport fails", async () => {
+    mockConfirmReport.mockRejectedValue(new Error("network error"));
+    setupClientView({ statusSlug: "pending_completion", hasAccepted: true }, [acceptedOfferWithPro]);
+    renderPage();
+
+    fireEvent.click(screen.getByText(/Munkát késznek fogadom/));
+    await waitFor(() => expect(toast.error).toHaveBeenCalled());
+  });
+
+  it("shows error toast when releaseTicket fails", async () => {
+    mockReleaseTicket.mockRejectedValue(new Error("network error"));
+    setupProView({ reportStatusSlug: "assigned" });
+    renderPage();
+
+    fireEvent.click(screen.getByText("Lemondás"));
+    fireEvent.click(screen.getByText("Igen, lemondok"));
+
+    await waitFor(() => expect(toast.error).toHaveBeenCalled());
   });
 });

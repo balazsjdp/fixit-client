@@ -2,18 +2,27 @@
 
 import { ProCategorySelector } from "@/components/features/pro-category-selector";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import logger from "@/lib/logger";
 import {
   useProRegisterForm,
   useProRegisterActions,
 } from "@/store/pro/pro-register-store-provider";
 import { registerProfessional } from "@/app/api/client/professionals";
+import { geocodeAddress } from "@/lib/geocoding";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { MapPin, Loader2, CheckCircle2, Send } from "lucide-react";
+import { MapPin, Loader2, CheckCircle2, Send, Save } from "lucide-react";
 
 const RADIUS_OPTIONS = [5, 10, 20, 50] as const;
+
+interface AddressFields {
+  postcode: string;
+  city: string;
+  street: string;
+  houseNumber: string;
+}
 
 export default function ProRegister() {
   const form = useProRegisterForm();
@@ -22,13 +31,23 @@ export default function ProRegister() {
   const router = useRouter();
   const [submitting, setSubmitting] = useState(false);
   const [gpsLoading, setGpsLoading] = useState(false);
+  const [gpsError, setGpsError] = useState(false);
+  const [addressGeocoding, setAddressGeocoding] = useState(false);
+  const [address, setAddress] = useState<AddressFields>({
+    postcode: "",
+    city: "",
+    street: "",
+    houseNumber: "",
+  });
 
   const handleGpsClick = () => {
     if (!navigator.geolocation) {
       toast.error("A böngésző nem támogatja a helymeghatározást.");
+      setGpsError(true);
       return;
     }
     setGpsLoading(true);
+    setGpsError(false);
     navigator.geolocation.getCurrentPosition(
       (position) => {
         setCoordinates({
@@ -39,10 +58,34 @@ export default function ProRegister() {
       },
       (err) => {
         logger.error({ err }, "GPS error");
-        toast.error("Nem sikerült a helymeghatározás.");
+        toast.error("Nem sikerült a helymeghatározás. Add meg a helyszínt kézzel.");
         setGpsLoading(false);
+        setGpsError(true);
       }
     );
+  };
+
+  const handleAddressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setAddress((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleGeocode = async () => {
+    setAddressGeocoding(true);
+    try {
+      const coords = await geocodeAddress(address);
+      if (coords) {
+        setCoordinates({ lat: coords.lat, lng: coords.lng });
+        toast.success("Helyszín meghatározva a megadott cím alapján.");
+      } else {
+        toast.error("Nem sikerült meghatározni a helyszínt. Ellenőrizd a beírt adatokat.");
+      }
+    } catch (err) {
+      logger.error({ err }, "Geocoding error");
+      toast.error("Hiba a helyszín meghatározása során.");
+    } finally {
+      setAddressGeocoding(false);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -198,6 +241,82 @@ export default function ProRegister() {
                 ? `Helyzet rögzítve (${form.coordinates.lat.toFixed(4)}, ${form.coordinates.lng.toFixed(4)})`
                 : "Helyzet automatikus meghatározása"}
             </button>
+
+            {(gpsError || !form.coordinates) && (
+              <div className="mt-4 space-y-3">
+                <p className="text-xs text-muted-foreground">
+                  Vagy add meg a helyszínedet kézzel:
+                </p>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="flex flex-col gap-1.5">
+                    <label htmlFor="reg-postcode" className="text-xs font-semibold text-muted-foreground">
+                      Irányítószám
+                    </label>
+                    <Input
+                      id="reg-postcode"
+                      name="postcode"
+                      value={address.postcode}
+                      onChange={handleAddressChange}
+                      placeholder="2085"
+                      className="rounded-xl"
+                    />
+                  </div>
+                  <div className="flex flex-col gap-1.5">
+                    <label htmlFor="reg-city" className="text-xs font-semibold text-muted-foreground">
+                      Város
+                    </label>
+                    <Input
+                      id="reg-city"
+                      name="city"
+                      value={address.city}
+                      onChange={handleAddressChange}
+                      placeholder="Pilisvörösvár"
+                      className="rounded-xl"
+                    />
+                  </div>
+                </div>
+                <div className="flex flex-col gap-1.5">
+                  <label htmlFor="reg-street" className="text-xs font-semibold text-muted-foreground">
+                    Közterület neve
+                  </label>
+                  <Input
+                    id="reg-street"
+                    name="street"
+                    value={address.street}
+                    onChange={handleAddressChange}
+                    placeholder="Fő út"
+                    className="rounded-xl"
+                  />
+                </div>
+                <div className="flex flex-col gap-1.5">
+                  <label htmlFor="reg-houseNumber" className="text-xs font-semibold text-muted-foreground">
+                    Házszám
+                  </label>
+                  <Input
+                    id="reg-houseNumber"
+                    name="houseNumber"
+                    value={address.houseNumber}
+                    onChange={handleAddressChange}
+                    placeholder="12."
+                    className="rounded-xl"
+                  />
+                </div>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={handleGeocode}
+                  disabled={addressGeocoding || (!address.city && !address.postcode)}
+                  className="w-full rounded-xl font-bold"
+                >
+                  {addressGeocoding ? (
+                    <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                  ) : (
+                    <Save className="w-4 h-4 mr-2" />
+                  )}
+                  {addressGeocoding ? "Helyszín meghatározása..." : "Cím alapján helyszín mentése"}
+                </Button>
+              </div>
+            )}
           </section>
 
           <section>

@@ -76,8 +76,10 @@ export function ReportCard({
           <div className="flex gap-4">
             {/* Image Preview */}
             {imageUrl && (
-              <div 
-                className="relative h-20 w-20 sm:h-24 sm:w-24 shrink-0 rounded-lg overflow-hidden bg-slate-100 dark:bg-slate-800 cursor-zoom-in group/img"
+              <button
+                type="button"
+                aria-label="Kép nagyítása"
+                className="relative h-20 w-20 sm:h-24 sm:w-24 shrink-0 rounded-lg overflow-hidden bg-slate-100 dark:bg-slate-800 cursor-zoom-in group/img p-0 border-0"
                 onClick={() => setIsImageOpen(true)}
               >
                 <img
@@ -88,7 +90,7 @@ export function ReportCard({
                 <div className="absolute inset-0 bg-black/20 opacity-0 group-hover/img:opacity-100 transition-opacity flex items-center justify-center">
                   <ImageIcon className="w-5 h-5 text-white" />
                 </div>
-              </div>
+              </button>
             )}
 
             {/* Content: Title & Toggle */}

@@ -4,14 +4,14 @@ import { useEffect, useState } from "react";
 import { isAxiosError } from "axios";
 import { toast } from "sonner";
 import {
-  AlertDialog,
-  AlertDialogContent,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogCancel,
-} from "@/components/ui/alert-dialog";
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+  DialogClose,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { submitOffer } from "@/app/api/client/offers";
@@ -97,18 +97,18 @@ export function OfferModal({
   };
 
   return (
-    <AlertDialog open={open} onOpenChange={handleOpenChange}>
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>
             {alreadySubmitted ? "Beküldött ajánlatod" : "Ajánlatot adok"}
-          </AlertDialogTitle>
-          <AlertDialogDescription>
+          </DialogTitle>
+          <DialogDescription>
             {alreadySubmitted
               ? "Már beküldtél ajánlatot erre a bejelentésre."
               : "Add meg a becsült munkadíjat és a kiszállási díjat."}
-          </AlertDialogDescription>
-        </AlertDialogHeader>
+          </DialogDescription>
+        </DialogHeader>
 
         {alreadySubmitted && submittedValues ? (
           <div className="space-y-3 py-2" data-testid="offer-readonly">
@@ -175,10 +175,12 @@ export function OfferModal({
           </div>
         )}
 
-        <AlertDialogFooter>
-          <AlertDialogCancel>
-            {alreadySubmitted ? "Bezár" : "Mégsem"}
-          </AlertDialogCancel>
+        <DialogFooter>
+          <DialogClose asChild>
+            <Button variant="outline">
+              {alreadySubmitted ? "Bezár" : "Mégsem"}
+            </Button>
+          </DialogClose>
           {!alreadySubmitted && (
             <Button
               onClick={handleSubmit}
@@ -188,8 +190,8 @@ export function OfferModal({
               {submitting ? "Beküldés..." : "Ajánlat beküldése"}
             </Button>
           )}
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }
