@@ -3,7 +3,7 @@
 import dynamic from "next/dynamic";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Coins, Clock } from "lucide-react";
+import { Coins, Clock, LogOut } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { RadiusSlider } from "@/components/features/radius-slider";
 import { ProReportCard } from "@/components/features/pro-report-card";
@@ -16,6 +16,8 @@ import {
   updateProRadius,
   updateProNotificationPreference,
 } from "@/app/api/client/professionals";
+import { useAuth } from "@/components/auth/KeycloakProvider";
+import { Button } from "@/components/ui/button";
 import { useNearbyReports } from "@/app/api/client/use-nearby-reports";
 import { useCategories } from "@/app/api/client/categories";
 
@@ -29,6 +31,7 @@ const ProDashboardMap = dynamic(
 
 export default function ProDashboard() {
   const router = useRouter();
+  const { keycloak } = useAuth();
   const {
     data: pro,
     isLoading: proLoading,
@@ -125,10 +128,23 @@ export default function ProDashboard() {
         <div className="text-center max-w-sm px-6">
           <Clock className="w-12 h-12 text-primary mx-auto mb-4" />
           <h1 className="text-2xl font-black mb-2">Regisztráció folyamatban</h1>
-          <p className="text-muted-foreground">
+          <p className="text-muted-foreground mb-6">
             A profilod jóváhagyásra vár. Értesítünk, amint aktiválják a
             fiókodat.
           </p>
+          <div className="flex flex-col gap-3">
+            <Button variant="outline" onClick={() => router.push("/")} className="w-full">
+              Vissza a főoldalra
+            </Button>
+            <Button
+              variant="ghost"
+              onClick={() => keycloak?.logout()}
+              className="w-full text-muted-foreground"
+            >
+              <LogOut className="w-4 h-4 mr-2" />
+              Kijelentkezés
+            </Button>
+          </div>
         </div>
       </div>
     );

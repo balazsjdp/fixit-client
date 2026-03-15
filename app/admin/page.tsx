@@ -15,7 +15,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
 import logger from "@/lib/logger";
 import { useState } from "react";
-import { CheckCircle2, Clock, ShieldX, CreditCard, ChevronDown, ChevronUp } from "lucide-react";
+import { CheckCircle2, Clock, ShieldX, CreditCard, ChevronDown, ChevronUp, Phone, MapPin, Banknote } from "lucide-react";
 
 type FilterType = "" | "pending" | "approved";
 
@@ -159,15 +159,15 @@ export default function AdminPage() {
                       </div>
                       <p className="text-sm text-muted-foreground font-medium flex flex-wrap gap-x-6 gap-y-1">
                         <span className="flex items-center gap-1.5">
-                          <span className="material-symbols-outlined text-base">phone</span>
+                          <Phone className="w-4 h-4" />
                           {pro.phone}
                         </span>
                         <span className="flex items-center gap-1.5">
-                          <span className="material-symbols-outlined text-base">map</span>
+                          <MapPin className="w-4 h-4" />
                           {pro.radiusKm} km sugár
                         </span>
                         <span className="flex items-center gap-1.5 text-foreground font-bold">
-                          <span className="material-symbols-outlined text-base">payments</span>
+                          <Banknote className="w-4 h-4" />
                           {pro.creditBalance} kredit
                         </span>
                       </p>

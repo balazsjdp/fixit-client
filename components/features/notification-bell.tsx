@@ -17,12 +17,14 @@ function getNotificationRoute(n: Notification): string | null {
   switch (n.type) {
     case "offer_accepted":
       return "/pro/offers";
-    case "new_report":
-      return "/pro";
+    case "new_report": {
+      const reportId = n.payload?.reportId;
+      return reportId ? `/pro?reportId=${reportId}` : "/pro";
+    }
     case "new_offer": {
       const reportId = n.payload?.reportId;
       return reportId
-        ? `/client/my-reports/${reportId}`
+        ? `/reports/${reportId}`
         : "/client/my-reports";
     }
     default:
