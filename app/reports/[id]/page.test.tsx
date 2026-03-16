@@ -284,10 +284,10 @@ describe("TicketDetailPage – pro view", () => {
     expect(screen.getByText("Csöpögő csap")).toBeInTheDocument();
   });
 
-  it("shows 'Vissza az ajánlataimhoz' back link for pro", () => {
+  it("shows 'Vissza a dashboardra' back link for pro", () => {
     setupProView();
     renderPage();
-    expect(screen.getByText("Vissza az ajánlataimhoz")).toBeInTheDocument();
+    expect(screen.getByText("Vissza a dashboardra")).toBeInTheDocument();
   });
 
   it("shows 'Szakember nézet' badge", () => {

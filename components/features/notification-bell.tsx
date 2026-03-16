@@ -16,7 +16,7 @@ import { Notification } from "@/types/notification";
 function getNotificationRoute(n: Notification): string | null {
   switch (n.type) {
     case "offer_accepted":
-      return "/pro/offers";
+      return "/pro";
     case "new_report": {
       const reportId = n.payload?.reportId;
       return reportId ? `/pro?reportId=${reportId}` : "/pro";

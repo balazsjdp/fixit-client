@@ -93,12 +93,12 @@ describe("useNavItems – pro user", () => {
     expect(result.current.groups[0].label).toBeUndefined();
   });
 
-  it("returns 3 pro menu items including offers link, no client-only links", () => {
+  it("returns 2 pro menu items, no client-only links", () => {
     const { result } = renderHook(() => useNavItems());
     const items = result.current.groups[0].items;
-    expect(items).toHaveLength(3);
+    expect(items).toHaveLength(2);
     expect(items.map((i) => i.url)).toContain("/pro");
-    expect(items.map((i) => i.url)).toContain("/pro/offers");
+    expect(items.map((i) => i.url)).not.toContain("/pro/offers");
     expect(items.map((i) => i.url)).not.toContain("/client/new");
     expect(items.map((i) => i.url)).not.toContain("/pro/register");
   });
@@ -152,12 +152,12 @@ describe("useNavItems – admin user", () => {
     expect(clientGroup?.items.map((i) => i.url)).not.toContain("/pro/register");
   });
 
-  it("szakember group contains /pro and /pro/offers URLs", () => {
+  it("szakember group contains /pro URL only", () => {
     const { result } = renderHook(() => useNavItems());
     const proGroup = result.current.groups.find(
       (g) => g.label === "Szakember"
     );
     expect(proGroup?.items.map((i) => i.url)).toContain("/pro");
-    expect(proGroup?.items.map((i) => i.url)).toContain("/pro/offers");
+    expect(proGroup?.items.map((i) => i.url)).not.toContain("/pro/offers");
   });
 });
