@@ -25,8 +25,8 @@ import {
   User as UserIcon,
   Shield,
   HardHat,
-  Wrench,
 } from "lucide-react";
+import Image from "next/image";
 import { useAuth } from "./auth/KeycloakProvider";
 
 function NavGroupSection({ group }: { group: NavGroup }) {
@@ -84,12 +84,14 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar {...props}>
       <SidebarHeader className="flex-row items-center py-4 px-6 border-b border-slate-100 dark:border-slate-800">
-        <h2 className="text-[#101418] dark:text-white text-xl font-black leading-tight tracking-tight flex items-center gap-2">
-          <div className="bg-primary p-1.5 rounded-lg text-white">
-            <Wrench className="w-5 h-5" />
-          </div>
-          FixIt
-        </h2>
+        <Image
+          src="/fixit_logo.png"
+          alt="FixIt"
+          width={80}
+          height={32}
+          className="h-8 w-auto"
+          priority
+        />
       </SidebarHeader>
       <SidebarContent>
         {isLoading ? (
