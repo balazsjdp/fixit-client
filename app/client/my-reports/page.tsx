@@ -79,7 +79,7 @@ export default function MyReports() {
           </p>
         </div>
       ) : (
-        <div className="space-y-3">
+        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
           {reports.map((report) => {
             const category = categories?.find((c) => Number(c.id) === report.categoryId);
             return (
