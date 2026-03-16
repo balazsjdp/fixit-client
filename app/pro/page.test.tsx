@@ -12,7 +12,7 @@ vi.mock("next/dynamic", () => ({
 }));
 
 vi.mock("@/components/auth/KeycloakProvider", () => ({
-  useAuth: vi.fn(() => ({ keycloak: null, isReady: true })),
+  useAuth: vi.fn(() => ({ keycloak: { logout: vi.fn() }, isReady: true })),
 }));
 
 vi.mock("next/navigation", () => ({
@@ -98,18 +98,33 @@ vi.mock("@/app/api/client/use-nearby-reports", () => ({
   useNearbyReports: vi.fn(),
 }));
 
+vi.mock("@/app/api/client/use-pro-jobs", () => ({
+  useProJobs: vi.fn(),
+}));
+
+vi.mock("@/app/api/client/use-my-offers", () => ({
+  useMyOffers: vi.fn(),
+}));
+
 vi.mock("@/app/api/client/categories", () => ({
   useCategories: vi.fn(),
 }));
 
 import { useMyProfessionalProfile, updateProRadius, updateProNotificationPreference } from "@/app/api/client/professionals";
 import { useNearbyReports } from "@/app/api/client/use-nearby-reports";
+import { useProJobs } from "@/app/api/client/use-pro-jobs";
+import { useMyOffers } from "@/app/api/client/use-my-offers";
 import { useCategories } from "@/app/api/client/categories";
+import { useAuth } from "@/components/auth/KeycloakProvider";
 import { useRouter } from "next/navigation";
+import { MyOffer } from "@/types/offer";
 
 const mockUsePro = useMyProfessionalProfile as ReturnType<typeof vi.fn>;
 const mockUseReports = useNearbyReports as ReturnType<typeof vi.fn>;
+const mockUseProJobs = useProJobs as ReturnType<typeof vi.fn>;
+const mockUseMyOffers = useMyOffers as ReturnType<typeof vi.fn>;
 const mockUseCategories = useCategories as ReturnType<typeof vi.fn>;
+const mockUseAuth = useAuth as ReturnType<typeof vi.fn>;
 const mockUseRouter = useRouter as ReturnType<typeof vi.fn>;
 const mockUpdateProRadius = updateProRadius as ReturnType<typeof vi.fn>;
 const mockUpdateProNotificationPreference = updateProNotificationPreference as ReturnType<typeof vi.fn>;
@@ -155,9 +170,28 @@ const mockCategories: Category[] = [
   { id: "7", label: "Vízvezeték", icon: "wrench" },
 ];
 
+const makeJob = (overrides: Partial<MyOffer> = {}): MyOffer => ({
+  id: 100,
+  reportId: 42,
+  categoryId: 7,
+  shortDescription: "Csőtörés javítása",
+  description: "Részletes leírás",
+  urgency: 80,
+  estimatedPrice: 25000,
+  travelFee: 3000,
+  status: "accepted",
+  reportStatusSlug: "assigned",
+  filePath: "",
+  createdAt: "2024-03-20T10:00:00Z",
+  clientName: "Teszt Béla",
+  clientPhone: "+36201234567",
+  address: { postcode: "1111", city: "Budapest", street: "Fő utca 1.", houseNumber: "1" },
+  ...overrides,
+});
+
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
-function setupApproved(reports: ProReport[] = mockReports) {
+function setupApproved(reports: ProReport[] = mockReports, jobs: MyOffer[] = [], offers: MyOffer[] = []) {
   const mutatePro = vi.fn().mockResolvedValue(undefined);
   const mutateReports = vi.fn().mockResolvedValue(undefined);
   mockUsePro.mockReturnValue({
@@ -171,6 +205,8 @@ function setupApproved(reports: ProReport[] = mockReports) {
     isLoading: false,
     mutate: mutateReports,
   });
+  mockUseProJobs.mockReturnValue({ data: jobs, isLoading: false });
+  mockUseMyOffers.mockReturnValue({ data: offers, isLoading: false });
   mockUseCategories.mockReturnValue({ data: mockCategories });
   return { mutatePro, mutateReports };
 }
@@ -186,6 +222,8 @@ describe("ProDashboard – loading state", () => {
   it("renders skeletons while profile is loading", () => {
     mockUsePro.mockReturnValue({ data: undefined, isLoading: true, error: null, mutate: vi.fn() });
     mockUseReports.mockReturnValue({ data: undefined, isLoading: true, mutate: vi.fn() });
+    mockUseProJobs.mockReturnValue({ data: undefined, isLoading: true });
+    mockUseMyOffers.mockReturnValue({ data: undefined, isLoading: true });
     mockUseCategories.mockReturnValue({ data: undefined });
 
     const { container } = render(<ProDashboard />);
@@ -195,7 +233,7 @@ describe("ProDashboard – loading state", () => {
 });
 
 describe("ProDashboard – pending professional", () => {
-  it("shows pending approval message for pending professionals", () => {
+  function setupPending() {
     mockUsePro.mockReturnValue({
       data: pendingPro,
       isLoading: false,
@@ -203,11 +241,34 @@ describe("ProDashboard – pending professional", () => {
       mutate: vi.fn(),
     });
     mockUseReports.mockReturnValue({ data: [], isLoading: false, mutate: vi.fn() });
+    mockUseProJobs.mockReturnValue({ data: [], isLoading: false });
+    mockUseMyOffers.mockReturnValue({ data: [], isLoading: false });
     mockUseCategories.mockReturnValue({ data: mockCategories });
+  }
 
+  it("shows pending approval message for pending professionals", () => {
+    setupPending();
     render(<ProDashboard />);
     expect(screen.getByText("Regisztráció folyamatban")).toBeDefined();
     expect(screen.getByText(/jóváhagyásra vár/)).toBeDefined();
+  });
+
+  it("navigates to home when 'Vissza a főoldalra' is clicked", () => {
+    const pushFn = vi.fn();
+    mockUseRouter.mockReturnValue({ replace: vi.fn(), push: pushFn });
+    setupPending();
+    render(<ProDashboard />);
+    fireEvent.click(screen.getByText("Vissza a főoldalra"));
+    expect(pushFn).toHaveBeenCalledWith("/");
+  });
+
+  it("calls keycloak logout when 'Kijelentkezés' is clicked", () => {
+    const logoutFn = vi.fn();
+    mockUseAuth.mockReturnValue({ keycloak: { logout: logoutFn }, isReady: true });
+    setupPending();
+    render(<ProDashboard />);
+    fireEvent.click(screen.getByText("Kijelentkezés"));
+    expect(logoutFn).toHaveBeenCalled();
   });
 });
 
@@ -258,6 +319,8 @@ describe("ProDashboard – approved professional", () => {
       mutate: vi.fn(),
     });
     mockUseReports.mockReturnValue({ data: undefined, isLoading: true, mutate: vi.fn() });
+    mockUseProJobs.mockReturnValue({ data: [], isLoading: false });
+    mockUseMyOffers.mockReturnValue({ data: [], isLoading: false });
     mockUseCategories.mockReturnValue({ data: mockCategories });
 
     const { container } = render(<ProDashboard />);
@@ -351,6 +414,8 @@ describe("ProDashboard – no profile redirect", () => {
       mutate: vi.fn(),
     });
     mockUseReports.mockReturnValue({ data: undefined, isLoading: false, mutate: vi.fn() });
+    mockUseProJobs.mockReturnValue({ data: undefined, isLoading: false });
+    mockUseMyOffers.mockReturnValue({ data: undefined, isLoading: false });
     mockUseCategories.mockReturnValue({ data: undefined });
 
     const { container } = render(<ProDashboard />);
@@ -415,5 +480,237 @@ describe("ProDashboard – offer modal", () => {
     await waitFor(() => {
       expect(screen.queryByTestId("offer-modal")).toBeNull();
     });
+  });
+});
+
+describe("ProDashboard – tabs", () => {
+  it("shows all three tabs: Felfedezés, Ajánlataim, Munkáim", () => {
+    setupApproved();
+    render(<ProDashboard />);
+    expect(screen.getByTestId("tab-discovery")).toBeDefined();
+    expect(screen.getByTestId("tab-offers")).toBeDefined();
+    expect(screen.getByTestId("tab-jobs")).toBeDefined();
+  });
+
+  it("defaults to Felfedezés tab showing report list", () => {
+    setupApproved();
+    render(<ProDashboard />);
+    expect(screen.getByTestId("report-count")).toBeDefined();
+    expect(screen.getByText("Csőtörés a fürdőszobában")).toBeDefined();
+  });
+
+  it("shows report count badge on Felfedezés tab", () => {
+    setupApproved();
+    render(<ProDashboard />);
+    expect(screen.getByTestId("report-count-badge").textContent).toBe("1");
+  });
+
+  it("shows pending offers count badge on Ajánlataim tab", () => {
+    setupApproved(mockReports, [], [
+      makeJob({ id: 200, status: "pending", reportStatusSlug: "open" }),
+      makeJob({ id: 201, status: "pending", reportStatusSlug: "open" }),
+      makeJob({ id: 202, status: "rejected", reportStatusSlug: "open" }),
+    ]);
+    render(<ProDashboard />);
+    expect(screen.getByTestId("offers-count-badge").textContent).toBe("2");
+  });
+
+  it("shows active jobs count badge on Munkáim tab", () => {
+    setupApproved(mockReports, [
+      makeJob({ id: 100, reportStatusSlug: "assigned" }),
+      makeJob({ id: 101, reportStatusSlug: "pending_completion" }),
+      makeJob({ id: 102, reportStatusSlug: "completed" }),
+    ]);
+    render(<ProDashboard />);
+    expect(screen.getByTestId("jobs-count-badge").textContent).toBe("2");
+  });
+
+  it("switches to Munkáim tab on click", async () => {
+    setupApproved(mockReports, [makeJob()]);
+    render(<ProDashboard />);
+
+    fireEvent.click(screen.getByTestId("tab-jobs"));
+
+    await waitFor(() => {
+      expect(screen.getByTestId("jobs-filter")).toBeDefined();
+    });
+    expect(screen.queryByTestId("report-count")).toBeNull();
+  });
+
+  it("switches to Ajánlataim tab on click", async () => {
+    setupApproved(mockReports, [], [makeJob({ status: "pending", reportStatusSlug: "open" })]);
+    render(<ProDashboard />);
+
+    fireEvent.click(screen.getByTestId("tab-offers"));
+
+    await waitFor(() => {
+      expect(screen.getByTestId("offers-list")).toBeDefined();
+    });
+    expect(screen.queryByTestId("report-count")).toBeNull();
+  });
+
+  it("switches back to Felfedezés tab on click", async () => {
+    setupApproved(mockReports, [makeJob()]);
+    render(<ProDashboard />);
+
+    fireEvent.click(screen.getByTestId("tab-jobs"));
+    fireEvent.click(screen.getByTestId("tab-discovery"));
+
+    await waitFor(() => {
+      expect(screen.getByTestId("report-count")).toBeDefined();
+    });
+    expect(screen.queryByTestId("jobs-filter")).toBeNull();
+  });
+});
+
+describe("ProDashboard – Ajánlataim tab", () => {
+  it("shows pending and rejected offers, not accepted", async () => {
+    setupApproved(mockReports, [], [
+      makeJob({ id: 200, shortDescription: "Váró ajánlat", status: "pending", reportStatusSlug: "open" }),
+      makeJob({ id: 201, shortDescription: "Elutasított ajánlat", status: "rejected", reportStatusSlug: "open" }),
+      makeJob({ id: 202, shortDescription: "Elfogadott munka", status: "accepted", reportStatusSlug: "assigned" }),
+    ]);
+    render(<ProDashboard />);
+    fireEvent.click(screen.getByTestId("tab-offers"));
+
+    await waitFor(() => {
+      expect(screen.getByText("Váró ajánlat")).toBeDefined();
+      expect(screen.getByText("Elutasított ajánlat")).toBeDefined();
+    });
+    expect(screen.queryByText("Elfogadott munka")).toBeNull();
+  });
+
+  it("shows 'Nincs várakozó ajánlatod' when list is empty", async () => {
+    setupApproved(mockReports, [], []);
+    render(<ProDashboard />);
+    fireEvent.click(screen.getByTestId("tab-offers"));
+
+    await waitFor(() => {
+      expect(screen.getByTestId("no-offers").textContent).toContain("Nincs várakozó ajánlatod");
+    });
+  });
+
+  it("shows skeletons while offers are loading", async () => {
+    mockUsePro.mockReturnValue({ data: approvedPro, isLoading: false, error: null, mutate: vi.fn() });
+    mockUseReports.mockReturnValue({ data: mockReports, isLoading: false, mutate: vi.fn() });
+    mockUseProJobs.mockReturnValue({ data: [], isLoading: false });
+    mockUseMyOffers.mockReturnValue({ data: undefined, isLoading: true });
+    mockUseCategories.mockReturnValue({ data: mockCategories });
+
+    render(<ProDashboard />);
+    fireEvent.click(screen.getByTestId("tab-offers"));
+
+    const { container } = await waitFor(() => ({ container: document.body }));
+    const skeletons = container.querySelectorAll('[class*="animate-pulse"]');
+    expect(skeletons.length).toBeGreaterThan(0);
+  });
+});
+
+describe("ProDashboard – Munkáim tab", () => {
+  it("shows active jobs by default", async () => {
+    setupApproved(mockReports, [
+      makeJob({ id: 100, shortDescription: "Aktív munka", reportStatusSlug: "assigned" }),
+      makeJob({ id: 101, shortDescription: "Befejezett munka", reportStatusSlug: "completed" }),
+    ]);
+    render(<ProDashboard />);
+    fireEvent.click(screen.getByTestId("tab-jobs"));
+
+    await waitFor(() => {
+      expect(screen.getByText("Aktív munka")).toBeDefined();
+    });
+    expect(screen.queryByText("Befejezett munka")).toBeNull();
+  });
+
+  it("shows completed jobs when Elvégzett filter is selected", async () => {
+    setupApproved(mockReports, [
+      makeJob({ id: 100, shortDescription: "Aktív munka", reportStatusSlug: "assigned" }),
+      makeJob({ id: 101, shortDescription: "Befejezett munka", reportStatusSlug: "completed" }),
+    ]);
+    render(<ProDashboard />);
+    fireEvent.click(screen.getByTestId("tab-jobs"));
+    await waitFor(() => expect(screen.getByTestId("jobs-filter")).toBeDefined());
+
+    fireEvent.click(screen.getByTestId("filter-completed"));
+
+    await waitFor(() => {
+      expect(screen.getByText("Befejezett munka")).toBeDefined();
+    });
+    expect(screen.queryByText("Aktív munka")).toBeNull();
+  });
+
+  it("shows 'Nincs aktív munkád' when no active jobs", async () => {
+    setupApproved(mockReports, [
+      makeJob({ id: 101, reportStatusSlug: "completed" }),
+    ]);
+    render(<ProDashboard />);
+    fireEvent.click(screen.getByTestId("tab-jobs"));
+
+    await waitFor(() => {
+      expect(screen.getByTestId("no-jobs").textContent).toContain("Nincs aktív munkád");
+    });
+  });
+
+  it("shows 'Még nincs elvégzett munkád' when no completed jobs", async () => {
+    setupApproved(mockReports, [
+      makeJob({ id: 100, reportStatusSlug: "assigned" }),
+    ]);
+    render(<ProDashboard />);
+    fireEvent.click(screen.getByTestId("tab-jobs"));
+    await waitFor(() => expect(screen.getByTestId("jobs-filter")).toBeDefined());
+
+    fireEvent.click(screen.getByTestId("filter-completed"));
+
+    await waitFor(() => {
+      expect(screen.getByTestId("no-jobs").textContent).toContain("Még nincs elvégzett munkád");
+    });
+  });
+
+  it("shows jobs-list with correct data", async () => {
+    setupApproved(mockReports, [makeJob({ id: 100, shortDescription: "Csőtörés javítása" })]);
+    render(<ProDashboard />);
+    fireEvent.click(screen.getByTestId("tab-jobs"));
+
+    await waitFor(() => {
+      expect(screen.getByTestId("jobs-list")).toBeDefined();
+      expect(screen.getByText("Csőtörés javítása")).toBeDefined();
+    });
+  });
+
+  it("switches back to Aktuális filter from Elvégzett", async () => {
+    setupApproved(mockReports, [
+      makeJob({ id: 100, shortDescription: "Aktív munka", reportStatusSlug: "assigned" }),
+      makeJob({ id: 101, shortDescription: "Befejezett munka", reportStatusSlug: "completed" }),
+    ]);
+    render(<ProDashboard />);
+    fireEvent.click(screen.getByTestId("tab-jobs"));
+    await waitFor(() => expect(screen.getByTestId("jobs-filter")).toBeDefined());
+
+    fireEvent.click(screen.getByTestId("filter-completed"));
+    await waitFor(() => expect(screen.getByText("Befejezett munka")).toBeDefined());
+
+    fireEvent.click(screen.getByTestId("filter-active"));
+    await waitFor(() => {
+      expect(screen.getByText("Aktív munka")).toBeDefined();
+    });
+    expect(screen.queryByText("Befejezett munka")).toBeNull();
+  });
+
+  it("shows skeletons while jobs are loading", async () => {
+    mockUsePro.mockReturnValue({
+      data: approvedPro,
+      isLoading: false,
+      error: null,
+      mutate: vi.fn(),
+    });
+    mockUseReports.mockReturnValue({ data: mockReports, isLoading: false, mutate: vi.fn() });
+    mockUseProJobs.mockReturnValue({ data: undefined, isLoading: true });
+    mockUseCategories.mockReturnValue({ data: mockCategories });
+
+    render(<ProDashboard />);
+    fireEvent.click(screen.getByTestId("tab-jobs"));
+
+    const { container } = await waitFor(() => ({ container: document.body }));
+    const skeletons = container.querySelectorAll('[class*="animate-pulse"]');
+    expect(skeletons.length).toBeGreaterThan(0);
   });
 });

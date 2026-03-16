@@ -233,9 +233,9 @@ describe("notification routing", () => {
     fireEvent.click(screen.getByTestId(`notification-item-${notification.id}`));
   };
 
-  it("navigates to /pro/offers for offer_accepted", async () => {
+  it("navigates to /pro for offer_accepted", async () => {
     await openAndClickItem(makeNotification({ type: "offer_accepted" }));
-    expect(mockPush).toHaveBeenCalledWith("/pro/offers");
+    expect(mockPush).toHaveBeenCalledWith("/pro");
   });
 
   it("navigates to /pro for new_report", async () => {

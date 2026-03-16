@@ -1,8 +1,6 @@
 "use client";
 
 import { ReportStatusBadge } from "@/components/features/badges/report-status-badge";
-import { CategoryBadge } from "@/components/features/badges/category-badge";
-import { UrgencyBadge } from "@/components/features/badges/urgency-badge";
 import { Button } from "@/components/ui/button";
 import {
   AlertDialog,
@@ -14,15 +12,14 @@ import {
   AlertDialogFooter,
   AlertDialogCancel,
 } from "@/components/ui/alert-dialog";
-import { Plus, Trash2, MessageSquare } from "lucide-react";
-import { config } from "@/app.config";
+import { Plus, Trash2, MessageSquare, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { useMyReports } from "@/app/api/client/use-my-reports";
 import { useCategories } from "@/app/api/client/categories";
 import { deleteReport } from "@/app/api/client/reports";
 import { toast } from "sonner";
-import { DataCard } from "@/components/ui/data-card";
+import { ReportCard } from "@/components/features/report-card";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export default function MyReports() {
@@ -82,29 +79,33 @@ export default function MyReports() {
           </p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="space-y-3">
           {reports.map((report) => {
             const category = categories?.find((c) => Number(c.id) === report.categoryId);
             return (
-              <DataCard
+              <ReportCard
                 key={report.id}
                 id={report.id}
-                title={report.shortDescription}
-                statusBadge={<ReportStatusBadge status={report.statusSlug} />}
-                categoryBadge={<CategoryBadge label={category?.label ?? "Ismeretlen"} />}
-                urgencyBadge={<UrgencyBadge urgency={report.urgency} />}
-                date={report.createdAt}
-                detailsUrl={`/reports/${report.id}`}
-                imageSrc={report.filePath ? `${config.apiBaseUrl}/${report.filePath}` : undefined}
-                imageAlt="Hiba fotója"
+                shortDescription={report.shortDescription}
+                description={report.description ?? ""}
+                urgency={report.urgency}
+                filePath={report.filePath}
+                createdAt={report.createdAt}
+                categoryLabel={category?.label ?? "Ismeretlen"}
+                statusBadges={<ReportStatusBadge status={report.statusSlug} />}
+                stats={
+                  report.offerCount > 0 ? (
+                    <div
+                      data-testid={`offer-count-${report.id}`}
+                      className="flex items-center gap-1.5 text-xs font-bold text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-800/50 px-2.5 py-1 rounded-lg"
+                    >
+                      <MessageSquare className="w-3.5 h-3.5" />
+                      {report.offerCount} ajánlat
+                    </div>
+                  ) : undefined
+                }
                 actions={
-                  <div className="flex items-center gap-4">
-                    {report.offerCount > 0 && (
-                      <div className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
-                        <MessageSquare className="w-3.5 h-3.5" />
-                        {report.offerCount} ajánlat
-                      </div>
-                    )}
+                  <div className="flex items-center gap-2">
                     {!report.hasAccepted && (
                       <AlertDialog
                         open={dialogOpenId === report.id}
@@ -148,6 +149,21 @@ export default function MyReports() {
                         </AlertDialogContent>
                       </AlertDialog>
                     )}
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      asChild
+                      className="h-9 px-4 rounded-lg font-semibold border-2 hover:bg-primary/5 hover:text-primary hover:border-primary/30 transition-all"
+                    >
+                      <Link
+                        href={`/reports/${report.id}`}
+                        className="flex items-center gap-2"
+                        data-testid={`details-link-${report.id}`}
+                      >
+                        Részletek
+                        <ArrowRight className="w-4 h-4" />
+                      </Link>
+                    </Button>
                   </div>
                 }
               />

@@ -155,10 +155,10 @@ export default function TicketDetailPage({
     );
   }
 
-  const backHref = isClient ? "/client/my-reports" : "/pro/offers";
+  const backHref = isClient ? "/client/my-reports" : "/pro";
   const backLabel = isClient
     ? "Vissza a bejelentéseimhez"
-    : "Vissza az ajánlataimhoz";
+    : "Vissza a dashboardra";
 
   return (
     <main className="max-w-6xl mx-auto w-full pb-12">

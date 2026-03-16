@@ -19,7 +19,14 @@ import {
 import { useAuth } from "@/components/auth/KeycloakProvider";
 import { Button } from "@/components/ui/button";
 import { useNearbyReports } from "@/app/api/client/use-nearby-reports";
+import { useProJobs } from "@/app/api/client/use-pro-jobs";
+import { useMyOffers } from "@/app/api/client/use-my-offers";
 import { useCategories } from "@/app/api/client/categories";
+import { OfferStatusBadge } from "@/components/features/badges/offer-status-badge";
+import { ReportStatusBadge } from "@/components/features/badges/report-status-badge";
+import { CategoryBadge } from "@/components/features/badges/category-badge";
+import { UrgencyBadge } from "@/components/features/badges/urgency-badge";
+import { DataCard } from "@/components/ui/data-card";
 
 const ProDashboardMap = dynamic(
   () =>
@@ -43,6 +50,8 @@ export default function ProDashboard() {
     isLoading: reportsLoading,
     mutate: mutateReports,
   } = useNearbyReports();
+  const { data: jobs, isLoading: jobsLoading } = useProJobs();
+  const { data: offers, isLoading: offersLoading } = useMyOffers();
   const { data: categories } = useCategories();
 
   const [radius, setRadius] = useState<number | null>(null);
@@ -54,6 +63,8 @@ export default function ProDashboard() {
   const [offerModalReportId, setOfferModalReportId] = useState<number | null>(
     null
   );
+  const [activeTab, setActiveTab] = useState<"discovery" | "offers" | "jobs">("discovery");
+  const [jobsFilter, setJobsFilter] = useState<"active" | "completed">("active");
 
   // Sync local state with fetched profile (once)
   useEffect(() => {
@@ -222,46 +233,263 @@ export default function ProDashboard() {
           </div>
         </div>
 
-        {/* Right column: report list */}
+        {/* Right column: tabs */}
         <div>
-          <p
-            className="text-sm text-muted-foreground font-medium mb-3"
-            data-testid="report-count"
+          {/* Tab selector */}
+          <div
+            className="flex gap-1 bg-muted/40 rounded-xl p-1 mb-4"
+            data-testid="dashboard-tabs"
           >
-            {reportsLoading
-              ? "Bejelentések betöltése..."
-              : `${reportList.length} bejelentés a közeledben`}
-          </p>
-
-          {reportsLoading ? (
-            <div className="space-y-3">
-              {[1, 2, 3].map((i) => (
-                <Skeleton key={i} className="h-28 w-full rounded-xl" />
-              ))}
-            </div>
-          ) : reportList.length === 0 ? (
-            <p
-              className="text-center text-muted-foreground py-8 text-sm"
-              data-testid="no-reports"
+            <button
+              data-testid="tab-discovery"
+              onClick={() => setActiveTab("discovery")}
+              className={`flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-sm font-semibold transition-all ${
+                activeTab === "discovery"
+                  ? "bg-white dark:bg-slate-900 shadow-sm text-foreground"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
             >
-              Nincs bejelentés a közelben.
-            </p>
-          ) : (
-            <div className="space-y-3">
-              {reportList.map((report) => (
-                <ProReportCard
-                  key={report.id}
-                  report={report}
-                  category={categories?.find(
-                    (c) => String(c.id) === String(report.categoryId)
-                  )}
-                  highlighted={highlightedId === report.id}
-                  onMouseEnter={() => setHighlightedId(report.id)}
-                  onMouseLeave={() => setHighlightedId(null)}
-                  onOffer={setOfferModalReportId}
-                />
-              ))}
-            </div>
+              Felfedezés
+              {!reportsLoading && (
+                <span
+                  data-testid="report-count-badge"
+                  className={`text-xs px-1.5 py-0.5 rounded-full font-bold ${
+                    activeTab === "discovery"
+                      ? "bg-primary/10 text-primary"
+                      : "bg-muted text-muted-foreground"
+                  }`}
+                >
+                  {reportList.length}
+                </span>
+              )}
+            </button>
+            <button
+              data-testid="tab-offers"
+              onClick={() => setActiveTab("offers")}
+              className={`flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-sm font-semibold transition-all ${
+                activeTab === "offers"
+                  ? "bg-white dark:bg-slate-900 shadow-sm text-foreground"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              Ajánlataim
+              {!offersLoading && (
+                <span
+                  data-testid="offers-count-badge"
+                  className={`text-xs px-1.5 py-0.5 rounded-full font-bold ${
+                    activeTab === "offers"
+                      ? "bg-primary/10 text-primary"
+                      : "bg-muted text-muted-foreground"
+                  }`}
+                >
+                  {(offers ?? []).filter((o) => o.status === "pending").length}
+                </span>
+              )}
+            </button>
+            <button
+              data-testid="tab-jobs"
+              onClick={() => setActiveTab("jobs")}
+              className={`flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-sm font-semibold transition-all ${
+                activeTab === "jobs"
+                  ? "bg-white dark:bg-slate-900 shadow-sm text-foreground"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              Munkáim
+              {!jobsLoading && (
+                <span
+                  data-testid="jobs-count-badge"
+                  className={`text-xs px-1.5 py-0.5 rounded-full font-bold ${
+                    activeTab === "jobs"
+                      ? "bg-primary/10 text-primary"
+                      : "bg-muted text-muted-foreground"
+                  }`}
+                >
+                  {(jobs ?? []).filter((j) =>
+                    ["assigned", "pending_completion"].includes(j.reportStatusSlug)
+                  ).length}
+                </span>
+              )}
+            </button>
+          </div>
+
+          {/* Felfedezés tab */}
+          {activeTab === "discovery" && (
+            <>
+              <p
+                className="text-sm text-muted-foreground font-medium mb-3"
+                data-testid="report-count"
+              >
+                {reportsLoading
+                  ? "Bejelentések betöltése..."
+                  : `${reportList.length} bejelentés a közeledben`}
+              </p>
+
+              {reportsLoading ? (
+                <div className="space-y-3">
+                  {[1, 2, 3].map((i) => (
+                    <Skeleton key={i} className="h-28 w-full rounded-xl" />
+                  ))}
+                </div>
+              ) : reportList.length === 0 ? (
+                <p
+                  className="text-center text-muted-foreground py-8 text-sm"
+                  data-testid="no-reports"
+                >
+                  Nincs bejelentés a közelben.
+                </p>
+              ) : (
+                <div className="space-y-3">
+                  {reportList.map((report) => (
+                    <ProReportCard
+                      key={report.id}
+                      report={report}
+                      category={categories?.find(
+                        (c) => String(c.id) === String(report.categoryId)
+                      )}
+                      highlighted={highlightedId === report.id}
+                      onMouseEnter={() => setHighlightedId(report.id)}
+                      onMouseLeave={() => setHighlightedId(null)}
+                      onOffer={setOfferModalReportId}
+                    />
+                  ))}
+                </div>
+              )}
+            </>
+          )}
+
+          {/* Ajánlataim tab */}
+          {activeTab === "offers" && (
+            <>
+              {offersLoading ? (
+                <div className="space-y-4">
+                  {[1, 2].map((i) => (
+                    <Skeleton key={i} className="h-48 w-full rounded-2xl" />
+                  ))}
+                </div>
+              ) : (() => {
+                const pendingAndRejected = (offers ?? []).filter(
+                  (o) => o.status === "pending" || o.status === "rejected"
+                );
+                return pendingAndRejected.length === 0 ? (
+                  <p
+                    className="text-center text-muted-foreground py-8 text-sm"
+                    data-testid="no-offers"
+                  >
+                    Nincs várakozó ajánlatod.
+                  </p>
+                ) : (
+                  <div className="space-y-4" data-testid="offers-list">
+                    {pendingAndRejected.map((offer) => {
+                      const category = categories?.find(
+                        (c) => String(c.id) === String(offer.categoryId)
+                      );
+                      return (
+                        <DataCard
+                          key={offer.id}
+                          id={offer.id}
+                          title={offer.shortDescription}
+                          statusBadge={<OfferStatusBadge status={offer.status} />}
+                          categoryBadge={<CategoryBadge label={category?.label ?? "Ismeretlen"} />}
+                          urgencyBadge={<UrgencyBadge urgency={offer.urgency} />}
+                          date={offer.createdAt}
+                          price={offer.estimatedPrice}
+                          travelFee={offer.travelFee}
+                          detailsUrl={`/reports/${offer.reportId}`}
+                        />
+                      );
+                    })}
+                  </div>
+                );
+              })()}
+            </>
+          )}
+
+          {/* Munkáim tab */}
+          {activeTab === "jobs" && (
+            <>
+              {/* Active / Completed sub-selector */}
+              <div
+                className="inline-flex gap-1 bg-muted/30 border border-border rounded-lg p-0.5 mb-4"
+                data-testid="jobs-filter"
+              >
+                <button
+                  data-testid="filter-active"
+                  onClick={() => setJobsFilter("active")}
+                  className={`px-3 py-1 rounded-md text-xs font-semibold transition-all ${
+                    jobsFilter === "active"
+                      ? "bg-white dark:bg-slate-900 shadow-sm text-foreground"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  Aktuális
+                </button>
+                <button
+                  data-testid="filter-completed"
+                  onClick={() => setJobsFilter("completed")}
+                  className={`px-3 py-1 rounded-md text-xs font-semibold transition-all ${
+                    jobsFilter === "completed"
+                      ? "bg-white dark:bg-slate-900 shadow-sm text-foreground"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  Elvégzett
+                </button>
+              </div>
+
+              {jobsLoading ? (
+                <div className="space-y-4">
+                  {[1, 2].map((i) => (
+                    <Skeleton key={i} className="h-48 w-full rounded-2xl" />
+                  ))}
+                </div>
+              ) : (() => {
+                const filtered = (jobs ?? []).filter((j) =>
+                  jobsFilter === "active"
+                    ? ["assigned", "pending_completion"].includes(j.reportStatusSlug)
+                    : j.reportStatusSlug === "completed"
+                );
+                return filtered.length === 0 ? (
+                  <p
+                    className="text-center text-muted-foreground py-8 text-sm"
+                    data-testid="no-jobs"
+                  >
+                    {jobsFilter === "active"
+                      ? "Nincs aktív munkád."
+                      : "Még nincs elvégzett munkád."}
+                  </p>
+                ) : (
+                  <div className="space-y-4" data-testid="jobs-list">
+                    {filtered.map((job) => {
+                      const category = categories?.find(
+                        (c) => String(c.id) === String(job.categoryId)
+                      );
+                      return (
+                        <DataCard
+                          key={job.id}
+                          id={job.id}
+                          title={job.shortDescription}
+                          statusBadge={<ReportStatusBadge status={job.reportStatusSlug} />}
+                          categoryBadge={<CategoryBadge label={category?.label ?? "Ismeretlen"} />}
+                          urgencyBadge={<UrgencyBadge urgency={job.urgency} />}
+                          date={job.createdAt}
+                          price={job.estimatedPrice}
+                          travelFee={job.travelFee}
+                          personName={job.clientName}
+                          role="client"
+                          location={
+                            job.address
+                              ? `${job.address.city}, ${job.address.street}`
+                              : undefined
+                          }
+                          detailsUrl={`/reports/${job.reportId}`}
+                        />
+                      );
+                    })}
+                  </div>
+                );
+              })()}
+            </>
           )}
         </div>
       </div>

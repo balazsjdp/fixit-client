@@ -23,7 +23,6 @@ const CLIENT_ITEMS: NavItem[] = [
 const PRO_ITEMS: NavItem[] = [
   { title: "Főoldal", url: "/", icon: "house" },
   { title: "Pro dashboard", url: "/pro", icon: "briefcase" },
-  { title: "Munkáim", url: "/pro/offers", icon: "wrench" },
 ];
 
 const ADMIN_CLIENT_ITEMS: NavItem[] = [
@@ -34,7 +33,6 @@ const ADMIN_CLIENT_ITEMS: NavItem[] = [
 
 const ADMIN_PRO_ITEMS: NavItem[] = [
   { title: "Pro dashboard", url: "/pro", icon: "briefcase" },
-  { title: "Munkáim", url: "/pro/offers", icon: "wrench" },
 ];
 
 const ADMIN_ITEMS: NavItem[] = [
