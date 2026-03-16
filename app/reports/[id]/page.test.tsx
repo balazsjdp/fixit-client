@@ -25,11 +25,17 @@ vi.mock("@/app/api/client/professionals", () => ({
 vi.mock("@/app/api/client/use-report-offers", () => ({
   useReportOffers: vi.fn(),
 }));
+vi.mock("@/app/api/client/use-nearby-reports", () => ({
+  useNearbyReports: vi.fn(),
+}));
 vi.mock("@/app/api/client/categories", () => ({
   useCategories: vi.fn(),
 }));
 vi.mock("@/app/api/client/offers", () => ({
   acceptOffer: vi.fn(),
+}));
+vi.mock("@/components/features/offer-modal", () => ({
+  OfferModal: vi.fn(() => null),
 }));
 vi.mock("@/app/api/client/reports", () => ({
   confirmReport: vi.fn(),
@@ -48,15 +54,19 @@ import { useMyReports } from "@/app/api/client/use-my-reports";
 import { useMyOffers } from "@/app/api/client/use-my-offers";
 import { useMyProfessionalProfile } from "@/app/api/client/professionals";
 import { useReportOffers } from "@/app/api/client/use-report-offers";
+import { useNearbyReports } from "@/app/api/client/use-nearby-reports";
 import { useCategories } from "@/app/api/client/categories";
 import { confirmReport, cancelReport, submitReview, releaseTicket } from "@/app/api/client/reports";
 import { toast } from "sonner";
+import { OfferModal } from "@/components/features/offer-modal";
 
 const mockUseMyReports = useMyReports as ReturnType<typeof vi.fn>;
 const mockUseMyOffers = useMyOffers as ReturnType<typeof vi.fn>;
 const mockUsePro = useMyProfessionalProfile as ReturnType<typeof vi.fn>;
 const mockUseReportOffers = useReportOffers as ReturnType<typeof vi.fn>;
+const mockUseNearbyReports = useNearbyReports as ReturnType<typeof vi.fn>;
 const mockUseCategories = useCategories as ReturnType<typeof vi.fn>;
+const mockOfferModal = OfferModal as ReturnType<typeof vi.fn>;
 const mockConfirmReport = confirmReport as ReturnType<typeof vi.fn>;
 const mockCancelReport = cancelReport as ReturnType<typeof vi.fn>;
 const mockSubmitReview = submitReview as ReturnType<typeof vi.fn>;
@@ -71,6 +81,21 @@ const mockCategories: Category[] = [
   { id: "1", label: "Vízvezetékszerelő", icon: "wrench" },
 ];
 
+const nearbyReport = {
+  id: REPORT_ID,
+  categoryId: 1,
+  statusId: 1,
+  statusSlug: "open" as const,
+  shortDescription: "Csöpögő csap",
+  description: "A konyhai csap folyamatosan csöpög.",
+  urgency: 50,
+  filePaths: [],
+  distanceKm: 2.1,
+  lat: 47.5,
+  lng: 19.0,
+  createdAt: "2026-01-01T10:00:00Z",
+};
+
 const clientReport: MyReport = {
   id: REPORT_ID,
   categoryId: 1,
@@ -79,7 +104,7 @@ const clientReport: MyReport = {
   shortDescription: "Csöpögő csap",
   description: "A konyhai csap folyamatosan csöpög.",
   urgency: 50,
-  filePath: "",
+  filePaths: [],
   offerCount: 1,
   hasAccepted: false,
   createdAt: "2026-01-01T10:00:00Z",
@@ -132,7 +157,7 @@ const proOffer: MyOffer = {
   status: "accepted",
   createdAt: "2026-01-01T11:00:00Z",
   reportStatusSlug: "assigned",
-  filePath: "",
+  filePaths: [],
   clientName: "Ügyfél Béla",
   clientPhone: "+36201234567",
   address: {
@@ -172,6 +197,7 @@ function setupClientView(reportOverride?: Partial<MyReport>, offers: OfferWithPr
   mockUseMyOffers.mockReturnValue({ data: [], isLoading: false, mutate: mockMutate });
   mockUsePro.mockReturnValue({ data: null, isLoading: false });
   mockUseReportOffers.mockReturnValue({ data: offers, isLoading: false, mutate: mockMutate });
+  mockUseNearbyReports.mockReturnValue({ data: [], isLoading: false });
   mockUseCategories.mockReturnValue({ data: mockCategories });
 }
 
@@ -184,6 +210,16 @@ function setupProView(offerOverride?: Partial<MyOffer>) {
   });
   mockUsePro.mockReturnValue({ data: approvedPro, isLoading: false });
   mockUseReportOffers.mockReturnValue({ data: [], isLoading: false, mutate: mockMutate });
+  mockUseNearbyReports.mockReturnValue({ data: [], isLoading: false });
+  mockUseCategories.mockReturnValue({ data: mockCategories });
+}
+
+function setupProDiscoveryView() {
+  mockUseMyReports.mockReturnValue({ data: [], isLoading: false, mutate: mockMutate });
+  mockUseMyOffers.mockReturnValue({ data: [], isLoading: false, mutate: mockMutate });
+  mockUsePro.mockReturnValue({ data: approvedPro, isLoading: false });
+  mockUseReportOffers.mockReturnValue({ data: [], isLoading: false, mutate: mockMutate });
+  mockUseNearbyReports.mockReturnValue({ data: [nearbyReport], isLoading: false });
   mockUseCategories.mockReturnValue({ data: mockCategories });
 }
 
@@ -208,6 +244,7 @@ describe("TicketDetailPage – loading state", () => {
     mockUseMyOffers.mockReturnValue({ data: undefined, isLoading: true, mutate: mockMutate });
     mockUsePro.mockReturnValue({ data: null, isLoading: true });
     mockUseReportOffers.mockReturnValue({ data: undefined, isLoading: false, mutate: mockMutate });
+    mockUseNearbyReports.mockReturnValue({ data: undefined, isLoading: true });
     mockUseCategories.mockReturnValue({ data: [] });
 
     renderPage();
@@ -221,6 +258,7 @@ describe("TicketDetailPage – access denied", () => {
     mockUseMyOffers.mockReturnValue({ data: [], isLoading: false, mutate: mockMutate });
     mockUsePro.mockReturnValue({ data: null, isLoading: false });
     mockUseReportOffers.mockReturnValue({ data: [], isLoading: false, mutate: mockMutate });
+    mockUseNearbyReports.mockReturnValue({ data: [], isLoading: false });
     mockUseCategories.mockReturnValue({ data: [] });
 
     renderPage();
@@ -529,5 +567,56 @@ describe("TicketDetailPage – error handling", () => {
     fireEvent.click(screen.getByText("Igen, lemondok"));
 
     await waitFor(() => expect(toast.error).toHaveBeenCalled());
+  });
+});
+
+describe("TicketDetailPage – pro discovery view", () => {
+  it("renders the report title and description", () => {
+    setupProDiscoveryView();
+    renderPage();
+    expect(screen.getByText("Csöpögő csap")).toBeInTheDocument();
+    expect(screen.getByText(/konyhai csap/)).toBeInTheDocument();
+  });
+
+  it("shows 'Szakember nézet' badge", () => {
+    setupProDiscoveryView();
+    renderPage();
+    expect(screen.getByText("Szakember nézet")).toBeInTheDocument();
+  });
+
+  it("shows 'Vissza a dashboardra' back link", () => {
+    setupProDiscoveryView();
+    renderPage();
+    expect(screen.getByText("Vissza a dashboardra")).toBeInTheDocument();
+  });
+
+  it("renders 'Ajánlatadás' card title", () => {
+    setupProDiscoveryView();
+    renderPage();
+    expect(screen.getByText("Ajánlatadás")).toBeInTheDocument();
+  });
+
+  it("renders 'Ajánlatot adok' button", () => {
+    setupProDiscoveryView();
+    renderPage();
+    expect(screen.getByText("Ajánlatot adok")).toBeInTheDocument();
+  });
+
+  it("opens OfferModal when 'Ajánlatot adok' is clicked", () => {
+    mockOfferModal.mockImplementation(({ open }: { open: boolean }) =>
+      open ? <div data-testid="offer-modal-open" /> : null
+    );
+    setupProDiscoveryView();
+    renderPage();
+
+    fireEvent.click(screen.getByText("Ajánlatot adok"));
+    expect(screen.getByTestId("offer-modal-open")).toBeInTheDocument();
+  });
+
+  it("does not render client action panel or pro panel", () => {
+    setupProDiscoveryView();
+    renderPage();
+    expect(screen.queryByText("Műveletek")).not.toBeInTheDocument();
+    expect(screen.queryByText("Az ajánlatom")).not.toBeInTheDocument();
   });
 });

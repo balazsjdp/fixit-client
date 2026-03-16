@@ -1,6 +1,7 @@
 "use client";
 
 import { Navigation, ArrowRight } from "lucide-react";
+import Link from "next/link";
 import { ProReport } from "@/types/report";
 import { Category } from "@/types/category";
 import { Button } from "@/components/ui/button";
@@ -29,7 +30,7 @@ export function ProReportCard({
       shortDescription={report.shortDescription}
       description={report.description}
       urgency={report.urgency}
-      filePath={report.filePath}
+      filePaths={report.filePaths}
       createdAt={report.createdAt}
       categoryLabel={category?.label ?? "Ismeretlen"}
       highlighted={highlighted}
@@ -42,21 +43,32 @@ export function ProReportCard({
         </div>
       }
       actions={
-        onOffer && (
+        <>
           <Button
             size="sm"
-            variant="default"
-            className="h-9 px-4 rounded-lg font-bold shadow-sm active:scale-95 transition-all flex items-center gap-2 group/btn"
-            onClick={(e) => {
-              e.stopPropagation();
-              onOffer(report.id);
-            }}
-            data-testid={`offer-btn-${report.id}`}
+            variant="outline"
+            className="h-9 px-4 rounded-lg font-semibold transition-all"
+            asChild
+            data-testid={`details-link-${report.id}`}
           >
-            Ajánlat
-            <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
+            <Link href={`/reports/${report.id}`}>Részletek</Link>
           </Button>
-        )
+          {onOffer && (
+            <Button
+              size="sm"
+              variant="default"
+              className="h-9 px-4 rounded-lg font-bold shadow-sm active:scale-95 transition-all flex items-center gap-2 group/btn"
+              onClick={(e) => {
+                e.stopPropagation();
+                onOffer(report.id);
+              }}
+              data-testid={`offer-btn-${report.id}`}
+            >
+              Ajánlat
+              <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
+            </Button>
+          )}
+        </>
       }
     />
   );

@@ -8,7 +8,7 @@ export interface ProReport {
   shortDescription: string;
   description: string;
   urgency: number;
-  filePath: string;
+  filePaths: string[];
   distanceKm: number;
   lat: number;
   lng: number;
@@ -24,7 +24,7 @@ export interface MyReport {
   shortDescription: string;
   description: string;
   urgency: number;
-  filePath: string;
+  filePaths: string[];
   offerCount: number;
   hasAccepted: boolean;
   createdAt: string;

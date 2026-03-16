@@ -14,7 +14,7 @@ export interface MyOffer {
   status: OfferStatus;
   createdAt: string;
   reportStatusSlug: ReportStatusSlug;
-  filePath: string;
+  filePaths: string[];
   clientName?: string;
   clientPhone?: string;
   address?: {

@@ -10,7 +10,7 @@ const baseReport: ProReport = {
   shortDescription: "Csöpögő csap a konyhában",
   description: "Csöpögő csap a konyhában részletesen",
   urgency: 0,
-  filePath: "",
+  filePaths: [],
   distanceKm: 3.4,
   lat: 47.49,
   lng: 19.04,
@@ -109,6 +109,20 @@ describe("ProReportCard – mouse events", () => {
     );
     fireEvent.mouseLeave(container.firstChild as HTMLElement);
     expect(onMouseLeave).toHaveBeenCalledOnce();
+  });
+});
+
+describe("ProReportCard – details link", () => {
+  it("always renders the details link", () => {
+    render(<ProReportCard report={baseReport} category={category} />);
+    expect(screen.getByTestId(`details-link-${baseReport.id}`)).toBeDefined();
+    expect(screen.getByText("Részletek")).toBeDefined();
+  });
+
+  it("details link points to /reports/:id", () => {
+    render(<ProReportCard report={baseReport} category={category} />);
+    const link = screen.getByTestId(`details-link-${baseReport.id}`);
+    expect(link.closest("a")?.getAttribute("href")).toBe(`/reports/${baseReport.id}`);
   });
 });
 

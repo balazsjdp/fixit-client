@@ -14,7 +14,7 @@ export interface ReportCardBaseProps {
   shortDescription: string;
   description: string;
   urgency: number;
-  filePath?: string;
+  filePaths?: string[];
   createdAt: string | Date;
   categoryLabel: string;
   statusBadges?: ReactNode;
@@ -29,7 +29,7 @@ export function ReportCard({
   shortDescription,
   description,
   urgency,
-  filePath,
+  filePaths,
   createdAt,
   categoryLabel,
   statusBadges,
@@ -42,8 +42,9 @@ export function ReportCard({
   const [isExpanded, setIsExpanded] = useState(false);
   const [isImageOpen, setIsImageOpen] = useState(false);
 
-  const imageUrl = filePath
-    ? `${config.apiBaseUrl}/${filePath}`
+  const thumbPath = filePaths?.[0];
+  const imageUrl = thumbPath
+    ? `${config.apiBaseUrl}/${thumbPath}`
     : null;
 
   return (

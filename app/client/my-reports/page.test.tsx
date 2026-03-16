@@ -60,7 +60,7 @@ const mockReports: MyReport[] = [
     shortDescription: "Csöpögő csap a konyhában",
     description: "Csöpögő csap a konyhában részletesen",
     urgency: 50,
-    filePath: "",
+    filePaths: [],
     offerCount: 2,
     hasAccepted: false,
     createdAt: "2024-03-12T10:00:00Z",
@@ -73,7 +73,7 @@ const mockReports: MyReport[] = [
     shortDescription: "Nem működik a kapcsoló",
     description: "Nem működik a kapcsoló részletesen",
     urgency: 0,
-    filePath: "",
+    filePaths: [],
     offerCount: 0,
     hasAccepted: true,
     createdAt: "2024-03-01T08:00:00Z",
@@ -206,9 +206,9 @@ describe("MyReports page – delete button", () => {
 });
 
 describe("MyReports page – image thumbnail", () => {
-  it("renders an image when filePath is set", () => {
+  it("renders an image when filePaths has an entry", () => {
     const reportWithImage: MyReport[] = [
-      { ...mockReports[0], filePath: "uploads/test.jpg" },
+      { ...mockReports[0], filePaths: ["uploads/test.jpg"] },
     ];
     setup(reportWithImage);
     render(<MyReports />);
@@ -217,9 +217,9 @@ describe("MyReports page – image thumbnail", () => {
     expect(img.src).toContain("uploads/test.jpg");
   });
 
-  it("renders placeholder icon when filePath is empty", () => {
+  it("renders placeholder icon when filePaths is empty", () => {
     const reportNoImage: MyReport[] = [
-      { ...mockReports[0], filePath: "" },
+      { ...mockReports[0], filePaths: [] },
     ];
     setup(reportNoImage);
     const { container } = render(<MyReports />);

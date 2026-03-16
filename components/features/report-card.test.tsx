@@ -11,7 +11,7 @@ const baseProps = {
   shortDescription: "Csöpögő csap",
   description: "Részletes leírás a csapról",
   urgency: 0,
-  filePath: "",
+  filePaths: [] as string[],
   createdAt: "2024-03-12T10:00:00Z",
   categoryLabel: "Vízvezeték",
 };
@@ -113,27 +113,27 @@ describe("ReportCard – expand/collapse", () => {
 });
 
 describe("ReportCard – image", () => {
-  it("does not render image when filePath is empty", () => {
-    render(<ReportCard {...baseProps} filePath="" />);
+  it("does not render image when filePaths is empty", () => {
+    render(<ReportCard {...baseProps} filePaths={[]} />);
     expect(screen.queryByAltText("Hiba fotója")).toBeNull();
   });
 
-  it("renders image when filePath is set", () => {
-    render(<ReportCard {...baseProps} filePath="uploads/test.jpg" />);
+  it("renders image when filePaths has one entry", () => {
+    render(<ReportCard {...baseProps} filePaths={["uploads/test.jpg"]} />);
     const img = screen.getByAltText("Hiba fotója") as HTMLImageElement;
     expect(img).toBeDefined();
     expect(img.src).toContain("uploads/test.jpg");
   });
 
   it("opens image modal on image click", () => {
-    render(<ReportCard {...baseProps} filePath="uploads/test.jpg" />);
+    render(<ReportCard {...baseProps} filePaths={["uploads/test.jpg"]} />);
     const imgContainer = screen.getByAltText("Hiba fotója").parentElement!;
     fireEvent.click(imgContainer);
     expect(screen.getByAltText("Hiba fotója nagyítva")).toBeDefined();
   });
 
   it("closes image modal on backdrop click", () => {
-    render(<ReportCard {...baseProps} filePath="uploads/test.jpg" />);
+    render(<ReportCard {...baseProps} filePaths={["uploads/test.jpg"]} />);
     fireEvent.click(screen.getByAltText("Hiba fotója").parentElement!);
     const backdrop = document.querySelector(".fixed.inset-0") as HTMLElement;
     fireEvent.click(backdrop);
@@ -141,11 +141,19 @@ describe("ReportCard – image", () => {
   });
 
   it("closes image modal on close button click", () => {
-    render(<ReportCard {...baseProps} filePath="uploads/test.jpg" />);
+    render(<ReportCard {...baseProps} filePaths={["uploads/test.jpg"]} />);
     fireEvent.click(screen.getByAltText("Hiba fotója").parentElement!);
     expect(screen.getByAltText("Hiba fotója nagyítva")).toBeDefined();
     const closeBtn = document.querySelector(".fixed.inset-0 button") as HTMLElement;
     fireEvent.click(closeBtn);
     expect(screen.queryByAltText("Hiba fotója nagyítva")).toBeNull();
+  });
+
+  it("clicking the image in the modal does not close it (stopPropagation)", () => {
+    render(<ReportCard {...baseProps} filePaths={["uploads/test.jpg"]} />);
+    fireEvent.click(screen.getByAltText("Hiba fotója").parentElement!);
+    const enlargedImg = screen.getByAltText("Hiba fotója nagyítva");
+    fireEvent.click(enlargedImg.parentElement!);
+    expect(screen.getByAltText("Hiba fotója nagyítva")).toBeDefined();
   });
 });

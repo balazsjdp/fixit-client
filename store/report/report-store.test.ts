@@ -29,6 +29,11 @@ describe('ReportStore – singleton', () => {
     expect(reportStore.getState().form.category).toBeNull()
   })
 
+  it('setShortDescription updates shortDescription', () => {
+    reportStore.getState().actions.setShortDescription('Csöpögő csap')
+    expect(reportStore.getState().form.shortDescription).toBe('Csöpögő csap')
+  })
+
   it('setDescription updates description', () => {
     reportStore.getState().actions.setDescription('Csöpögő cső')
     expect(reportStore.getState().form.description).toBe('Csöpögő cső')
@@ -66,6 +71,19 @@ describe('ReportStore – singleton', () => {
     reportStore.getState().actions.setCoordinates({ lat: 47.6172, lng: 18.9812 })
     reportStore.getState().actions.setCoordinates(null)
     expect(reportStore.getState().form.coordinates).toBeNull()
+  })
+
+  it('setPhone updates phone', () => {
+    reportStore.getState().actions.setPhone('+36201234567')
+    expect(reportStore.getState().form.phone).toBe('+36201234567')
+  })
+
+  it('initForm merges data into form', () => {
+    reportStore.getState().actions.initForm({ shortDescription: 'Bejelentés', urgency: 100 })
+    const { form } = reportStore.getState()
+    expect(form.shortDescription).toBe('Bejelentés')
+    expect(form.urgency).toBe(100)
+    expect(form.description).toBe('')
   })
 
   it('resetForm clears all fields to defaults including coordinates', () => {

@@ -89,7 +89,7 @@ export default function MyReports() {
                 shortDescription={report.shortDescription}
                 description={report.description ?? ""}
                 urgency={report.urgency}
-                filePath={report.filePath}
+                filePaths={report.filePaths}
                 createdAt={report.createdAt}
                 categoryLabel={category?.label ?? "Ismeretlen"}
                 statusBadges={<ReportStatusBadge status={report.statusSlug} />}

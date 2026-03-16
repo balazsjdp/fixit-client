@@ -49,7 +49,9 @@ import { useMyReports } from "@/app/api/client/use-my-reports";
 import { useMyOffers } from "@/app/api/client/use-my-offers";
 import { useMyProfessionalProfile } from "@/app/api/client/professionals";
 import { useReportOffers } from "@/app/api/client/use-report-offers";
+import { useNearbyReports } from "@/app/api/client/use-nearby-reports";
 import { useCategories } from "@/app/api/client/categories";
+import { OfferModal } from "@/components/features/offer-modal";
 import { acceptOffer } from "@/app/api/client/offers";
 import {
   confirmReport,
@@ -89,32 +91,40 @@ export default function TicketDetailPage({
     isLoading: offersLoading,
     mutate: mutateMyOffers,
   } = useMyOffers(!!pro);
+  const { data: nearbyReports, isLoading: nearbyReportsLoading } = useNearbyReports(
+    needsProCheck && !!pro
+  );
   const { data: categories } = useCategories();
 
   const proOffer = myOffers?.find((o) => o.reportId === reportId);
+  const nearbyReport = nearbyReports?.find((r) => r.id === reportId);
   const isClient = isKnownClient;
   const isProView = !isClient && !!proOffer;
+  const isProDiscovery = !isClient && !isProView && !!nearbyReport;
 
   // Fetch report offers only for the client (SWR skips when key is null)
   const { data: reportOffers, mutate: mutateReportOffers } = useReportOffers(
     isClient ? reportId : null
   );
 
-  const isLoading = reportsLoading || (needsProCheck && (proLoading || (!!pro && offersLoading)));
+  const isLoading =
+    reportsLoading ||
+    (needsProCheck &&
+      (proLoading || (!!pro && (offersLoading || nearbyReportsLoading))));
 
   // Derived shared values
-  const categoryId = myReport?.categoryId ?? proOffer?.categoryId;
+  const categoryId = myReport?.categoryId ?? proOffer?.categoryId ?? nearbyReport?.categoryId;
   const categoryLabel =
     categories?.find((c) => Number(c.id) === categoryId)?.label ?? "Ismeretlen";
   const statusSlug = (myReport?.statusSlug ??
-    proOffer?.reportStatusSlug) as ReportStatusSlug | undefined;
+    proOffer?.reportStatusSlug ??
+    nearbyReport?.statusSlug) as ReportStatusSlug | undefined;
   const shortDescription =
-    myReport?.shortDescription ?? proOffer?.shortDescription ?? "";
-  const description = myReport?.description ?? proOffer?.description ?? "";
-  const urgency = myReport?.urgency ?? proOffer?.urgency ?? 0;
-  const createdAt = myReport?.createdAt ?? proOffer?.createdAt ?? "";
-  const filePath = myReport?.filePath ?? proOffer?.filePath ?? "";
-  const imageUrl = filePath ? `${config.apiBaseUrl}/${filePath}` : null;
+    myReport?.shortDescription ?? proOffer?.shortDescription ?? nearbyReport?.shortDescription ?? "";
+  const description = myReport?.description ?? proOffer?.description ?? nearbyReport?.description ?? "";
+  const urgency = myReport?.urgency ?? proOffer?.urgency ?? nearbyReport?.urgency ?? 0;
+  const createdAt = myReport?.createdAt ?? proOffer?.createdAt ?? nearbyReport?.createdAt ?? "";
+  const filePaths = myReport?.filePaths ?? proOffer?.filePaths ?? nearbyReport?.filePaths ?? [];
 
   if (isLoading) {
     return (
@@ -134,7 +144,7 @@ export default function TicketDetailPage({
     );
   }
 
-  if (!isClient && !isProView) {
+  if (!isClient && !isProView && !isProDiscovery) {
     return (
       <main className="max-w-5xl mx-auto w-full">
         <Link
@@ -186,7 +196,7 @@ export default function TicketDetailPage({
           </div>
           <span>•</span>
           <CategoryBadge label={categoryLabel} />
-          {isProView && (
+          {(isProView || isProDiscovery) && (
             <>
               <span>•</span>
               <span className="text-xs font-medium text-primary bg-primary/10 px-2 py-0.5 rounded-full flex items-center gap-1">
@@ -201,18 +211,23 @@ export default function TicketDetailPage({
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Left column */}
         <div className="lg:col-span-2 space-y-8">
-          {/* Image */}
+          {/* Image gallery */}
           <Card className="overflow-hidden shadow-sm">
-            <div className="aspect-video relative bg-muted/30 flex items-center justify-center">
-              {imageUrl ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={imageUrl}
-                  alt="Hiba fotója"
-                  className="w-full h-full object-cover"
-                />
+            <div className="relative bg-muted/30 flex items-center justify-center p-4">
+              {filePaths.length > 0 ? (
+                <div className="flex gap-3 overflow-x-auto pb-2 w-full">
+                  {filePaths.map((fp, i) => (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      key={i}
+                      src={`${config.apiBaseUrl}/${fp}`}
+                      alt={`Hiba fotója ${i + 1}`}
+                      className="h-48 w-auto rounded-xl object-cover flex-shrink-0"
+                    />
+                  ))}
+                </div>
               ) : (
-                <div className="flex flex-col items-center gap-2 text-muted-foreground">
+                <div className="flex flex-col items-center gap-2 text-muted-foreground py-12">
                   <ImageOff className="w-12 h-12 opacity-50" />
                   <span className="text-sm font-medium">Nincs csatolt kép</span>
                 </div>
@@ -253,6 +268,14 @@ export default function TicketDetailPage({
               proOffer={proOffer}
               reportId={reportId}
               onMutate={() => mutateMyOffers()}
+            />
+          )}
+
+          {/* PRO DISCOVERY: offer button before submitting an offer */}
+          {isProDiscovery && (
+            <ProDiscoveryPanel
+              reportId={reportId}
+              onSuccess={() => mutateMyOffers()}
             />
           )}
         </div>
@@ -966,6 +989,38 @@ function ProClientContactCard({ proOffer }: { proOffer: MyOffer }) {
             </span>
           </div>
         )}
+      </CardContent>
+    </Card>
+  );
+}
+
+function ProDiscoveryPanel({
+  reportId,
+  onSuccess,
+}: {
+  reportId: number;
+  onSuccess: () => void;
+}) {
+  const [offerOpen, setOfferOpen] = useState(false);
+
+  return (
+    <Card className="shadow-sm border-primary/20">
+      <CardHeader className="pb-3 bg-muted/10">
+        <CardTitle className="text-base flex items-center gap-2">
+          <Briefcase className="w-5 h-5 text-primary" />
+          Ajánlatadás
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="pt-4">
+        <Button onClick={() => setOfferOpen(true)} className="w-full sm:w-auto">
+          Ajánlatot adok
+        </Button>
+        <OfferModal
+          reportId={reportId}
+          open={offerOpen}
+          onOpenChange={setOfferOpen}
+          onSuccess={onSuccess}
+        />
       </CardContent>
     </Card>
   );
